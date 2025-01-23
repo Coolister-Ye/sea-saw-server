@@ -1,0 +1,16 @@
+Django==5.1.2
+gunicorn==21.2.0
+psycopg2-binary==2.9.6
+djangorestframework==3.15.2
+drf-writable-nested==0.7.1
+djangorestframework-simplejwt==5.3.1
+dask==2024.5.0
+dask-expr==1.1.0
+pyperf==2.8.0
+dj-rest-auth==7.0.0
+django-filter==24.3
+django-crispy-forms==2.3
+crispy-bootstrap4
+django-cors-headers
+django-safedelete==1.4.0
+

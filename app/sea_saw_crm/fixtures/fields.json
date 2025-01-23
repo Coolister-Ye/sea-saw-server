@@ -1,0 +1,98 @@
+[
+  {
+    "pk": 1,
+    "field_name": "product_name",
+    "field_type": "picklist",
+    "is_active": true,
+    "is_mandatory": false,
+    "content_type": "orderproduct",
+    "extra_info": {
+      "choices": [
+        {
+          "label": "原条罗非鱼",
+          "value": "原条罗非鱼"
+        },
+        {
+          "label": "一去罗非鱼",
+          "value": "一去罗非鱼"
+        },
+        {
+          "label": "二去罗非鱼",
+          "value": "二去罗非鱼"
+        },
+        {
+          "label": "三去罗非鱼",
+          "value": "三去罗非鱼"
+        },
+        {
+          "label": "原条红罗非鱼",
+          "value": "原条红罗非鱼"
+        },
+        {
+          "label": "一去红罗非鱼",
+          "value": "一去红罗非鱼"
+        },
+        {
+          "label": "二去红罗非鱼",
+          "value": "二去红罗非鱼"
+        },
+        {
+          "label": "三去红罗非鱼",
+          "value": "三去红罗非鱼"
+        },
+        {
+          "label": "罗非鱼片",
+          "value": "罗非鱼片"
+        }
+      ]
+    }
+  },
+  {
+    "pk": 2,
+    "field_name": "interior_packaging",
+    "field_type": "picklist",
+    "is_active": true,
+    "is_mandatory": false,
+    "content_type": "orderproduct",
+    "extra_info": {
+      "choices": [
+        {
+          "label": "散装",
+          "value": "散装"
+        },
+        {
+          "label": "散装+1KG袋",
+          "value": "散装+1KG袋"
+        },
+        {
+          "label": "散装+2KG袋",
+          "value": "散装+2KG袋"
+        },
+        {
+          "label": "散装+5KG袋",
+          "value": "散装+5KG袋"
+        },
+        {
+          "label": "IWP",
+          "value": "IWP"
+        },
+        {
+          "label": "IWP+1KG袋",
+          "value": "IWP+1KG袋"
+        },
+        {
+          "label": "IWP+1KG袋",
+          "value": "IWP+2KG袋"
+        },
+        {
+          "label": "IWP+5KG袋",
+          "value": "IWP+5KG袋"
+        },
+        {
+          "label": "IVP",
+          "value": "IVP"
+        }
+      ]
+    }
+  }
+]
