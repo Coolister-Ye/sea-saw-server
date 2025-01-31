@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, F, Prefetch, ForeignKey, OneToOneField, ManyToManyField, ManyToOneRel
+from django.db.models import Sum, F
 from django.db.models.functions import Coalesce, TruncDate
 from django.utils.timezone import make_aware
 from django_filters import rest_framework as filters
@@ -22,7 +22,7 @@ from .pagination import CustomPageNumberPagination
 from .permissions import CustomDjangoModelPermission
 from .serializers import (
     ContactSerializer, CompanySerializer,
-    ContractSerializer, OrderSerializer, FieldSerializer, OrderProductSerializer, OrderSerializer4Prod
+    ContractSerializer, FieldSerializer, OrderProductSerializer, OrderSerializer4Prod
 )
 
 LOOKUP_TYPES = [
