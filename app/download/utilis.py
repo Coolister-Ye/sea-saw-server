@@ -1,11 +1,12 @@
 import itertools
+import importlib
 from rest_framework.serializers import ListSerializer, ModelSerializer
 
 
 def combine_lists(lst_a, lst_b):
     """
     将两个列表中的字典合并，返回一个包含所有合并结果的列表。
-    合并时，如果两个列表的元素是字典，将它们合并为一个字典。
+    合并时，如果两个列表的元素是字典，将它们合并为字典。
     """
     if not lst_a:
         return lst_b
@@ -13,7 +14,7 @@ def combine_lists(lst_a, lst_b):
         return lst_a
 
     res = []
-    # 遍历两个列表中的元素，将每个元素合并为一个字典并加入结果列表
+    # 遍历两个列表中的元素，将每个元素合并为字典并加入结果列表
     for b in lst_b:
         for a in lst_a:
             res.append({**a, **b})  # 合并字典，**表示解包字典并合并
@@ -96,3 +97,45 @@ def flatten(queryset, serializer):
     data = traverse(serialized.data, serialized)
 
     return data, headers
+
+
+def dynamic_import_model(app_name, model_name):
+    """
+    Dynamically import a model given an app name and model name as strings.
+    """
+    try:
+        # Construct the module path (e.g., 'myapp.models')
+        module_path = f"{app_name}.models"
+
+        # Dynamically import the module
+        models_module = importlib.import_module(module_path)
+
+        # Get the model class from the imported module
+        model_class = getattr(models_module, model_name)
+        return model_class
+    except ImportError as e:
+        raise Exception(f"Failed to import model {model_name} from app {app_name}: {e}")
+    except AttributeError:
+        raise Exception(f"Model {model_name} not found in app {app_name}")
+
+
+def dynamic_import_serializer(app_name, serializer_name):
+    """
+    Dynamically import a serializer given an app name and serializer name as strings.
+    """
+    try:
+        # Construct the module path (e.g., 'myapp.serializers')
+        module_path = f"{app_name}.serializers"
+
+        # Dynamically import the module
+        serializers_module = importlib.import_module(module_path)
+
+        # Get the serializer class from the imported module
+        serializer_class = getattr(serializers_module, serializer_name)
+        return serializer_class
+    except ImportError as e:
+        raise Exception(f"Failed to import serializer {serializer_name} from app {app_name}: {e}")
+    except AttributeError:
+        raise Exception(f"Serializer {serializer_name} not found in app {app_name}")
+
+

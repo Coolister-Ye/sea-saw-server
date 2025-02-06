@@ -3,7 +3,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
-from rest_framework.exceptions import NotAuthenticated
 from rest_framework.serializers import ListSerializer
 
 from sea_saw_auth.models import User

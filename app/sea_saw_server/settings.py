@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "safedelete",
     "django_celery_results",
+    "download",
     "sea_saw_auth",
     "sea_saw_crm",
 ]
@@ -195,10 +196,11 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # 配置 Celery 使用 Redis 作为消息队列
-CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://127.0.0.1:6379/0")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_BACKEND = 'django-db'
 
 # 可选配置：超时、任务队列等
 CELERY_TASK_SOFT_TIME_LIMIT = 300  # 单个任务超时时间（秒）
