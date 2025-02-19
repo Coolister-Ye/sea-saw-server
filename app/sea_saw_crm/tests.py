@@ -1,8 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
-from rest_framework.test import APITestCase
-
-from sea_saw_auth.models import User
-
 # class SerializerTests(APITestCase):
 #
 #     def setUp(self):
@@ -229,10 +224,6 @@ from sea_saw_auth.models import User
 #
 #         # Check if the new order was added and old ones remain the same, when partial is set to True
 #         self.assertEqual(updated_contract.orders.count(), 3)
-
-from rest_framework.test import APITestCase
-from sea_saw_crm.models import Contract, Order, OrderProduct
-from django.utils import timezone
 
 # class FlattenContractFunctionTests(APITestCase):
 #

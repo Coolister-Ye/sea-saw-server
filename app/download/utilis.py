@@ -1,5 +1,6 @@
 import importlib
 import itertools
+
 from rest_framework.serializers import ListSerializer, ModelSerializer
 
 
@@ -137,4 +138,3 @@ def dynamic_import_serializer(app_name, serializer_name):
         raise Exception(f"Failed to import serializer {serializer_name} from app {app_name}: {e}")
     except AttributeError:
         raise Exception(f"Serializer {serializer_name} not found in app {app_name}")
-

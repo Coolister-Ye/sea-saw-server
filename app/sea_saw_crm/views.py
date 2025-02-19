@@ -290,4 +290,3 @@ class DownloadTaskView(DownloadView):
         # Add filter condition to restrict query to visible users
 
         return filters_dict
-

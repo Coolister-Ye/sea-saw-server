@@ -9,6 +9,7 @@ from django.utils import timezone
 from download.models import DownloadTask
 from download.utilis import dynamic_import_model, flatten, dynamic_import_serializer
 
+
 def split_class_path(class_path):
     """
     Split the class path (e.g., 'app_name.model_name') into app_name and class_name.
@@ -16,12 +17,14 @@ def split_class_path(class_path):
     app_name, class_name = class_path.split(".")
     return app_name, class_name
 
+
 def create_directory(directory):
     """
     Create the directory if it does not exist.
     """
     if not os.path.exists(directory):
         os.makedirs(directory)
+
 
 @shared_task
 def generate_csv_task(model_cls, serializer_cls, filters, ordering, task):

@@ -168,14 +168,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
     "http://192.168.3.204:8081",
-    "http://localhost:8081"
+    "http://localhost:8081",
 ] + FRONTEDN_HOST
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
     "http://192.168.3.204:8081",
-    "http://localhost:8081"
+    "http://localhost:8081",
 ] + FRONTEDN_HOST
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
