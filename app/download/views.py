@@ -25,7 +25,10 @@ class DownloadView(APIView):
     该视图允许用户提交筛选条件，并通过异步任务生成对应数据的CSV文件。
     (View class to receive filter conditions and create download tasks for CSV generation)
     """
+<<<<<<< HEAD
 
+=======
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
     # 使用自定义的权限类，确保用户具有适当的权限
     # (Use custom permission class to ensure the user has the appropriate permissions)
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
@@ -100,7 +103,15 @@ class DownloadView(APIView):
 
         # Create a new download task record in the database
         task = DownloadTask.objects.create(
+<<<<<<< HEAD
             user=request.user, task_id=task_id, file_name=file_name, file_path=file_path, status="processing"
+=======
+            user=request.user,
+            task_id=task_id,
+            file_name=file_name,
+            file_path=file_path,
+            status="processing"
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
         )
 
         # Serialize task data for passing to async task
@@ -110,6 +121,7 @@ class DownloadView(APIView):
         generate_csv_task.delay_on_commit(model_path, serializer_path, filters, ordering, task_json)
 
         # Return task ID to inform the user the task has been created
+<<<<<<< HEAD
         return Response(
             {
                 'task_id': task.id,  # Return the generated task ID
@@ -117,13 +129,22 @@ class DownloadView(APIView):
             },
             status=status.HTTP_202_ACCEPTED,
         )
+=======
+        return Response({
+            'task_id': task.id,  # Return the generated task ID
+            'message': 'The download task has been initiated.'  # Inform the user the task has been started
+        }, status=status.HTTP_202_ACCEPTED)
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 
 
 class UserDownloadTasksView(ListAPIView):
     """
     获取当前用户的所有下载任务
     """
+<<<<<<< HEAD
 
+=======
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
     permission_classes = [IsAuthenticated, IsTaskOwner]  # 确保只有认证的用户能访问
     queryset = DownloadTask.objects.all()
     serializer_class = DownloadTaskSerializer
@@ -137,4 +158,8 @@ class UserDownloadTasksView(ListAPIView):
         user = self.request.user
         queryset = super().get_queryset()
 
+<<<<<<< HEAD
         return queryset.filter(user=user)
+=======
+        return queryset.filter(user=user)
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787

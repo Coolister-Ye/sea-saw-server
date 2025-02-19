@@ -1,5 +1,6 @@
 import csv
 import os
+<<<<<<< HEAD
 
 from celery import shared_task
 from django.conf import settings
@@ -9,6 +10,14 @@ from django.utils import timezone
 from download.models import DownloadTask
 from download.utilis import dynamic_import_model, flatten, dynamic_import_serializer
 
+=======
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
+from celery import shared_task
+from download.models import DownloadTask
+from download.utilis import dynamic_import_model, flatten, dynamic_import_serializer
+from django.conf import settings
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 
 def split_class_path(class_path):
     """
@@ -17,7 +26,10 @@ def split_class_path(class_path):
     app_name, class_name = class_path.split(".")
     return app_name, class_name
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 def create_directory(directory):
     """
     Create the directory if it does not exist.
@@ -25,7 +37,10 @@ def create_directory(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 @shared_task
 def generate_csv_task(model_cls, serializer_cls, filters, ordering, task):
     """

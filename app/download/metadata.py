@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 from django.core.exceptions import PermissionDenied
+=======
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.metadata import SimpleMetadata
 from rest_framework.request import clone_request
+<<<<<<< HEAD
+=======
+from django.core.exceptions import PermissionDenied
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 
 
 class CustomMetadata(SimpleMetadata):
@@ -31,4 +38,8 @@ class CustomMetadata(SimpleMetadata):
             finally:
                 view.request = request
 
+<<<<<<< HEAD
         return actions
+=======
+        return actions
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787

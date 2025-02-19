@@ -259,8 +259,19 @@ class DownloadTaskView(DownloadView):
     # 映射不同对象类型到相应的模型和序列化器
     # Map different object types to corresponding models and serializers
     download_obj_mapping = {
+<<<<<<< HEAD
         "contracts": {"model": "sea_saw_crm.Contract", "serializer": "sea_saw_crm.ContractSerializer"},
         "orders": {"model": "sea_saw_crm.Order", "serializer": "sea_saw_crm.OrderSerializer4Prod"},
+=======
+        "contracts": {
+            "model": "sea_saw_crm.Contract",
+            "serializer": "sea_saw_crm.ContractSerializer"
+        },
+        "orders": {
+            "model": "sea_saw_crm.Order",
+            "serializer": "sea_saw_crm.OrderSerializer4Prod"
+        }
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
     }
 
     def get_filters(self, request):
@@ -290,3 +301,10 @@ class DownloadTaskView(DownloadView):
         # Add filter condition to restrict query to visible users
 
         return filters_dict
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787

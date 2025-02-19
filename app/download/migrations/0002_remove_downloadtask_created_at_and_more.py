@@ -6,6 +6,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+<<<<<<< HEAD
     dependencies = [('download', '0001_initial'), migrations.swappable_dependency(settings.AUTH_USER_MODEL)]
 
     operations = [
@@ -22,6 +23,43 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='downloadtask', name='task_id', field=models.CharField(max_length=255, unique=True)
+=======
+
+    dependencies = [
+        ('download', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.RemoveField(
+            model_name='downloadtask',
+            name='created_at',
+        ),
+        migrations.AddField(
+            model_name='downloadtask',
+            name='download_url',
+            field=models.URLField(blank=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='downloadtask',
+            name='error_message',
+            field=models.TextField(blank=True, null=True),
+        ),
+        migrations.AlterField(
+            model_name='downloadtask',
+            name='file_path',
+            field=models.CharField(max_length=1024),
+        ),
+        migrations.AlterField(
+            model_name='downloadtask',
+            name='status',
+            field=models.CharField(default='processing', max_length=50),
+        ),
+        migrations.AlterField(
+            model_name='downloadtask',
+            name='task_id',
+            field=models.CharField(max_length=255, unique=True),
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
         ),
         migrations.AlterField(
             model_name='downloadtask',

@@ -6,9 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+<<<<<<< HEAD
     initial = True
 
     dependencies = [migrations.swappable_dependency(settings.AUTH_USER_MODEL)]
+=======
+
+    initial = True
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 
     operations = [
         migrations.CreateModel(
@@ -21,6 +30,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(max_length=50)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('completed_at', models.DateTimeField(blank=True, null=True)),
+<<<<<<< HEAD
                 (
                     'user',
                     models.ForeignKey(
@@ -31,4 +41,9 @@ class Migration(migrations.Migration):
                 ),
             ],
         )
+=======
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='download_tasks', to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
     ]

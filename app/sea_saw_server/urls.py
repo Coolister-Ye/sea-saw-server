@@ -14,7 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+<<<<<<< HEAD
 
+=======
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -30,9 +33,16 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+<<<<<<< HEAD
     path('api/download/', include('download.urls')),
     path('api/preference/', include('preference.urls')),
     re_path(r'^auth/', include('djoser.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+=======
+    path('api/download/', include('download.urls'))
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
