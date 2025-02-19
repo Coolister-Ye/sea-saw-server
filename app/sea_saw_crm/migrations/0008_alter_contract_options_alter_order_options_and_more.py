@@ -4,24 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ('sea_saw_crm', '0007_alter_orderproduct_options_contact_full_name'),
-    ]
+    dependencies = [('sea_saw_crm', '0007_alter_orderproduct_options_contact_full_name')]
 
     operations = [
         migrations.AlterModelOptions(
-            name='contract',
-            options={'verbose_name': 'Contract', 'verbose_name_plural': 'Contracts'},
+            name='contract', options={'verbose_name': 'Contract', 'verbose_name_plural': 'Contracts'}
         ),
-        migrations.AlterModelOptions(
-            name='order',
-            options={'verbose_name': 'Order', 'verbose_name_plural': 'Orders'},
-        ),
+        migrations.AlterModelOptions(name='order', options={'verbose_name': 'Order', 'verbose_name_plural': 'Orders'}),
         migrations.AlterField(
             model_name='contact',
             name='full_name',
-            field=models.CharField(blank=True, help_text="The contact's full name. Can be empty.", max_length=510, null=True, verbose_name='Customer Name'),
+            field=models.CharField(
+                blank=True,
+                help_text="The contact's full name. Can be empty.",
+                max_length=510,
+                null=True,
+                verbose_name='Customer Name',
+            ),
         ),
         migrations.AlterField(
             model_name='contract',

@@ -3,7 +3,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
-from rest_framework.exceptions import NotAuthenticated
 from rest_framework.serializers import ListSerializer
 
 from sea_saw_auth.models import User
@@ -19,33 +18,27 @@ class BaseSerializer(WritableNestedModelSerializer):
         read_only=True,
         allow_null=True,
         label=_("Owner"),
-        help_text=_("The user who owns this object.")
+        help_text=_("The user who owns this object."),
     )
     created_by = serializers.CharField(
-        read_only=True,
-        allow_null=True,
-        label=_("Created By"),
-        help_text=_("The user who created this object.")
+        read_only=True, allow_null=True, label=_("Created By"), help_text=_("The user who created this object.")
     )
     updated_by = serializers.CharField(
-        read_only=True,
-        allow_null=True,
-        label=_("Updated By"),
-        help_text=_("The user who last updated this object.")
+        read_only=True, allow_null=True, label=_("Updated By"), help_text=_("The user who last updated this object.")
     )
     created_at = serializers.DateTimeField(
         read_only=True,
         allow_null=True,
         format=DATETIME_FORMATS,
         label=_("Created At"),
-        help_text=_("Timestamp when this object was created.")
+        help_text=_("Timestamp when this object was created."),
     )
     updated_at = serializers.DateTimeField(
         read_only=True,
         allow_null=True,
         format=DATETIME_FORMATS,
         label=_("Updated At"),
-        help_text=_("Timestamp when this object was last updated.")
+        help_text=_("Timestamp when this object was last updated."),
     )
 
     class Meta:
@@ -66,10 +59,7 @@ class BaseSerializer(WritableNestedModelSerializer):
         (such as required, nullability, default values, etc.)
         """
         _kwards = field.__dict__.get("_kwargs")
-        return {
-            **_kwards,
-            **{"context": self.context},
-        }
+        return {**_kwards, **{"context": self.context}}
 
     def _process_nested_field(self, field, field_name):
         """
@@ -80,10 +70,7 @@ class BaseSerializer(WritableNestedModelSerializer):
             field = field.child
             child_serializer_class = field.__class__
             field_kwargs = self._get_common_kwargs(field)
-            self.fields[field_name] = ListSerializer(
-                child=child_serializer_class(context=self.context),
-                **field_kwargs,
-            )
+            self.fields[field_name] = ListSerializer(child=child_serializer_class(context=self.context), **field_kwargs)
         else:  # Handle single serializer case
             serializer_class = field.__class__
             field_kwargs = self._get_common_kwargs(field)
@@ -95,7 +82,9 @@ class BaseSerializer(WritableNestedModelSerializer):
         to the correct request and user context.
         """
         for field_name, field in self.fields.items():
-            if isinstance(field, BaseSerializer) or (hasattr(field, 'child') and isinstance(field.child, BaseSerializer)):
+            if isinstance(field, BaseSerializer) or (
+                hasattr(field, 'child') and isinstance(field.child, BaseSerializer)
+            ):
                 self._process_nested_field(field, field_name)
 
     def _filter_fields(self, fields):
@@ -149,18 +138,14 @@ class BaseSerializer(WritableNestedModelSerializer):
         """
         # If no relation data is provided, exit early
         if (
-                not relation_data
-                and hasattr(self.initial_data, relation_name)
-                and hasattr(self.validated_data, relation_name)
+            not relation_data
+            and hasattr(self.initial_data, relation_name)
+            and hasattr(self.validated_data, relation_name)
         ):
             return instance
 
         # Use initial_data or passed relation_data if available
-        relation_data = (
-                relation_data
-                or self.initial_data.get(relation_name)
-                or self.validated_data.get(relation_name)
-        )
+        relation_data = relation_data or self.initial_data.get(relation_name) or self.validated_data.get(relation_name)
 
         try:
             # Determine the relation instance
@@ -182,13 +167,11 @@ class BaseSerializer(WritableNestedModelSerializer):
                 instance.save(update_fields=[relation_name])
 
         except ObjectDoesNotExist:
-            raise serializers.ValidationError({
-                relation_name: f'{relation_model.__name__} with the provided identifier does not exist.'
-            })
+            raise serializers.ValidationError(
+                {relation_name: f'{relation_model.__name__} with the provided identifier does not exist.'}
+            )
         except Exception as e:
-            raise serializers.ValidationError({
-                relation_name: f'Error assigning {relation_model.__name__}: {str(e)}'
-            })
+            raise serializers.ValidationError({relation_name: f'Error assigning {relation_model.__name__}: {str(e)}'})
 
         return instance
 
@@ -248,17 +231,14 @@ class FieldSerializer(BaseSerializer):
     - @field_option: The choice of field for picklist type.
     - @content_type: Use the name of the model for serialization/deserialization.
     """
+
     content_type = serializers.CharField(
-        source='content_type.model',
-        label=_("Content Type"),
-        help_text=_("The model associated with this field."),
+        source='content_type.model', label=_("Content Type"), help_text=_("The model associated with this field.")
     )
 
     class Meta:
         model = Field
-        fields = [
-            'pk', 'field_name', 'field_type', 'is_active', 'is_mandatory', 'content_type', 'extra_info', 'owner'
-        ]
+        fields = ['pk', 'field_name', 'field_type', 'is_active', 'is_mandatory', 'content_type', 'extra_info', 'owner']
 
     def validate(self, data):
         """
@@ -266,9 +246,7 @@ class FieldSerializer(BaseSerializer):
         - Picklist fields must include a 'picklist' key in `extra_info`.
         """
         if data.get('field_type') == 'picklist' and not data.get('extra_info', {}).get('choices'):
-            raise serializers.ValidationError(
-                'Picklist field requires a "picklist" key in extra_info.'
-            )
+            raise serializers.ValidationError('Picklist field requires a "picklist" key in extra_info.')
         return data
 
     @staticmethod
@@ -277,10 +255,7 @@ class FieldSerializer(BaseSerializer):
         Resolve content_type from the provided model name.
         """
         try:
-            return ContentType.objects.get_by_natural_key(
-                app_label='sea_saw_crm',
-                model=content_type_data['model']
-            )
+            return ContentType.objects.get_by_natural_key(app_label='sea_saw_crm', model=content_type_data['model'])
         except ObjectDoesNotExist:
             raise serializers.ValidationError(
                 {"content_type": f"ContentType for model '{content_type_data['model']}' does not exist."}
@@ -309,9 +284,7 @@ class FieldSerializer(BaseSerializer):
         immutable_fields = ['field_name', 'field_type']
         for field in immutable_fields:
             if field in validated_data and validated_data[field] != getattr(instance, field):
-                raise serializers.ValidationError(
-                    {field: f"The field '{field}' cannot be updated."}
-                )
+                raise serializers.ValidationError({field: f"The field '{field}' cannot be updated."})
 
         validated_data = self.handle_content_type(validated_data)
         return super().update(instance, validated_data)
@@ -324,7 +297,7 @@ class CompanySerializer(BaseSerializer):
 
     class Meta(BaseSerializer.Meta):
         model = Company
-        fields = ['pk', 'company_name', 'email', 'mobile', 'phone', 'home_phone']
+        fields = ['pk', 'company_name', 'email', 'mobile', 'phone', 'home_phone', 'owner']
 
 
 class ContactSerializer(BaseSerializer):
@@ -332,13 +305,26 @@ class ContactSerializer(BaseSerializer):
     Serializer for the Contact model, automatically updates full_name
     during creation and update operations.
     """
+
     company = CompanySerializer(fields={"company_name"}, required=False, allow_null=True, label=_("Company"))
 
     class Meta(BaseSerializer.Meta):
         model = Contact
         fields = [
-            'pk', 'first_name', 'last_name', 'full_name', 'title', 'email', 'mobile', 'phone', 'company', 'owner',
-            'created_by', 'updated_by', 'created_at', 'updated_at'
+            'pk',
+            'first_name',
+            'last_name',
+            'full_name',
+            'title',
+            'email',
+            'mobile',
+            'phone',
+            'company',
+            'owner',
+            'created_by',
+            'updated_by',
+            'created_at',
+            'updated_at',
         ]
 
     def assign_company(self, instance, company):
@@ -394,9 +380,21 @@ class OrderProductSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
         model = OrderProduct
         fields = [
-            'pk', 'product_name', 'size', 'packaging', 'interior_packaging', 'weight',
-            'glazing', 'net_weight', 'quantity', 'total_net_weight', 'price', 'total_price',
-            'progress_material', 'progress_quantity', 'progress_weight'
+            'pk',
+            'product_name',
+            'size',
+            'packaging',
+            'interior_packaging',
+            'weight',
+            'glazing',
+            'net_weight',
+            'quantity',
+            'total_net_weight',
+            'price',
+            'total_price',
+            'progress_material',
+            'progress_quantity',
+            'progress_weight',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -421,16 +419,28 @@ class OrderProductSerializer(BaseSerializer):
 
 class OrderProductSerializer4Prod(BaseSerializer):
     """
-        Production order details serializer for contract view.
-        This serializer assume the user can be sale, production or admin user.
-        """
+    Production order details serializer for contract view.
+    This serializer assume the user can be sale, production or admin user.
+    """
 
     class Meta(BaseSerializer.Meta):
         model = OrderProduct
         fields = [
-            'pk', 'product_name', 'size', 'packaging', 'interior_packaging', 'weight',
-            'glazing', 'net_weight', 'quantity', 'total_net_weight', 'price', 'total_price',
-            'progress_material', 'progress_quantity', 'progress_weight'
+            'pk',
+            'product_name',
+            'size',
+            'packaging',
+            'interior_packaging',
+            'weight',
+            'glazing',
+            'net_weight',
+            'quantity',
+            'total_net_weight',
+            'price',
+            'total_price',
+            'progress_material',
+            'progress_quantity',
+            'progress_weight',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -465,13 +475,23 @@ class OrderSerializer(BaseSerializer):
     """
     Order serializer for admin users.
     """
+
     products = OrderProductSerializer(many=True, required=False, allow_null=True)
 
     class Meta(BaseSerializer.Meta):
         model = Order
         fields = [
-            'pk', 'order_code', 'destination_port', 'etd', 'deliver_date', 'deposit',
-            'deposit_date', 'balance', 'balance_date', 'stage', 'products'
+            'pk',
+            'order_code',
+            'destination_port',
+            'etd',
+            'deliver_date',
+            'deposit',
+            'deposit_date',
+            'balance',
+            'balance_date',
+            'stage',
+            'products',
         ]
 
 
@@ -480,13 +500,22 @@ class OrderSerializer4Prod(BaseSerializer):
     Order serializer for production users.
     Hides price-related fields.
     """
+
     products = OrderProductSerializer4Prod(many=True, required=False, allow_null=True)
 
     class Meta(BaseSerializer.Meta):
         model = Order
         fields = [
-            'pk', 'order_code', 'etd', 'destination_port', 'products', 'owner', 'created_at', 'updated_at',
-            'created_by', 'updated_by'
+            'pk',
+            'order_code',
+            'etd',
+            'destination_port',
+            'products',
+            'owner',
+            'created_at',
+            'updated_at',
+            'created_by',
+            'updated_by',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -495,7 +524,7 @@ class OrderSerializer4Prod(BaseSerializer):
         # Retrieve user from context
         request = self.context.get("request")
         if not request or not hasattr(request, "user"):
-           return
+            return
 
         user = request.user
 
@@ -503,22 +532,38 @@ class OrderSerializer4Prod(BaseSerializer):
         if user.is_staff:
             return
 
-        # Sale/Production group: set all fields to read-only
+        # Sale group: set all fields to read-only
+        if user.groups.filter(name="Sale").exists():
+            for field_name, field in self.fields.items():
+                field.read_only = True
+
+        # Sale/Production group: set all fields to read-only, except for products
         for field_name, field in self.fields.items():
-            field.read_only = True
+            if field_name not in ["products"]:
+                field.read_only = True
 
 
 class ContractSerializer(BaseSerializer):
     """
     Contract serializer for admin and sale user.
     """
+
     contact = ContactSerializer(fields={'full_name'}, required=False, allow_null=True)
     orders = OrderSerializer(many=True, required=False)
 
     class Meta(BaseSerializer.Meta):
         model = Contract
-        fields = ['pk', 'contract_code', 'contract_date', 'stage', 'contact', 'orders', 'owner', 'created_at',
-                  'updated_at']
+        fields = [
+            'pk',
+            'contract_code',
+            'contract_date',
+            'stage',
+            'contact',
+            'orders',
+            'owner',
+            'created_at',
+            'updated_at',
+        ]
 
     def assign_contact(self, instance, contact):
         """

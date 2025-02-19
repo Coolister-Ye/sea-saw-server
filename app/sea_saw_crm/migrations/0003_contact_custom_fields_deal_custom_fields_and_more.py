@@ -5,37 +5,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ("sea_saw_crm", "0002_alter_deal_contact"),
-    ]
+    dependencies = [("sea_saw_crm", "0002_alter_deal_contact")]
 
     operations = [
-        migrations.AddField(
-            model_name="contact",
-            name="custom_fields",
-            field=models.JSONField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name="deal",
-            name="custom_fields",
-            field=models.JSONField(blank=True, null=True),
-        ),
+        migrations.AddField(model_name="contact", name="custom_fields", field=models.JSONField(blank=True, null=True)),
+        migrations.AddField(model_name="deal", name="custom_fields", field=models.JSONField(blank=True, null=True)),
         migrations.AlterField(
             model_name="deal",
             name="amount",
-            field=models.DecimalField(
-                blank=True,
-                decimal_places=5,
-                max_digits=10,
-                null=True,
-                verbose_name="数量",
-            ),
+            field=models.DecimalField(blank=True, decimal_places=5, max_digits=10, null=True, verbose_name="数量"),
         ),
         migrations.AlterField(
-            model_name="deal",
-            name="closing_date",
-            field=models.DateTimeField(verbose_name="完成时间"),
+            model_name="deal", name="closing_date", field=models.DateTimeField(verbose_name="完成时间")
         ),
         migrations.AlterField(
             model_name="deal",
@@ -49,27 +30,17 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name="deal",
-            name="deal_name",
-            field=models.CharField(max_length=255, verbose_name="Deal"),
+            model_name="deal", name="deal_name", field=models.CharField(max_length=255, verbose_name="Deal")
         ),
         migrations.AlterField(
             model_name="deal",
             name="description",
-            field=models.TextField(
-                blank=True, default="", null=True, verbose_name="详情"
-            ),
+            field=models.TextField(blank=True, default="", null=True, verbose_name="详情"),
         ),
         migrations.AlterField(
             model_name="deal",
             name="expected_revenue",
-            field=models.DecimalField(
-                blank=True,
-                decimal_places=2,
-                max_digits=10,
-                null=True,
-                verbose_name="预期收入",
-            ),
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name="预期收入"),
         ),
         migrations.AlterField(
             model_name="deal",

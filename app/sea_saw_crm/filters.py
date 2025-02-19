@@ -1,4 +1,5 @@
 from django_filters import rest_framework as filters
+
 from .models import Contract, Contact, Company, Order
 
 
@@ -90,12 +91,22 @@ class ContractFilter(filters.FilterSet):
 
     # Filters for orders
     orders__order_code = filters.CharFilter(field_name='orders__order_code', lookup_expr='exact', distinct=True)
-    orders__order_code__icontains = filters.CharFilter(field_name='orders__order_code', lookup_expr='icontains', distinct=True)
-    orders__order_code__startswith = filters.CharFilter(field_name='orders__order_code', lookup_expr='startswith', distinct=True)
+    orders__order_code__icontains = filters.CharFilter(
+        field_name='orders__order_code', lookup_expr='icontains', distinct=True
+    )
+    orders__order_code__startswith = filters.CharFilter(
+        field_name='orders__order_code', lookup_expr='startswith', distinct=True
+    )
 
-    orders__destination_port = filters.CharFilter(field_name='orders__destination_port', lookup_expr='exact', distinct=True)
-    orders__destination_port__icontains = filters.CharFilter(field_name='orders__destination_port', lookup_expr='icontains', distinct=True)
-    orders__destination_port__startswith = filters.CharFilter(field_name='orders__destination_port', lookup_expr='startswith', distinct=True)
+    orders__destination_port = filters.CharFilter(
+        field_name='orders__destination_port', lookup_expr='exact', distinct=True
+    )
+    orders__destination_port__icontains = filters.CharFilter(
+        field_name='orders__destination_port', lookup_expr='icontains', distinct=True
+    )
+    orders__destination_port__startswith = filters.CharFilter(
+        field_name='orders__destination_port', lookup_expr='startswith', distinct=True
+    )
 
     orders__etd = filters.DateFilter(field_name='orders__etd', lookup_expr='exact', distinct=True)
     orders__etd__gte = filters.DateFilter(field_name='orders__etd', lookup_expr='gte', distinct=True)
@@ -126,55 +137,123 @@ class ContractFilter(filters.FilterSet):
     orders__balance__isnull = filters.BooleanFilter(field_name='orders__balance', lookup_expr='isnull', distinct=True)
 
     # Filters for OrderProduct fields
-    orders__products__product_name = filters.CharFilter(field_name='orders__products__product_name', lookup_expr='exact', distinct=True)
-    orders__products__product_name__icontains = filters.CharFilter(field_name='orders__products__product_name', lookup_expr='icontains', distinct=True)
+    orders__products__product_name = filters.CharFilter(
+        field_name='orders__products__product_name', lookup_expr='exact', distinct=True
+    )
+    orders__products__product_name__icontains = filters.CharFilter(
+        field_name='orders__products__product_name', lookup_expr='icontains', distinct=True
+    )
 
-    orders__products__packaging = filters.CharFilter(field_name='orders__products__packaging', lookup_expr='exact', distinct=True)
-    orders__products__packaging__icontains = filters.CharFilter(field_name='orders__products__packaging', lookup_expr='icontains', distinct=True)
+    orders__products__packaging = filters.CharFilter(
+        field_name='orders__products__packaging', lookup_expr='exact', distinct=True
+    )
+    orders__products__packaging__icontains = filters.CharFilter(
+        field_name='orders__products__packaging', lookup_expr='icontains', distinct=True
+    )
 
     orders__products__size = filters.CharFilter(field_name='orders__products__size', lookup_expr='exact', distinct=True)
-    orders__products__size__icontains = filters.CharFilter(field_name='orders__products__size', lookup_expr='icontains', distinct=True)
+    orders__products__size__icontains = filters.CharFilter(
+        field_name='orders__products__size', lookup_expr='icontains', distinct=True
+    )
 
-    orders__products__glazing = filters.NumberFilter(field_name='orders__products__glazing', lookup_expr='exact', distinct=True)
-    orders__products__glazing__gte = filters.NumberFilter(field_name='orders__products__glazing', lookup_expr='gte', distinct=True)
-    orders__products__glazing__lte = filters.NumberFilter(field_name='orders__products__glazing', lookup_expr='lte', distinct=True)
+    orders__products__glazing = filters.NumberFilter(
+        field_name='orders__products__glazing', lookup_expr='exact', distinct=True
+    )
+    orders__products__glazing__gte = filters.NumberFilter(
+        field_name='orders__products__glazing', lookup_expr='gte', distinct=True
+    )
+    orders__products__glazing__lte = filters.NumberFilter(
+        field_name='orders__products__glazing', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__quantity = filters.NumberFilter(field_name='orders__products__quantity', lookup_expr='exact', distinct=True)
-    orders__products__quantity__gte = filters.NumberFilter(field_name='orders__products__quantity', lookup_expr='gte', distinct=True)
-    orders__products__quantity__lte = filters.NumberFilter(field_name='orders__products__quantity', lookup_expr='lte', distinct=True)
+    orders__products__quantity = filters.NumberFilter(
+        field_name='orders__products__quantity', lookup_expr='exact', distinct=True
+    )
+    orders__products__quantity__gte = filters.NumberFilter(
+        field_name='orders__products__quantity', lookup_expr='gte', distinct=True
+    )
+    orders__products__quantity__lte = filters.NumberFilter(
+        field_name='orders__products__quantity', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__weight = filters.CharFilter(field_name='orders__products__weight', lookup_expr='exact', distinct=True)
-    orders__products__weight__icontains = filters.CharFilter(field_name='orders__products__weight', lookup_expr='icontains', distinct=True)
-    orders__products__weight__startswith = filters.CharFilter(field_name='orders__products__weight', lookup_expr='startswith', distinct=True)
+    orders__products__weight = filters.CharFilter(
+        field_name='orders__products__weight', lookup_expr='exact', distinct=True
+    )
+    orders__products__weight__icontains = filters.CharFilter(
+        field_name='orders__products__weight', lookup_expr='icontains', distinct=True
+    )
+    orders__products__weight__startswith = filters.CharFilter(
+        field_name='orders__products__weight', lookup_expr='startswith', distinct=True
+    )
 
-    orders__products__net_weight = filters.NumberFilter(field_name='orders__products__net_weight', lookup_expr='exact', distinct=True)
-    orders__products__net_weight__gte = filters.NumberFilter(field_name='orders__products__net_weight', lookup_expr='gte', distinct=True)
-    orders__products__net_weight__lte = filters.NumberFilter(field_name='orders__products__net_weight', lookup_expr='lte', distinct=True)
+    orders__products__net_weight = filters.NumberFilter(
+        field_name='orders__products__net_weight', lookup_expr='exact', distinct=True
+    )
+    orders__products__net_weight__gte = filters.NumberFilter(
+        field_name='orders__products__net_weight', lookup_expr='gte', distinct=True
+    )
+    orders__products__net_weight__lte = filters.NumberFilter(
+        field_name='orders__products__net_weight', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__total_net_weight = filters.NumberFilter(field_name='orders__products__total_net_weight', lookup_expr='exact', distinct=True)
-    orders__products__total_net_weight__gte = filters.NumberFilter(field_name='orders__products__total_net_weight', lookup_expr='gte', distinct=True)
-    orders__products__total_net_weight__lte = filters.NumberFilter(field_name='orders__products__total_net_weight', lookup_expr='lte', distinct=True)
+    orders__products__total_net_weight = filters.NumberFilter(
+        field_name='orders__products__total_net_weight', lookup_expr='exact', distinct=True
+    )
+    orders__products__total_net_weight__gte = filters.NumberFilter(
+        field_name='orders__products__total_net_weight', lookup_expr='gte', distinct=True
+    )
+    orders__products__total_net_weight__lte = filters.NumberFilter(
+        field_name='orders__products__total_net_weight', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__price = filters.NumberFilter(field_name='orders__products__price', lookup_expr='exact', distinct=True)
-    orders__products__price__gte = filters.NumberFilter(field_name='orders__products__price', lookup_expr='gte', distinct=True)
-    orders__products__price__lte = filters.NumberFilter(field_name='orders__products__price', lookup_expr='lte', distinct=True)
+    orders__products__price = filters.NumberFilter(
+        field_name='orders__products__price', lookup_expr='exact', distinct=True
+    )
+    orders__products__price__gte = filters.NumberFilter(
+        field_name='orders__products__price', lookup_expr='gte', distinct=True
+    )
+    orders__products__price__lte = filters.NumberFilter(
+        field_name='orders__products__price', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__total_price = filters.NumberFilter(field_name='orders__products__total_price', lookup_expr='exact', distinct=True)
-    orders__products__total_price__gte = filters.NumberFilter(field_name='orders__products__total_price', lookup_expr='gte', distinct=True)
-    orders__products__total_price__lte = filters.NumberFilter(field_name='orders__products__total_price', lookup_expr='lte', distinct=True)
+    orders__products__total_price = filters.NumberFilter(
+        field_name='orders__products__total_price', lookup_expr='exact', distinct=True
+    )
+    orders__products__total_price__gte = filters.NumberFilter(
+        field_name='orders__products__total_price', lookup_expr='gte', distinct=True
+    )
+    orders__products__total_price__lte = filters.NumberFilter(
+        field_name='orders__products__total_price', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__progress_material = filters.CharFilter(field_name='orders__products__progress_material', lookup_expr='exact', distinct=True)
-    orders__products__progress_quantity = filters.NumberFilter(field_name='orders__products__progress_quantity', lookup_expr='exact', distinct=True)
-    orders__products__progress_quantity__gte = filters.NumberFilter(field_name='orders__products__progress_quantity', lookup_expr='gte', distinct=True)
-    orders__products__progress_quantity__lte = filters.NumberFilter(field_name='orders__products__progress_quantity', lookup_expr='lte', distinct=True)
+    orders__products__progress_material = filters.CharFilter(
+        field_name='orders__products__progress_material', lookup_expr='exact', distinct=True
+    )
+    orders__products__progress_quantity = filters.NumberFilter(
+        field_name='orders__products__progress_quantity', lookup_expr='exact', distinct=True
+    )
+    orders__products__progress_quantity__gte = filters.NumberFilter(
+        field_name='orders__products__progress_quantity', lookup_expr='gte', distinct=True
+    )
+    orders__products__progress_quantity__lte = filters.NumberFilter(
+        field_name='orders__products__progress_quantity', lookup_expr='lte', distinct=True
+    )
 
-    orders__products__progress_weight = filters.NumberFilter(field_name='orders__products__progress_weight', lookup_expr='exact', distinct=True)
-    orders__products__progress_weight__gte = filters.NumberFilter(field_name='orders__products__progress_weight', lookup_expr='gte', distinct=True)
-    orders__products__progress_weight__lte = filters.NumberFilter(field_name='orders__products__progress_weight', lookup_expr='lte', distinct=True)
+    orders__products__progress_weight = filters.NumberFilter(
+        field_name='orders__products__progress_weight', lookup_expr='exact', distinct=True
+    )
+    orders__products__progress_weight__gte = filters.NumberFilter(
+        field_name='orders__products__progress_weight', lookup_expr='gte', distinct=True
+    )
+    orders__products__progress_weight__lte = filters.NumberFilter(
+        field_name='orders__products__progress_weight', lookup_expr='lte', distinct=True
+    )
 
     # Filters for contact (if applicable)
     contact__full_name = filters.CharFilter(field_name='contact__full_name', lookup_expr='exact', distinct=True)
-    contact__full_name__icontains = filters.CharFilter(field_name='contact__full_name', lookup_expr='icontains', distinct=True)
+    contact__full_name__icontains = filters.CharFilter(
+        field_name='contact__full_name', lookup_expr='icontains', distinct=True
+    )
 
     class Meta:
         model = Contract
@@ -185,6 +264,7 @@ class OrderFilter(filters.FilterSet):
     """
     FIlter for orders
     """
+
     order_code = filters.CharFilter(field_name='order_code', lookup_expr='exact')
     order_code__icontains = filters.CharFilter(field_name='order_code', lookup_expr='icontains')
     order_code__startswith = filters.CharFilter(field_name='order_code', lookup_expr='startswith')
@@ -220,13 +300,17 @@ class OrderFilter(filters.FilterSet):
     balance_date__gte = filters.DateFilter(field_name='balance_date', lookup_expr='gte', distinct=True)
     balance_date__lte = filters.DateFilter(field_name='balance_date', lookup_expr='lte', distinct=True)
     balance__isnull = filters.BooleanFilter(field_name='balance', lookup_expr='isnull', distinct=True)
-    
+
     # Fiter for product
     products__product_name = filters.CharFilter(field_name='products__product_name', lookup_expr='exact', distinct=True)
-    products__product_name__icontains = filters.CharFilter(field_name='products__product_name', lookup_expr='icontains', distinct=True)
+    products__product_name__icontains = filters.CharFilter(
+        field_name='products__product_name', lookup_expr='icontains', distinct=True
+    )
 
     products__packaging = filters.CharFilter(field_name='products__packaging', lookup_expr='exact', distinct=True)
-    products__packaging__icontains = filters.CharFilter(field_name='products__packaging', lookup_expr='icontains', distinct=True)
+    products__packaging__icontains = filters.CharFilter(
+        field_name='products__packaging', lookup_expr='icontains', distinct=True
+    )
 
     products__size = filters.CharFilter(field_name='products__size', lookup_expr='exact', distinct=True)
     products__size__icontains = filters.CharFilter(field_name='products__size', lookup_expr='icontains', distinct=True)
@@ -240,33 +324,65 @@ class OrderFilter(filters.FilterSet):
     products__quantity__lte = filters.NumberFilter(field_name='products__quantity', lookup_expr='lte', distinct=True)
 
     products__weight = filters.CharFilter(field_name='products__weight', lookup_expr='exact', distinct=True)
-    products__weight__icontains = filters.CharFilter(field_name='products__weight', lookup_expr='icontains', distinct=True)
-    products__weight__startswith = filters.CharFilter(field_name='products__weight', lookup_expr='startswith', distinct=True)
+    products__weight__icontains = filters.CharFilter(
+        field_name='products__weight', lookup_expr='icontains', distinct=True
+    )
+    products__weight__startswith = filters.CharFilter(
+        field_name='products__weight', lookup_expr='startswith', distinct=True
+    )
 
     products__net_weight = filters.NumberFilter(field_name='products__net_weight', lookup_expr='exact', distinct=True)
-    products__net_weight__gte = filters.NumberFilter(field_name='products__net_weight', lookup_expr='gte', distinct=True)
-    products__net_weight__lte = filters.NumberFilter(field_name='products__net_weight', lookup_expr='lte', distinct=True)
+    products__net_weight__gte = filters.NumberFilter(
+        field_name='products__net_weight', lookup_expr='gte', distinct=True
+    )
+    products__net_weight__lte = filters.NumberFilter(
+        field_name='products__net_weight', lookup_expr='lte', distinct=True
+    )
 
-    products__total_net_weight = filters.NumberFilter(field_name='products__total_net_weight', lookup_expr='exact', distinct=True)
-    products__total_net_weight__gte = filters.NumberFilter(field_name='products__total_net_weight', lookup_expr='gte', distinct=True)
-    products__total_net_weight__lte = filters.NumberFilter(field_name='products__total_net_weight', lookup_expr='lte', distinct=True)
+    products__total_net_weight = filters.NumberFilter(
+        field_name='products__total_net_weight', lookup_expr='exact', distinct=True
+    )
+    products__total_net_weight__gte = filters.NumberFilter(
+        field_name='products__total_net_weight', lookup_expr='gte', distinct=True
+    )
+    products__total_net_weight__lte = filters.NumberFilter(
+        field_name='products__total_net_weight', lookup_expr='lte', distinct=True
+    )
 
     products__price = filters.NumberFilter(field_name='products__price', lookup_expr='exact', distinct=True)
     products__price__gte = filters.NumberFilter(field_name='products__price', lookup_expr='gte', distinct=True)
     products__price__lte = filters.NumberFilter(field_name='products__price', lookup_expr='lte', distinct=True)
 
     products__total_price = filters.NumberFilter(field_name='products__total_price', lookup_expr='exact', distinct=True)
-    products__total_price__gte = filters.NumberFilter(field_name='products__total_price', lookup_expr='gte', distinct=True)
-    products__total_price__lte = filters.NumberFilter(field_name='products__total_price', lookup_expr='lte', distinct=True)
+    products__total_price__gte = filters.NumberFilter(
+        field_name='products__total_price', lookup_expr='gte', distinct=True
+    )
+    products__total_price__lte = filters.NumberFilter(
+        field_name='products__total_price', lookup_expr='lte', distinct=True
+    )
 
-    products__progress_material = filters.CharFilter(field_name='products__progress_material', lookup_expr='exact', distinct=True)
-    products__progress_quantity = filters.NumberFilter(field_name='products__progress_quantity', lookup_expr='exact', distinct=True)
-    products__progress_quantity__gte = filters.NumberFilter(field_name='products__progress_quantity', lookup_expr='gte', distinct=True)
-    products__progress_quantity__lte = filters.NumberFilter(field_name='products__progress_quantity', lookup_expr='lte', distinct=True)
+    products__progress_material = filters.CharFilter(
+        field_name='products__progress_material', lookup_expr='exact', distinct=True
+    )
+    products__progress_quantity = filters.NumberFilter(
+        field_name='products__progress_quantity', lookup_expr='exact', distinct=True
+    )
+    products__progress_quantity__gte = filters.NumberFilter(
+        field_name='products__progress_quantity', lookup_expr='gte', distinct=True
+    )
+    products__progress_quantity__lte = filters.NumberFilter(
+        field_name='products__progress_quantity', lookup_expr='lte', distinct=True
+    )
 
-    products__progress_weight = filters.NumberFilter(field_name='products__progress_weight', lookup_expr='exact', distinct=True)
-    products__progress_weight__gte = filters.NumberFilter(field_name='products__progress_weight', lookup_expr='gte', distinct=True)
-    products__progress_weight__lte = filters.NumberFilter(field_name='products__progress_weight', lookup_expr='lte', distinct=True)
+    products__progress_weight = filters.NumberFilter(
+        field_name='products__progress_weight', lookup_expr='exact', distinct=True
+    )
+    products__progress_weight__gte = filters.NumberFilter(
+        field_name='products__progress_weight', lookup_expr='gte', distinct=True
+    )
+    products__progress_weight__lte = filters.NumberFilter(
+        field_name='products__progress_weight', lookup_expr='lte', distinct=True
+    )
 
     class Meta:
         model = Order

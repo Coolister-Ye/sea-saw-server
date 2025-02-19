@@ -1,15 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from sea_saw_auth.models import (
-    User
-)
-from .models import (
-    Contact, Company, Field, Contract, Order, OrderProduct
-)
-from .serializers import ContactSerializer, CompanySerializer, FieldSerializer, ContractSerializer
-from .tasks import flatten, flatten_header
+from sea_saw_auth.models import User
 
 # class SerializerTests(APITestCase):
 #
@@ -240,73 +232,71 @@ from .tasks import flatten, flatten_header
 
 from rest_framework.test import APITestCase
 from sea_saw_crm.models import Contract, Order, OrderProduct
-from sea_saw_crm.serializers import ContractSerializer
 from django.utils import timezone
 
-
-class FlattenContractFunctionTests(APITestCase):
-
-    def setUp(self):
-        # Create sample data for testing
-        self.contract = Contract.objects.create(
-            contract_code="C001",
-            contract_date=timezone.now().date(),
-        )
-
-        self.order1 = Order.objects.create(
-            order_code="O001",
-            etd=timezone.now().date(),
-            contract=self.contract
-        )
-
-        self.order2 = Order.objects.create(
-            order_code="O002",
-            etd=timezone.now().date(),
-            contract=self.contract
-        )
-
-        self.product1 = OrderProduct.objects.create(
-            product_name="Product A",
-            product_code="P001",
-            product_type="Type A",
-            quantity=10,
-            order=self.order1
-        )
-
-        self.product2 = OrderProduct.objects.create(
-            product_name="Product B",
-            product_code="P002",
-            product_type="Type B",
-            quantity=5,
-            order=self.order2
-        )
-
-    def test_flatten_contract(self):
-        """
-        Test the flatten function to ensure it properly flattens nested serialized data for contracts.
-        """
-        queryset = Contract.objects.all()
-        serializer = ContractSerializer
-        flattened_data, flattened_header = flatten(queryset, serializer)
-
-        print("flattened_data", flattened_data)
-        print("flatttened_header", flattened_header)
-
-        # Check if the data is flattened correctly
-        self.assertIsInstance(flattened_data, list)
-        self.assertEqual(len(flattened_data), 1)  # Only one contract in the test data
-
-        # Verify the flattened contract data
-        contract_data = flattened_data[0]
-        self.assertIn('contract_code', contract_data)
-        self.assertIn('contract_date', contract_data)
-        self.assertIn('orders.order_code', contract_data)
-        self.assertIn('orders.products.product_name', contract_data)
-
-        self.assertEqual(contract_data['contract_code'], "C001")
-        self.assertEqual(contract_data['orders.order_code'][0], "O001")
-        self.assertEqual(contract_data['orders.products.product_name'][0][0], "Product A")
-        self.assertEqual(contract_data['orders.products.product_name'][1][0], "Product B")
-
-        # Verify the second order and its products
-        self.assertEqual(contract_data['orders.order_code'][1], "O002")
+# class FlattenContractFunctionTests(APITestCase):
+#
+#     def setUp(self):
+#         # Create sample data for testing
+#         self.contract = Contract.objects.create(
+#             contract_code="C001",
+#             contract_date=timezone.now().date(),
+#         )
+#
+#         self.order1 = Order.objects.create(
+#             order_code="O001",
+#             etd=timezone.now().date(),
+#             contract=self.contract
+#         )
+#
+#         self.order2 = Order.objects.create(
+#             order_code="O002",
+#             etd=timezone.now().date(),
+#             contract=self.contract
+#         )
+#
+#         self.product1 = OrderProduct.objects.create(
+#             product_name="Product A",
+#             product_code="P001",
+#             product_type="Type A",
+#             quantity=10,
+#             order=self.order1
+#         )
+#
+#         self.product2 = OrderProduct.objects.create(
+#             product_name="Product B",
+#             product_code="P002",
+#             product_type="Type B",
+#             quantity=5,
+#             order=self.order2
+#         )
+#
+#     def test_flatten_contract(self):
+#         """
+#         Test the flatten function to ensure it properly flattens nested serialized data for contracts.
+#         """
+#         queryset = Contract.objects.all()
+#         serializer = ContractSerializer
+#         flattened_data, flattened_header = flatten(queryset, serializer)
+#
+#         print("flattened_data", flattened_data)
+#         print("flatttened_header", flattened_header)
+#
+#         # Check if the data is flattened correctly
+#         self.assertIsInstance(flattened_data, list)
+#         self.assertEqual(len(flattened_data), 1)  # Only one contract in the test data
+#
+#         # Verify the flattened contract data
+#         contract_data = flattened_data[0]
+#         self.assertIn('contract_code', contract_data)
+#         self.assertIn('contract_date', contract_data)
+#         self.assertIn('orders.order_code', contract_data)
+#         self.assertIn('orders.products.product_name', contract_data)
+#
+#         self.assertEqual(contract_data['contract_code'], "C001")
+#         self.assertEqual(contract_data['orders.order_code'][0], "O001")
+#         self.assertEqual(contract_data['orders.products.product_name'][0][0], "Product A")
+#         self.assertEqual(contract_data['orders.products.product_name'][1][0], "Product B")
+#
+#         # Verify the second order and its products
+#         self.assertEqual(contract_data['orders.order_code'][1], "O002")

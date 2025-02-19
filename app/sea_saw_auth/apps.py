@@ -18,7 +18,7 @@ def add_default_roles(sender, **kwargs):
     admin_role, created = Role.objects.get_or_create(
         name="admin",
         is_peer_visible=True,
-        description="Users with this role have access to the data owned by all other users."
+        description="Users with this role have access to the data owned by all other users.",
     )
 
     # Get or create the 'normal user' role, setting the parent as the 'admin' role
@@ -26,5 +26,5 @@ def add_default_roles(sender, **kwargs):
         name="normal user",
         parent=admin_role,  # Use the admin_role instance directly
         is_peer_visible=False,
-        description="Users belonging to this role cannot see data for admin users."
+        description="Users belonging to this role cannot see data for admin users.",
     )

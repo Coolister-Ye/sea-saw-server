@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
 from . import views
 
 router = DefaultRouter()
@@ -15,5 +16,6 @@ urlpatterns = [
     path('fields/', views.FieldListView.as_view(), name='fields'),
     path('contracts-stats/', views.ContractStats.as_view(), name='contracts-stats'),
     path('orders-stats/', views.OrderStats.as_view(), name='contracts-stats'),
-    path('orders-stats/s2/', views.OrderStatsByMonth.as_view(), name='contracts-stats-s2')
+    path('orders-stats/s2/', views.OrderStatsByMonth.as_view(), name='contracts-stats-s2'),
+    path('download/', views.DownloadTaskView.as_view(), name='download'),
 ]

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('sea_saw_crm', '0005_alter_company_options_alter_contract_options_and_more'),
@@ -22,11 +21,14 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='customfieldvalue',
-            options={'ordering': ['field', 'content_type', 'object_id'], 'verbose_name': 'Custom Field Value', 'verbose_name_plural': 'Custom Field Values'},
+            options={
+                'ordering': ['field', 'content_type', 'object_id'],
+                'verbose_name': 'Custom Field Value',
+                'verbose_name_plural': 'Custom Field Values',
+            },
         ),
         migrations.AlterModelOptions(
-            name='deal',
-            options={'ordering': ['deal_name'], 'verbose_name': 'Deal', 'verbose_name_plural': 'Deals'},
+            name='deal', options={'ordering': ['deal_name'], 'verbose_name': 'Deal', 'verbose_name_plural': 'Deals'}
         ),
         migrations.AlterModelOptions(
             name='pipeline',
@@ -37,29 +39,23 @@ class Migration(migrations.Migration):
             options={'ordering': ['product_name'], 'verbose_name': 'Product', 'verbose_name_plural': 'Products'},
         ),
         migrations.AlterModelOptions(
-            name='stage',
-            options={'ordering': ['stage_name'], 'verbose_name': 'Stage', 'verbose_name_plural': 'Stages'},
+            name='stage', options={'ordering': ['stage_name'], 'verbose_name': 'Stage', 'verbose_name_plural': 'Stages'}
         ),
-        migrations.RemoveField(
-            model_name='deal',
-            name='pipeline',
-        ),
-        migrations.RemoveField(
-            model_name='orderproduct',
-            name='discount',
-        ),
-        migrations.RemoveField(
-            model_name='orderproduct',
-            name='is_available',
-        ),
-        migrations.RemoveField(
-            model_name='orderproduct',
-            name='list_price',
-        ),
+        migrations.RemoveField(model_name='deal', name='pipeline'),
+        migrations.RemoveField(model_name='orderproduct', name='discount'),
+        migrations.RemoveField(model_name='orderproduct', name='is_available'),
+        migrations.RemoveField(model_name='orderproduct', name='list_price'),
         migrations.AddField(
             model_name='contact',
             name='company',
-            field=models.ForeignKey(blank=True, help_text='Associated Company', null=True, on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.company', verbose_name='Company'),
+            field=models.ForeignKey(
+                blank=True,
+                help_text='Associated Company',
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.company',
+                verbose_name='Company',
+            ),
         ),
         migrations.AddField(
             model_name='order',
@@ -84,7 +80,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='orderproduct',
             name='total_price',
-            field=models.DecimalField(blank=True, decimal_places=5, max_digits=10, null=True, verbose_name='Total Price'),
+            field=models.DecimalField(
+                blank=True, decimal_places=5, max_digits=10, null=True, verbose_name='Total Price'
+            ),
         ),
         migrations.AddField(
             model_name='orderproduct',
@@ -104,57 +102,123 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='company',
             name='email',
-            field=models.EmailField(blank=True, help_text="The company's contact email address.", max_length=254, null=True, verbose_name='Email Address'),
+            field=models.EmailField(
+                blank=True,
+                help_text="The company's contact email address.",
+                max_length=254,
+                null=True,
+                verbose_name='Email Address',
+            ),
         ),
         migrations.AlterField(
             model_name='company',
             name='home_phone',
-            field=models.CharField(blank=True, help_text="The company's home phone number, if applicable.", max_length=255, null=True, verbose_name='Home Phone'),
+            field=models.CharField(
+                blank=True,
+                help_text="The company's home phone number, if applicable.",
+                max_length=255,
+                null=True,
+                verbose_name='Home Phone',
+            ),
         ),
         migrations.AlterField(
             model_name='company',
             name='mobile',
-            field=models.CharField(blank=True, help_text="The company's mobile phone number.", max_length=255, null=True, verbose_name='Mobile Number'),
+            field=models.CharField(
+                blank=True,
+                help_text="The company's mobile phone number.",
+                max_length=255,
+                null=True,
+                verbose_name='Mobile Number',
+            ),
         ),
         migrations.AlterField(
             model_name='company',
             name='phone',
-            field=models.CharField(blank=True, help_text="The company's landline phone number.", max_length=255, null=True, verbose_name='Phone Number'),
+            field=models.CharField(
+                blank=True,
+                help_text="The company's landline phone number.",
+                max_length=255,
+                null=True,
+                verbose_name='Phone Number',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='custom_fields',
-            field=models.JSONField(blank=True, help_text='Additional custom information about the contact, stored as JSON.', null=True, verbose_name='Custom Fields'),
+            field=models.JSONField(
+                blank=True,
+                help_text='Additional custom information about the contact, stored as JSON.',
+                null=True,
+                verbose_name='Custom Fields',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='email',
-            field=models.EmailField(blank=True, help_text="The contact's email address. Must be unique.", max_length=254, null=True, unique=True, verbose_name='Email'),
+            field=models.EmailField(
+                blank=True,
+                help_text="The contact's email address. Must be unique.",
+                max_length=254,
+                null=True,
+                unique=True,
+                verbose_name='Email',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='first_name',
-            field=models.CharField(blank=True, help_text="The contact's first name. Can be empty.", max_length=255, null=True, verbose_name='First Name'),
+            field=models.CharField(
+                blank=True,
+                help_text="The contact's first name. Can be empty.",
+                max_length=255,
+                null=True,
+                verbose_name='First Name',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='last_name',
-            field=models.CharField(blank=True, help_text="The contact's last name. Can be empty.", max_length=255, null=True, verbose_name='Last Name'),
+            field=models.CharField(
+                blank=True,
+                help_text="The contact's last name. Can be empty.",
+                max_length=255,
+                null=True,
+                verbose_name='Last Name',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='mobile',
-            field=models.CharField(blank=True, help_text="The contact's landline number. Can be empty.", max_length=255, null=True, verbose_name='Landline'),
+            field=models.CharField(
+                blank=True,
+                help_text="The contact's landline number. Can be empty.",
+                max_length=255,
+                null=True,
+                verbose_name='Landline',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='phone',
-            field=models.CharField(blank=True, help_text="The contact's mobile phone number. Can be empty.", max_length=255, null=True, verbose_name='Phone Number'),
+            field=models.CharField(
+                blank=True,
+                help_text="The contact's mobile phone number. Can be empty.",
+                max_length=255,
+                null=True,
+                verbose_name='Phone Number',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='title',
-            field=models.CharField(blank=True, help_text="The contact's job title. Can be empty.", max_length=255, null=True, verbose_name='Job Title'),
+            field=models.CharField(
+                blank=True,
+                help_text="The contact's job title. Can be empty.",
+                max_length=255,
+                null=True,
+                verbose_name='Job Title',
+            ),
         ),
         migrations.AlterField(
             model_name='contract',
@@ -162,54 +226,94 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=255, verbose_name='Contract Code'),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='contract_date',
-            field=models.DateField(verbose_name='Contract Date'),
+            model_name='contract', name='contract_date', field=models.DateField(verbose_name='Contract Date')
         ),
         migrations.AlterField(
             model_name='contract',
             name='deal',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.deal', verbose_name='Associated Deal'),
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.deal',
+                verbose_name='Associated Deal',
+            ),
         ),
         migrations.AlterField(
             model_name='customfieldvalue',
             name='content_type',
-            field=models.ForeignKey(help_text='The type of object to which this custom field value belongs.', null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.contenttype', verbose_name='Content Type'),
+            field=models.ForeignKey(
+                help_text='The type of object to which this custom field value belongs.',
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='contenttypes.contenttype',
+                verbose_name='Content Type',
+            ),
         ),
         migrations.AlterField(
             model_name='customfieldvalue',
             name='field',
-            field=models.ForeignKey(help_text='The custom field associated with this value.', on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.field', verbose_name='Custom Field'),
+            field=models.ForeignKey(
+                help_text='The custom field associated with this value.',
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.field',
+                verbose_name='Custom Field',
+            ),
         ),
         migrations.AlterField(
             model_name='customfieldvalue',
             name='object_id',
-            field=models.PositiveIntegerField(help_text='The ID of the object to which this custom field value belongs.', verbose_name='Object ID'),
+            field=models.PositiveIntegerField(
+                help_text='The ID of the object to which this custom field value belongs.', verbose_name='Object ID'
+            ),
         ),
         migrations.AlterField(
             model_name='customfieldvalue',
             name='value',
-            field=models.TextField(default='', help_text='The value assigned to the custom field.', verbose_name='Field Value'),
+            field=models.TextField(
+                default='', help_text='The value assigned to the custom field.', verbose_name='Field Value'
+            ),
         ),
         migrations.AlterField(
             model_name='deal',
             name='amount',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Quantity involved in the deal.', max_digits=10, null=True, verbose_name='Amount'),
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text='Quantity involved in the deal.',
+                max_digits=10,
+                null=True,
+                verbose_name='Amount',
+            ),
         ),
         migrations.AlterField(
             model_name='deal',
             name='closing_date',
-            field=models.DateTimeField(help_text='Date when the deal is expected to close.', verbose_name='Closing Date'),
+            field=models.DateTimeField(
+                help_text='Date when the deal is expected to close.', verbose_name='Closing Date'
+            ),
         ),
         migrations.AlterField(
             model_name='deal',
             name='contact',
-            field=models.ForeignKey(blank=True, help_text='Associated contact information for the deal.', null=True, on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.contact', verbose_name='Contact'),
+            field=models.ForeignKey(
+                blank=True,
+                help_text='Associated contact information for the deal.',
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.contact',
+                verbose_name='Contact',
+            ),
         ),
         migrations.AlterField(
             model_name='deal',
             name='custom_fields',
-            field=models.JSONField(blank=True, help_text='Customizable fields for additional data.', null=True, verbose_name='Custom Fields'),
+            field=models.JSONField(
+                blank=True,
+                help_text='Customizable fields for additional data.',
+                null=True,
+                verbose_name='Custom Fields',
+            ),
         ),
         migrations.AlterField(
             model_name='deal',
@@ -219,22 +323,44 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deal',
             name='description',
-            field=models.TextField(blank=True, default='', help_text='Additional details about the deal.', null=True, verbose_name='Description'),
+            field=models.TextField(
+                blank=True,
+                default='',
+                help_text='Additional details about the deal.',
+                null=True,
+                verbose_name='Description',
+            ),
         ),
         migrations.AlterField(
             model_name='deal',
             name='expected_revenue',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Projected revenue from the deal.', max_digits=10, null=True, verbose_name='Expected Revenue'),
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text='Projected revenue from the deal.',
+                max_digits=10,
+                null=True,
+                verbose_name='Expected Revenue',
+            ),
         ),
         migrations.AlterField(
             model_name='field',
             name='content_type',
-            field=models.ForeignKey(help_text='The model associated with this field.', on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype', verbose_name='Content Type'),
+            field=models.ForeignKey(
+                help_text='The model associated with this field.',
+                on_delete=django.db.models.deletion.CASCADE,
+                to='contenttypes.contenttype',
+                verbose_name='Content Type',
+            ),
         ),
         migrations.AlterField(
             model_name='field',
             name='field_name',
-            field=models.CharField(help_text='Name of the field (must be unique within the same content type).', max_length=50, verbose_name='Field Name'),
+            field=models.CharField(
+                help_text='Name of the field (must be unique within the same content type).',
+                max_length=50,
+                verbose_name='Field Name',
+            ),
         ),
         migrations.AlterField(
             model_name='order',
@@ -244,7 +370,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='order',
             name='contract',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='orders', to='sea_saw_crm.contract', verbose_name='Associated Contract'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='orders',
+                to='sea_saw_crm.contract',
+                verbose_name='Associated Contract',
+            ),
         ),
         migrations.AlterField(
             model_name='order',
@@ -274,12 +405,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='orderproduct',
             name='glazing',
-            field=models.DecimalField(blank=True, decimal_places=5, max_digits=10, null=True, verbose_name='Glazing Ratio'),
+            field=models.DecimalField(
+                blank=True, decimal_places=5, max_digits=10, null=True, verbose_name='Glazing Ratio'
+            ),
         ),
         migrations.AlterField(
             model_name='orderproduct',
             name='order',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='products', to='sea_saw_crm.order', verbose_name='Associated Order'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='products',
+                to='sea_saw_crm.order',
+                verbose_name='Associated Order',
+            ),
         ),
         migrations.AlterField(
             model_name='orderproduct',
@@ -319,50 +457,70 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='pipeline',
             name='pipeline_name',
-            field=models.CharField(help_text='The name of the sales pipeline.', max_length=255, verbose_name='Pipeline Name'),
+            field=models.CharField(
+                help_text='The name of the sales pipeline.', max_length=255, verbose_name='Pipeline Name'
+            ),
         ),
         migrations.AlterField(
             model_name='product',
             name='is_available',
-            field=models.BooleanField(default=True, help_text='Indicates if the product is available.', verbose_name='Availability'),
+            field=models.BooleanField(
+                default=True, help_text='Indicates if the product is available.', verbose_name='Availability'
+            ),
         ),
         migrations.AlterField(
             model_name='product',
             name='product_code',
-            field=models.CharField(blank=True, help_text='The unique product code.', max_length=255, null=True, verbose_name='Product Code'),
+            field=models.CharField(
+                blank=True, help_text='The unique product code.', max_length=255, null=True, verbose_name='Product Code'
+            ),
         ),
         migrations.AlterField(
             model_name='product',
             name='product_name',
-            field=models.CharField(help_text='The name of the product.', max_length=255, unique=True, verbose_name='Product Name'),
+            field=models.CharField(
+                help_text='The name of the product.', max_length=255, unique=True, verbose_name='Product Name'
+            ),
         ),
         migrations.AlterField(
             model_name='product',
             name='product_type',
-            field=models.CharField(blank=True, help_text='The type or category of the product.', max_length=255, null=True, verbose_name='Product Type'),
+            field=models.CharField(
+                blank=True,
+                help_text='The type or category of the product.',
+                max_length=255,
+                null=True,
+                verbose_name='Product Type',
+            ),
         ),
         migrations.AlterField(
             model_name='stage',
             name='pipeline',
-            field=models.ForeignKey(help_text='The pipeline this stage belongs to.', on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.pipeline', verbose_name='Pipeline'),
+            field=models.ForeignKey(
+                help_text='The pipeline this stage belongs to.',
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.pipeline',
+                verbose_name='Pipeline',
+            ),
         ),
         migrations.AlterField(
             model_name='stage',
             name='stage_name',
-            field=models.CharField(help_text='The name of the stage within the pipeline.', max_length=255, verbose_name='Stage Name'),
+            field=models.CharField(
+                help_text='The name of the stage within the pipeline.', max_length=255, verbose_name='Stage Name'
+            ),
         ),
         migrations.AlterField(
             model_name='stage',
             name='stage_sector',
-            field=models.IntegerField(default=0, help_text='0: Open Stage; 1: Closed Stage', verbose_name='Stage Sector'),
+            field=models.IntegerField(
+                default=0, help_text='0: Open Stage; 1: Closed Stage', verbose_name='Stage Sector'
+            ),
         ),
         migrations.AlterField(
             model_name='stage',
             name='stage_type',
             field=models.IntegerField(default=2, help_text='0: Fail; 1: Success; 2: Other', verbose_name='Stage Type'),
         ),
-        migrations.AlterUniqueTogether(
-            name='contact',
-            unique_together={('email',)},
-        ),
+        migrations.AlterUniqueTogether(name='contact', unique_together={('email',)}),
     ]
