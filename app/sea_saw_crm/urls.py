@@ -19,10 +19,5 @@ urlpatterns = [
     path('contracts-stats/', views.ContractStats.as_view(), name='contracts-stats'),
     path('orders-stats/', views.OrderStats.as_view(), name='contracts-stats'),
     path('orders-stats/s2/', views.OrderStatsByMonth.as_view(), name='contracts-stats-s2'),
-<<<<<<< HEAD
     path('download/', views.DownloadTaskView.as_view(), name='download'),
 ]
-=======
-    path ('download/', views.DownloadTaskView.as_view(), name='download'),
-]
->>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787

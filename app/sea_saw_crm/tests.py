@@ -234,10 +234,6 @@ from rest_framework.test import APITestCase
 from sea_saw_crm.models import Contract, Order, OrderProduct
 from django.utils import timezone
 
-<<<<<<< HEAD
-=======
-
->>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
 # class FlattenContractFunctionTests(APITestCase):
 #
 #     def setUp(self):

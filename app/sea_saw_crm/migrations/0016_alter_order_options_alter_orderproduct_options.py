@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-<<<<<<< HEAD
     dependencies = [('sea_saw_crm', '0015_alter_contract_contact_alter_order_contract_and_more')]
 
     operations = [
@@ -18,20 +17,5 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Order Product',
                 'verbose_name_plural': 'Order Products',
             },
-=======
-
-    dependencies = [
-        ('sea_saw_crm', '0015_alter_contract_contact_alter_order_contract_and_more'),
-    ]
-
-    operations = [
-        migrations.AlterModelOptions(
-            name='order',
-            options={'ordering': ['created_at'], 'verbose_name': 'Order', 'verbose_name_plural': 'Orders'},
-        ),
-        migrations.AlterModelOptions(
-            name='orderproduct',
-            options={'ordering': ['created_at'], 'verbose_name': 'Order Product', 'verbose_name_plural': 'Order Products'},
->>>>>>> b8ed2530b8fff5b07d0c432a841b3ffb83230787
         ),
     ]
