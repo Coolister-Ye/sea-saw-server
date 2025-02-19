@@ -5,20 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ('sea_saw_crm', '0008_alter_contract_options_alter_order_options_and_more'),
-    ]
+    dependencies = [('sea_saw_crm', '0008_alter_contract_options_alter_order_options_and_more')]
 
     operations = [
-        migrations.RemoveField(
-            model_name='contract',
-            name='deal',
-        ),
+        migrations.RemoveField(model_name='contract', name='deal'),
         migrations.AddField(
             model_name='contract',
             name='contact',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.contact', verbose_name='Contact'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.contact',
+                verbose_name='Contact',
+            ),
         ),
         migrations.AddField(
             model_name='order',

@@ -5,20 +5,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ("sea_saw_crm", "0001_initial"),
-    ]
+    dependencies = [("sea_saw_crm", "0001_initial")]
 
     operations = [
         migrations.AlterField(
             model_name="deal",
             name="contact",
             field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.PROTECT,
-                to="sea_saw_crm.contact",
+                blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to="sea_saw_crm.contact"
             ),
-        ),
+        )
     ]

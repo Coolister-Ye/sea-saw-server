@@ -9,9 +9,4 @@ def load_fields():
         for field in fields:
             content_type = field['content_type']
             field_name = field['field_name']
-            Field.objects.update_or_create(
-                content_type=content_type,
-                field_name=field_name,
-                defaults=field
-            )
-
+            Field.objects.update_or_create(content_type=content_type, field_name=field_name, defaults=field)

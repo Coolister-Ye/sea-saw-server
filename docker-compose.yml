@@ -2,21 +2,76 @@ version: '3.8'
 
 services:
   web:
-    build: ./app
-    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: ./app
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /usr/src/sh/start.sh
     volumes:
       - ./app/:/usr/src/app/
     ports:
-      - 8000:8000
+      - "8001:8000"
     env_file:
-      - ./.env.dev
-   
+      - .env/.dev
+    depends_on:
+      - db
+      - redis
+
   db:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.dev.db
+      - .env/.dev.db
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: ./app
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /usr/src/sh/start-celeryworker.sh
+    volumes:
+      - ./app/:/usr/src/app/
+    env_file:
+      - .env/.dev
+    depends_on:
+      - db
+      - redis
+
+  celery_beat:
+    build:
+      context: ./app
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /usr/src/sh/start-celerybeat.sh
+    volumes:
+      - ./app/:/usr/src/app/
+    env_file:
+      - .env/.dev
+    depends_on:
+      - db
+      - redis
+
+  flower:
+    build:
+      context: ./app
+      dockerfile: ./compose/local/django/Dockerfile
+    command: /usr/src/sh/start-flower.sh
+    volumes:
+      - ./app/:/usr/src/app/
+    env_file:
+      - .env/.dev
+    ports:
+      - "5558:5555"
+    depends_on:
+      - db
+      - redis
 
 volumes:
   postgres_data:
+  redis_data:

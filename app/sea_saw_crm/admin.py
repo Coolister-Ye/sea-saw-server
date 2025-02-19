@@ -1,6 +1,7 @@
 from django.contrib import admin
+from safedelete.admin import SafeDeleteAdmin, highlight_deleted
+
 from .models import Contact, Company, Field, Contract, Order, OrderProduct
-from safedelete.admin import SafeDeleteAdmin, SafeDeleteAdminFilter, highlight_deleted
 
 
 # Field Admin
@@ -32,7 +33,7 @@ class CompanyAdmin(admin.ModelAdmin):
 
 @admin.register(Contract)
 class ContractAdmin(SafeDeleteAdmin):
-    list_display = (highlight_deleted, 'id', 'contract_code', 'contract_date') + SafeDeleteAdmin.list_display
+    list_display = (highlight_deleted, 'id', 'contract_code', 'contract_date', 'owner') + SafeDeleteAdmin.list_display
     ordering = ('created_at',)
     field_to_highlight = "id"
 
@@ -40,8 +41,16 @@ class ContractAdmin(SafeDeleteAdmin):
 @admin.register(Order)
 class OrderAdmin(SafeDeleteAdmin):
     list_display = (
-        highlight_deleted, 'id', 'order_code', 'destination_port', 'etd', 'deliver_date', 'deposit',
-        'deposit_date', 'balance', 'balance_date'
+        highlight_deleted,
+        'id',
+        'order_code',
+        'destination_port',
+        'etd',
+        'deliver_date',
+        'deposit',
+        'deposit_date',
+        'balance',
+        'balance_date',
     ) + SafeDeleteAdmin.list_display
     ordering = ('created_at',)
     field_to_highlight = "id"
@@ -50,9 +59,18 @@ class OrderAdmin(SafeDeleteAdmin):
 @admin.register(OrderProduct)
 class OrderProductAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'product_name', 'size', 'packaging', 'interior_packaging', 'weight',
-        'glazing', 'net_weight', 'quantity', 'total_net_weight', 'progress_material',
-        'progress_quantity', 'progress_weight'
+        'pk',
+        'product_name',
+        'size',
+        'packaging',
+        'interior_packaging',
+        'weight',
+        'glazing',
+        'net_weight',
+        'quantity',
+        'total_net_weight',
+        'progress_material',
+        'progress_quantity',
+        'progress_weight',
     )
     ordering = ('created_at',)
-

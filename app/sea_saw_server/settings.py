@@ -16,7 +16,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -27,7 +26,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-!46^gn^&egu^@5%k9l(_b
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
-
 
 # Application definition
 
@@ -46,8 +44,12 @@ INSTALLED_APPS = [
     "crispy_bootstrap4",
     "dj_rest_auth",
     "safedelete",
+    "django_celery_results",
+    "download",
     "sea_saw_auth",
     "sea_saw_crm",
+    "preference",
+    "djoser",
 ]
 
 MIDDLEWARE = [
@@ -75,13 +77,12 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ]
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "sea_saw_server.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -97,25 +98,15 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -127,17 +118,11 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_L10N = True
 
-LANGUAGES = [
-    ('en-us', 'English'),
-    ('zh-Hans', '简体中文'),
-]
+LANGUAGES = [('en-us', 'English'), ('zh-Hans', '简体中文')]
 
-LOCALE_PATHS = [
-    BASE_DIR / 'locale',
-]
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -155,16 +140,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissions',
-    ],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.DjangoModelPermissions'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # Simple jwt backend
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    ]
+    ],
 }
 
 AUTH_USER_MODEL = "sea_saw_auth.User"
@@ -178,17 +161,33 @@ SIMPLE_JWT = {
 }
 
 REST_USE_JWT = True  # 配置 dj-rest-auth 使用 JWT
-REST_AUTH = {
-    'TOKEN_MODEL': None,  # 禁用 Token 模型，避免冲突
-}
+REST_AUTH = {'TOKEN_MODEL': None}  # 禁用 Token 模型，避免冲突
 
+FRONTEDN_HOST = [i for i in os.getenv("FRONTEDN_HOST", "").split(" ") if i != ""]
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://192.168.3.204:8081",
     "http://localhost:8081",
-    "http://127.0.0.1:8081",
-    "http://192.168.0.88:8081",
-    "http://192.168.3.204:8081"
-]
+] + FRONTEDN_HOST
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://192.168.3.204:8081",
+    "http://localhost:8081",
+] + FRONTEDN_HOST
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# 配置 Celery 使用 Redis 作为消息队列
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://127.0.0.1:6379/0")
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_BACKEND = 'django-db'
+
+# 可选配置：超时、任务队列等
+CELERY_TASK_SOFT_TIME_LIMIT = 300  # 单个任务超时时间（秒）

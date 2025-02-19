@@ -4,10 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ('sea_saw_crm', '0009_remove_contract_deal_contract_contact_and_more'),
-    ]
+    dependencies = [('sea_saw_crm', '0009_remove_contract_deal_contract_contact_and_more')]
 
     operations = [
         migrations.AlterModelOptions(
@@ -15,12 +12,15 @@ class Migration(migrations.Migration):
             options={'ordering': ['created_at'], 'verbose_name': 'Contract', 'verbose_name_plural': 'Contracts'},
         ),
         migrations.AlterModelOptions(
-            name='order',
-            options={'ordering': ['created_at'], 'verbose_name': 'Order', 'verbose_name_plural': 'Orders'},
+            name='order', options={'ordering': ['created_at'], 'verbose_name': 'Order', 'verbose_name_plural': 'Orders'}
         ),
         migrations.AlterModelOptions(
             name='orderproduct',
-            options={'ordering': ['created_at'], 'verbose_name': 'Order Product', 'verbose_name_plural': 'Order Products'},
+            options={
+                'ordering': ['created_at'],
+                'verbose_name': 'Order Product',
+                'verbose_name_plural': 'Order Products',
+            },
         ),
         migrations.AlterField(
             model_name='order',
@@ -40,6 +40,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='orderproduct',
             name='total_price',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Total Price'),
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Total Price'
+            ),
         ),
     ]

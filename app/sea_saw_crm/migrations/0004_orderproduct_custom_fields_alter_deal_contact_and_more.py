@@ -5,16 +5,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ("sea_saw_crm", "0003_contact_custom_fields_deal_custom_fields_and_more"),
-    ]
+    dependencies = [("sea_saw_crm", "0003_contact_custom_fields_deal_custom_fields_and_more")]
 
     operations = [
         migrations.AddField(
-            model_name="orderproduct",
-            name="custom_fields",
-            field=models.JSONField(blank=True, null=True),
+            model_name="orderproduct", name="custom_fields", field=models.JSONField(blank=True, null=True)
         ),
         migrations.AlterField(
             model_name="deal",

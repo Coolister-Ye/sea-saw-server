@@ -1,34 +1,55 @@
-from django.contrib.contenttypes.models import ContentType
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.metadata import SimpleMetadata
-from sea_saw_crm.models import Field
-from django.utils.encoding import force_str
+import re
+from collections import defaultdict
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-
+from django.utils.encoding import force_str
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, serializers
+from rest_framework.metadata import SimpleMetadata
 from rest_framework.request import clone_request
-from collections import defaultdict
-import re
+
+from sea_saw_crm.models import Field
 
 
 class CustomMetadata(SimpleMetadata):
     LOOKUP_TYPES = [
-        "exact", "iexact", "contains", "icontains", "in",
-        "gt", "lt", "gte", "lte", "startswith", "istartswith",
-        "endswith", "iendswith", "range", "date", "year",
-        "month", "day", "week_day", "isnull", "search",
-        "regex", "iregex", "hour", "minute", "second", "time"
+        "exact",
+        "iexact",
+        "contains",
+        "icontains",
+        "in",
+        "gt",
+        "lt",
+        "gte",
+        "lte",
+        "startswith",
+        "istartswith",
+        "endswith",
+        "iendswith",
+        "range",
+        "date",
+        "year",
+        "month",
+        "day",
+        "week_day",
+        "isnull",
+        "search",
+        "regex",
+        "iregex",
+        "hour",
+        "minute",
+        "second",
+        "time",
     ]
 
     # Regex pattern that matches any of the lookups at the end of the string
     lookup_pattern = r'__(?:' + '|'.join(LOOKUP_TYPES) + r')$'
-    
+
     def __init__(self):
         super().__init__()
         self.filter_info = {}
-
 
     def determine_actions(self, request, view):
         """
@@ -51,7 +72,7 @@ class CustomMetadata(SimpleMetadata):
                 # If user has appropriate permissions for the view, include
                 # appropriate metadata about the fields that should be supplied.
                 serializer = view.get_serializer()
-                self.filter_info  = self.get_filters_info(view)
+                self.filter_info = self.get_filters_info(view)
                 actions[method] = self.get_serializer_info(serializer)
             finally:
                 view.request = request
@@ -63,8 +84,6 @@ class CustomMetadata(SimpleMetadata):
         field_name = re.sub(self.lookup_pattern, '', field_name)
         # Convert Django lookup pattern to chain pattern
         return re.sub(r'__', '.', field_name)
-
-    from collections import defaultdict
 
     def get_filters_info(self, view):
         filters_info = defaultdict(lambda: {"operations": []})
@@ -101,9 +120,10 @@ class CustomMetadata(SimpleMetadata):
         model = getattr(serializer.Meta, 'model', None)
         if model:
             content_type = ContentType.objects.get_for_model(model)
-            model_field_info = {field.field_name: {
-                **field.extra_info, **{'field_type': field.field_type}
-            } for field in Field.objects.filter(content_type=content_type)}
+            model_field_info = {
+                field.field_name: {**field.extra_info, **{'field_type': field.field_type}}
+                for field in Field.objects.filter(content_type=content_type)
+            }
         else:
             model_field_info = {}
 
@@ -136,16 +156,18 @@ class CustomMetadata(SimpleMetadata):
         Given an instance of a serializer field, return a dictionary
         of metadata about it.
         """
-        field_info = {
-            "type": self.label_lookup[field],
-            "required": getattr(field, "required", False),
-        }
+        field_info = {"type": self.label_lookup[field], "required": getattr(field, "required", False)}
 
         attrs = [
-            'read_only', 'label', 'help_text',
-            'min_length', 'max_length',
-            'min_value', 'max_value',
-            'max_digits', 'decimal_places'
+            'read_only',
+            'label',
+            'help_text',
+            'min_length',
+            'max_length',
+            'min_value',
+            'max_value',
+            'max_digits',
+            'decimal_places',
         ]
 
         for attr in attrs:
@@ -158,14 +180,13 @@ class CustomMetadata(SimpleMetadata):
         elif getattr(field, 'fields', None):
             field_info['children'] = self.get_serializer_info(field, parent)
 
-        if (not field_info.get('read_only') and
-                not isinstance(field, (serializers.RelatedField, serializers.ManyRelatedField)) and
-                hasattr(field, 'choices')):
+        if (
+            not field_info.get('read_only')
+            and not isinstance(field, (serializers.RelatedField, serializers.ManyRelatedField))
+            and hasattr(field, 'choices')
+        ):
             field_info['choices'] = [
-                {
-                    'value': choice_value,
-                    'label': force_str(choice_name, strings_only=True)
-                }
+                {'value': choice_value, 'label': force_str(choice_name, strings_only=True)}
                 for choice_value, choice_name in field.choices.items()
             ]
 

@@ -6,49 +6,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('sea_saw_crm', '0011_alter_deal_amount_alter_deal_expected_revenue_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='customfieldvalue',
-            unique_together=None,
-        ),
-        migrations.RemoveField(
-            model_name='customfieldvalue',
-            name='content_type',
-        ),
-        migrations.RemoveField(
-            model_name='customfieldvalue',
-            name='field',
-        ),
-        migrations.RemoveField(
-            model_name='deal',
-            name='contact',
-        ),
-        migrations.RemoveField(
-            model_name='deal',
-            name='owner',
-        ),
-        migrations.RemoveField(
-            model_name='pipeline',
-            name='owner',
-        ),
-        migrations.RemoveField(
-            model_name='stage',
-            name='pipeline',
-        ),
-        migrations.RemoveField(
-            model_name='product',
-            name='owner',
-        ),
-        migrations.RemoveField(
-            model_name='stage',
-            name='owner',
-        ),
+        migrations.AlterUniqueTogether(name='customfieldvalue', unique_together=None),
+        migrations.RemoveField(model_name='customfieldvalue', name='content_type'),
+        migrations.RemoveField(model_name='customfieldvalue', name='field'),
+        migrations.RemoveField(model_name='deal', name='contact'),
+        migrations.RemoveField(model_name='deal', name='owner'),
+        migrations.RemoveField(model_name='pipeline', name='owner'),
+        migrations.RemoveField(model_name='stage', name='pipeline'),
+        migrations.RemoveField(model_name='product', name='owner'),
+        migrations.RemoveField(model_name='stage', name='owner'),
         migrations.AlterModelOptions(
             name='contact',
             options={'ordering': ['-created_at'], 'verbose_name': 'Contact', 'verbose_name_plural': 'Contacts'},
@@ -63,22 +35,59 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='orderproduct',
-            options={'ordering': ['-created_at'], 'verbose_name': 'Order Product', 'verbose_name_plural': 'Order Products'},
+            options={
+                'ordering': ['-created_at'],
+                'verbose_name': 'Order Product',
+                'verbose_name_plural': 'Order Products',
+            },
         ),
         migrations.AddField(
             model_name='contract',
             name='stage',
-            field=models.CharField(blank=True, choices=[('in_progress', 'In Progress'), ('finished', 'Finished'), ('cancelled', 'Cancelled'), ('delayed', 'Delayed'), ('issue_reported', 'Issue Reported')], max_length=25, null=True, verbose_name='Stage'),
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ('in_progress', 'In Progress'),
+                    ('finished', 'Finished'),
+                    ('cancelled', 'Cancelled'),
+                    ('delayed', 'Delayed'),
+                    ('issue_reported', 'Issue Reported'),
+                ],
+                max_length=25,
+                null=True,
+                verbose_name='Stage',
+            ),
         ),
         migrations.AddField(
             model_name='order',
             name='stage',
-            field=models.CharField(blank=True, choices=[('in_production', 'In Production'), ('finished_production', 'Finished Production'), ('in_shipment', 'In Shipment'), ('in_payment', 'In Payment'), ('finished', 'Finished'), ('cancelled', 'Cancelled'), ('delayed', 'Delayed'), ('issue_reported', 'Issue Reported')], max_length=25, null=True, verbose_name='Stage'),
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ('in_production', 'In Production'),
+                    ('finished_production', 'Finished Production'),
+                    ('in_shipment', 'In Shipment'),
+                    ('in_payment', 'In Payment'),
+                    ('finished', 'Finished'),
+                    ('cancelled', 'Cancelled'),
+                    ('delayed', 'Delayed'),
+                    ('issue_reported', 'Issue Reported'),
+                ],
+                max_length=25,
+                null=True,
+                verbose_name='Stage',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
             name='company',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sea_saw_crm.company', verbose_name='Company'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sea_saw_crm.company',
+                verbose_name='Company',
+            ),
         ),
         migrations.AlterField(
             model_name='contact',
@@ -123,7 +132,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='contract',
             name='contact',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='sea_saw_crm.contact', verbose_name='Contact'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='sea_saw_crm.contact',
+                verbose_name='Contact',
+            ),
         ),
         migrations.AlterField(
             model_name='contract',
@@ -136,14 +151,19 @@ class Migration(migrations.Migration):
             field=models.DecimalField(blank=True, decimal_places=5, max_digits=30, null=True, verbose_name='Balance'),
         ),
         migrations.AlterField(
-            model_name='order',
-            name='comment',
-            field=models.TextField(blank=True, null=True, verbose_name='Comment'),
+            model_name='order', name='comment', field=models.TextField(blank=True, null=True, verbose_name='Comment')
         ),
         migrations.AlterField(
             model_name='order',
             name='contract',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='orders', to='sea_saw_crm.contract', verbose_name='Associated Contract'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='orders',
+                to='sea_saw_crm.contract',
+                verbose_name='Associated Contract',
+            ),
         ),
         migrations.AlterField(
             model_name='order',
@@ -163,7 +183,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='orderproduct',
             name='order',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='products', to='sea_saw_crm.order', verbose_name='Associated Order'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='products',
+                to='sea_saw_crm.order',
+                verbose_name='Associated Order',
+            ),
         ),
         migrations.AlterField(
             model_name='orderproduct',
@@ -208,7 +235,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='orderproduct',
             name='total_price',
-            field=models.DecimalField(blank=True, decimal_places=5, max_digits=30, null=True, verbose_name='Total Price'),
+            field=models.DecimalField(
+                blank=True, decimal_places=5, max_digits=30, null=True, verbose_name='Total Price'
+            ),
         ),
         migrations.AlterField(
             model_name='orderproduct',
@@ -216,30 +245,18 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, max_length=50, null=True, verbose_name='Unit'),
         ),
         migrations.AddIndex(
-            model_name='order',
-            index=models.Index(fields=['order_code'], name='sea_saw_crm_order_c_383188_idx'),
+            model_name='order', index=models.Index(fields=['order_code'], name='sea_saw_crm_order_c_383188_idx')
         ),
         migrations.AddIndex(
-            model_name='order',
-            index=models.Index(fields=['stage'], name='sea_saw_crm_stage_8d9f12_idx'),
+            model_name='order', index=models.Index(fields=['stage'], name='sea_saw_crm_stage_8d9f12_idx')
         ),
         migrations.AddIndex(
             model_name='orderproduct',
             index=models.Index(fields=['product_name'], name='sea_saw_crm_product_b5a641_idx'),
         ),
-        migrations.DeleteModel(
-            name='CustomFieldValue',
-        ),
-        migrations.DeleteModel(
-            name='Deal',
-        ),
-        migrations.DeleteModel(
-            name='Pipeline',
-        ),
-        migrations.DeleteModel(
-            name='Product',
-        ),
-        migrations.DeleteModel(
-            name='Stage',
-        ),
+        migrations.DeleteModel(name='CustomFieldValue'),
+        migrations.DeleteModel(name='Deal'),
+        migrations.DeleteModel(name='Pipeline'),
+        migrations.DeleteModel(name='Product'),
+        migrations.DeleteModel(name='Stage'),
     ]

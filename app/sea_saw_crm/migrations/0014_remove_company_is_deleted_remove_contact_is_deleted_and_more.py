@@ -4,85 +4,44 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-        ('sea_saw_crm', '0013_alter_contract_stage_alter_order_stage'),
-    ]
+    dependencies = [('sea_saw_crm', '0013_alter_contract_stage_alter_order_stage')]
 
     operations = [
-        migrations.RemoveField(
-            model_name='company',
-            name='is_deleted',
-        ),
-        migrations.RemoveField(
-            model_name='contact',
-            name='is_deleted',
-        ),
-        migrations.RemoveField(
-            model_name='contract',
-            name='is_deleted',
-        ),
-        migrations.RemoveField(
-            model_name='field',
-            name='is_deleted',
-        ),
-        migrations.RemoveField(
-            model_name='order',
-            name='is_deleted',
-        ),
-        migrations.RemoveField(
-            model_name='orderproduct',
-            name='is_deleted',
+        migrations.RemoveField(model_name='company', name='is_deleted'),
+        migrations.RemoveField(model_name='contact', name='is_deleted'),
+        migrations.RemoveField(model_name='contract', name='is_deleted'),
+        migrations.RemoveField(model_name='field', name='is_deleted'),
+        migrations.RemoveField(model_name='order', name='is_deleted'),
+        migrations.RemoveField(model_name='orderproduct', name='is_deleted'),
+        migrations.AddField(
+            model_name='company', name='deleted', field=models.DateTimeField(db_index=True, editable=False, null=True)
         ),
         migrations.AddField(
-            model_name='company',
-            name='deleted',
-            field=models.DateTimeField(db_index=True, editable=False, null=True),
+            model_name='company', name='deleted_by_cascade', field=models.BooleanField(default=False, editable=False)
         ),
         migrations.AddField(
-            model_name='company',
-            name='deleted_by_cascade',
-            field=models.BooleanField(default=False, editable=False),
+            model_name='contact', name='deleted', field=models.DateTimeField(db_index=True, editable=False, null=True)
         ),
         migrations.AddField(
-            model_name='contact',
-            name='deleted',
-            field=models.DateTimeField(db_index=True, editable=False, null=True),
+            model_name='contact', name='deleted_by_cascade', field=models.BooleanField(default=False, editable=False)
         ),
         migrations.AddField(
-            model_name='contact',
-            name='deleted_by_cascade',
-            field=models.BooleanField(default=False, editable=False),
+            model_name='contract', name='deleted', field=models.DateTimeField(db_index=True, editable=False, null=True)
         ),
         migrations.AddField(
-            model_name='contract',
-            name='deleted',
-            field=models.DateTimeField(db_index=True, editable=False, null=True),
+            model_name='contract', name='deleted_by_cascade', field=models.BooleanField(default=False, editable=False)
         ),
         migrations.AddField(
-            model_name='contract',
-            name='deleted_by_cascade',
-            field=models.BooleanField(default=False, editable=False),
+            model_name='field', name='deleted', field=models.DateTimeField(db_index=True, editable=False, null=True)
         ),
         migrations.AddField(
-            model_name='field',
-            name='deleted',
-            field=models.DateTimeField(db_index=True, editable=False, null=True),
+            model_name='field', name='deleted_by_cascade', field=models.BooleanField(default=False, editable=False)
         ),
         migrations.AddField(
-            model_name='field',
-            name='deleted_by_cascade',
-            field=models.BooleanField(default=False, editable=False),
+            model_name='order', name='deleted', field=models.DateTimeField(db_index=True, editable=False, null=True)
         ),
         migrations.AddField(
-            model_name='order',
-            name='deleted',
-            field=models.DateTimeField(db_index=True, editable=False, null=True),
-        ),
-        migrations.AddField(
-            model_name='order',
-            name='deleted_by_cascade',
-            field=models.BooleanField(default=False, editable=False),
+            model_name='order', name='deleted_by_cascade', field=models.BooleanField(default=False, editable=False)
         ),
         migrations.AddField(
             model_name='orderproduct',
@@ -97,11 +56,38 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='contract',
             name='stage',
-            field=models.CharField(blank=True, choices=[('进行中', 'In Progress'), ('已完成', 'Finished'), ('已取消', 'Cancelled'), ('延迟中', 'Delayed'), ('问题单', 'Issue Reported')], max_length=25, null=True, verbose_name='Contract Stage'),
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ('进行中', 'In Progress'),
+                    ('已完成', 'Finished'),
+                    ('已取消', 'Cancelled'),
+                    ('延迟中', 'Delayed'),
+                    ('问题单', 'Issue Reported'),
+                ],
+                max_length=25,
+                null=True,
+                verbose_name='Contract Stage',
+            ),
         ),
         migrations.AlterField(
             model_name='order',
             name='stage',
-            field=models.CharField(blank=True, choices=[('生产中', 'In Production'), ('已完成生产', 'Finished Production'), ('运输中', 'In Shipment'), ('支付中', 'In Payment'), ('完成', 'Finished'), ('已取消', 'Cancelled'), ('延迟中', 'Delayed'), ('问题单', 'Issue Reported')], max_length=25, null=True, verbose_name='Order Stage'),
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ('生产中', 'In Production'),
+                    ('已完成生产', 'Finished Production'),
+                    ('运输中', 'In Shipment'),
+                    ('支付中', 'In Payment'),
+                    ('完成', 'Finished'),
+                    ('已取消', 'Cancelled'),
+                    ('延迟中', 'Delayed'),
+                    ('问题单', 'Issue Reported'),
+                ],
+                max_length=25,
+                null=True,
+                verbose_name='Order Stage',
+            ),
         ),
     ]

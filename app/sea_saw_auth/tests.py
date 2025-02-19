@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from .models import Role, User
 
 
@@ -39,7 +40,9 @@ class RoleModelTests(TestCase):
         self.child_role1.save()
 
         visible_users = self.child_role1.get_all_visible_users()
-        self.assertEqual(set(visible_users), {self.user2, self.user3, self.user4})  # child_role1, child_role2 and grandchild_role users are visible
+        self.assertEqual(
+            set(visible_users), {self.user2, self.user3, self.user4}
+        )  # child_role1, child_role2 and grandchild_role users are visible
 
     def test_get_all_visible_users_no_peers(self):
         """Test the get_all_visible_users method without peers visible."""

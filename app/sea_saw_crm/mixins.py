@@ -1,6 +1,4 @@
 from django.db.models import ManyToOneRel, Prefetch
-from rest_framework import viewsets
-from rest_framework.serializers import ListSerializer
 
 
 class RoleFilterMixin:
@@ -28,6 +26,7 @@ class DjangoFilterMixin:
     The original function dosen't filter unmatched records inside a OneToManyField,
     as it filter based on foreginKey fields to identify the parent records.
     """
+
     def get_queryset(self):
         """Retrieve and filter the queryset based on the provided query parameters."""
         queryset = super().get_queryset()  # Start with the base queryset
@@ -125,4 +124,3 @@ class DjangoFilterMixin:
             queryset = queryset.filter(**{key: filter})
 
         return queryset
-
