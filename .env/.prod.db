@@ -1,0 +1,3 @@
+POSTGRES_USER=sea_saw
+POSTGRES_PASSWORD=sea_saw_passwd
+POSTGRES_DB=sea_saw_prod
