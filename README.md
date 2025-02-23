@@ -24,6 +24,7 @@ docker exec -it sea_saw_dev_redis_1 redis-cli ping
 celery -A django_celery_example worker --loglevel=info
 celery -A django_celery_example flower --port=5555
 docker-compose -f docker-compose.prod.yml -p sea_saw_prod up --build
+docker-compose -f docker-compose.prod.yml up --build
 python manage.py createsuperuser
 
 ```

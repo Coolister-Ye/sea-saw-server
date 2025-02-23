@@ -163,19 +163,19 @@ SIMPLE_JWT = {
 REST_USE_JWT = True  # 配置 dj-rest-auth 使用 JWT
 REST_AUTH = {'TOKEN_MODEL': None}  # 禁用 Token 模型，避免冲突
 
-FRONTEDN_HOST = [i for i in os.getenv("FRONTEDN_HOST", "").split(" ") if i != ""]
+FRONTEDN_HOST = [i for i in os.environ.get("FRONTEND_HOST", "").split(" ") if i != ""]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
-    "http://192.168.3.204:8081",
-    "http://localhost:8081",
+    "http://0.0.0.0:8000",
 ] + FRONTEDN_HOST
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
-    "http://192.168.3.204:8081",
-    "http://localhost:8081",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://192.168.0.183:8000"
 ] + FRONTEDN_HOST
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"

@@ -22,6 +22,8 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env/.prod.db
+    ports:
+      - "5432:5432"
 
   nginx:
     build: ./nginx
@@ -70,7 +72,7 @@ services:
     env_file:
       - .env/.prod
     ports:
-      - "5557:5555"
+      - "5555:5555"
     depends_on:
       - db
       - redis
