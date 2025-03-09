@@ -341,6 +341,8 @@ class CompanySerializer(BaseSerializer):
     Company serializer
     """
 
+    company_name = serializers.CharField(required=False, label=_("Company Name"))
+
     class Meta(BaseSerializer.Meta):
         model = Company
         fields = [
@@ -409,10 +411,23 @@ class ContactSerializer(BaseSerializer):
         :param validated_data: Data for the Contact instance.
         :return: Updated or newly created Contact instance.
         """
+        validated_data = self.set_full_name(validated_data)
         validated_data.pop("company", None)
-        if instance:
-            self.assign_company(instance)
-        return validated_data
+
+        # Create or update the Contact instance
+        instance = (
+            super().update(instance, validated_data)
+            if instance
+            else super().create(validated_data)
+        )
+
+        # Assign the company relationship
+        if not self.assign_company(instance):
+            raise serializers.ValidationError(
+                _("Failed to assign company to the contact.")
+            )
+
+        return instance
 
     def create(self, validated_data):
         """
