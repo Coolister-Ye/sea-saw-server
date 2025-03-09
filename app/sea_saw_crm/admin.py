@@ -15,8 +15,8 @@ class FieldAdmin(admin.ModelAdmin):
 
 # Contact Admin
 @admin.register(Contact)
-class ContactAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'mobile', 'company__company_name')
+class ContactAdmin(SafeDeleteAdmin):
+    list_display = (highlight_deleted, 'first_name', 'last_name', 'email', 'mobile', 'company__company_name') + SafeDeleteAdmin.list_display
     search_fields = ('first_name', 'last_name', 'email', 'company__company_name')
     list_filter = ('created_at', 'updated_at', 'company')
     ordering = ('last_name', 'first_name')  # Sorting by last name and first name
@@ -24,8 +24,8 @@ class ContactAdmin(admin.ModelAdmin):
 
 # Company Admin
 @admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('company_name', 'email', 'mobile', 'phone', 'created_at')
+class CompanyAdmin(SafeDeleteAdmin):
+    list_display = (highlight_deleted, 'company_name', 'email', 'mobile', 'phone', 'created_at') + SafeDeleteAdmin.list_display
     search_fields = ('company_name', 'email', 'mobile', 'phone')
     list_filter = ('created_at', 'updated_at')
     ordering = ('company_name',)
@@ -57,8 +57,9 @@ class OrderAdmin(SafeDeleteAdmin):
 
 
 @admin.register(OrderProduct)
-class OrderProductAdmin(admin.ModelAdmin):
+class OrderProductAdmin(SafeDeleteAdmin):
     list_display = (
+        highlight_deleted,
         'pk',
         'product_name',
         'size',
@@ -72,5 +73,5 @@ class OrderProductAdmin(admin.ModelAdmin):
         'progress_material',
         'progress_quantity',
         'progress_weight',
-    )
+    ) + SafeDeleteAdmin.list_display
     ordering = ('created_at',)

@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
-from safedelete.models import SOFT_DELETE_CASCADE
+from safedelete.models import SOFT_DELETE_CASCADE, SOFT_DELETE
 from safedelete.models import SafeDeleteModel
 
 
@@ -146,6 +146,7 @@ class Company(BaseModel):
     Represents a company entity with basic details and optional custom fields.
     表示公司实体，包含基本信息以及可选的自定义字段。
     """
+    # _safedelete_policy = SOFT_DELETE
 
     company_name = models.CharField(
         max_length=255,
@@ -201,15 +202,15 @@ class Contact(BaseModel):
     last_name = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Last Name"))
     full_name = models.CharField(max_length=510, null=True, blank=True, verbose_name=_("Customer Name"))
     title = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Job Title"))
-    email = models.EmailField(null=True, blank=True, unique=True, verbose_name=_("Email"))
+    email = models.EmailField(null=True, blank=True, verbose_name=_("Email"))
     mobile = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Landline"))
     phone = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Phone Number"))
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_("Company"))
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Company"))
     custom_fields = models.JSONField(null=True, blank=True, verbose_name=_("Custom Fields"))
 
     class Meta:
         ordering = ['-created_at']  # 按姓氏排序 (Order by Last Name)
-        unique_together = ('email',)  # 确保邮箱唯一 (Ensure Unique Email)
+        unique_together = ('email', 'deleted')  # 确保邮箱唯一 (Ensure Unique Email)
         verbose_name = _("Contact")  # 联系人 (Contact)
         verbose_name_plural = _("Contacts")  # 联系人列表 (Contact List)
 
@@ -319,6 +320,10 @@ class Order(BaseModel):
     destination_port = models.CharField(
         max_length=100, null=True, blank=True, verbose_name=_("Destination Port")
     )  # 目的港 (Destination Port)
+
+    shippment_term = models.CharField(
+        max_length=10, null=True, blank=True, verbose_name=_("Shippment Term")
+    )  # 交易方式 (Shippment Term)
 
     contract = models.ForeignKey(
         Contract,

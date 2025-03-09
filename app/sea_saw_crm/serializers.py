@@ -343,32 +343,36 @@ class ContactSerializer(BaseSerializer):
         validated_data['full_name'] = f"{first_name} {last_name}".strip()
         return validated_data
 
-    def handle_relations(self, instance, validated_data):
+    def create_or_update(self, instance, validated_data):
         """
-        Handle related fields like company.
+        Handles creation or update of a Contact instance with company assignment.
+        :param instance: Contact instance to update, or None for creation.
+        :param validated_data: Data for the Contact instance.
+        :return: Updated or newly created Contact instance.
         """
+        validated_data = self.set_full_name(validated_data)
         company = validated_data.pop("company", None)
-        if instance:
-            self.assign_company(instance, company)
-        return validated_data
+
+        # Create or update the Contact instance
+        instance = super().update(instance, validated_data) if instance else super().create(validated_data)
+
+        # Assign the company relationship
+        if not self.assign_company(instance, company):
+            raise serializers.ValidationError(_("Failed to assign company to the contact."))
+
+        return instance
 
     def create(self, validated_data):
         """
-        Override create method to handle full_name and relations.
+        Creates a new Contact instance.
         """
-        validated_data = self.set_full_name(validated_data)
-        instance = super().create(validated_data)
-        self.handle_relations(instance, validated_data)
-        return instance
+        return self.create_or_update(None, validated_data)
 
     def update(self, instance, validated_data):
         """
-        Override update method to handle full_name and relations.
+        Updates an existing Contact instance.
         """
-        validated_data = self.set_full_name(validated_data)
-        validated_data = self.handle_relations(instance, validated_data)
-        instance = super().update(instance, validated_data)
-        return instance
+        return self.create_or_update(instance, validated_data)
 
 
 class OrderProductSerializer(BaseSerializer):
@@ -484,6 +488,7 @@ class OrderSerializer(BaseSerializer):
             'pk',
             'order_code',
             'destination_port',
+            'shippment_term',
             'etd',
             'deliver_date',
             'deposit',
