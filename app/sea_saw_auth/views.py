@@ -5,7 +5,6 @@ from rest_framework.views import APIView
 from sea_saw_auth.serializers import UserSerializer
 
 
-# Create your views here.
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
