@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-18 01:47+0800\n"
+"POT-Creation-Date: 2025-03-04 16:00+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,446 +18,463 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: sea_saw_crm/models.py:17 sea_saw_crm/serializers.py:22
-msgid "Owner"
-msgstr "所有者"
+#: app/preference/models.py:6
+msgid "User"
+msgstr ""
 
-#: sea_saw_crm/models.py:18 sea_saw_crm/serializers.py:23
-msgid "The user who owns this object."
-msgstr "该对象的负责人。"
+#: app/preference/models.py:7
+msgid "Table name"
+msgstr ""
 
-#: sea_saw_crm/models.py:24 sea_saw_crm/serializers.py:28
-msgid "Created By"
-msgstr "创建者"
+#: app/preference/models.py:8
+msgid "Column preference"
+msgstr ""
 
-#: sea_saw_crm/models.py:25 sea_saw_crm/serializers.py:29
-msgid "The user who created this object."
-msgstr "创建此对象的用户。"
-
-#: sea_saw_crm/models.py:31 sea_saw_crm/serializers.py:34
-msgid "Updated By"
-msgstr "更新者"
-
-#: sea_saw_crm/models.py:32 sea_saw_crm/serializers.py:35
-msgid "The user who last updated this object."
-msgstr "最后更新此对象的用户。"
-
-#: sea_saw_crm/models.py:36 sea_saw_crm/serializers.py:41
+#: app/preference/models.py:10 app/sea_saw_crm/models.py:41
+#: app/sea_saw_crm/serializers.py:33
 msgid "Created At"
 msgstr "创建时间"
 
-#: sea_saw_crm/models.py:37 sea_saw_crm/serializers.py:42
+#: app/preference/models.py:10 app/sea_saw_crm/models.py:41
+#: app/sea_saw_crm/serializers.py:34
 msgid "Timestamp when this object was created."
 msgstr "对象创建的时间戳。"
 
-#: sea_saw_crm/models.py:41 sea_saw_crm/serializers.py:48
+#: app/preference/models.py:13 app/sea_saw_crm/models.py:44
+#: app/sea_saw_crm/serializers.py:40
 msgid "Updated At"
 msgstr "更新时间"
 
-#: sea_saw_crm/models.py:42 sea_saw_crm/serializers.py:49
+#: app/preference/models.py:13 app/sea_saw_crm/models.py:44
+#: app/sea_saw_crm/serializers.py:41
 msgid "Timestamp when this object was last updated."
 msgstr "对象最后更新的时间戳。"
 
-#: sea_saw_crm/models.py:48
-msgid "Is Deleted"
-msgstr "是否已删除"
+#: app/sea_saw_crm/models.py:23 app/sea_saw_crm/serializers.py:20
+msgid "Owner"
+msgstr "所有者"
 
-#: sea_saw_crm/models.py:49
-msgid "Soft delete flag for marking this object as deleted."
-msgstr "标记此对象为已删除的软删除标志。"
+#: app/sea_saw_crm/models.py:24 app/sea_saw_crm/serializers.py:21
+msgid "The user who owns this object."
+msgstr "该对象的负责人。"
 
-#: sea_saw_crm/models.py:54
+#: app/sea_saw_crm/models.py:30 app/sea_saw_crm/serializers.py:24
+msgid "Created By"
+msgstr "创建者"
+
+#: app/sea_saw_crm/models.py:31 app/sea_saw_crm/serializers.py:24
+msgid "The user who created this object."
+msgstr "创建此对象的用户。"
+
+#: app/sea_saw_crm/models.py:37 app/sea_saw_crm/serializers.py:27
+msgid "Updated By"
+msgstr "更新者"
+
+#: app/sea_saw_crm/models.py:38 app/sea_saw_crm/serializers.py:27
+msgid "The user who last updated this object."
+msgstr "最后更新此对象的用户。"
+
+#: app/sea_saw_crm/models.py:49
 msgid "Base Model"
 msgstr "基础模型"
 
-#: sea_saw_crm/models.py:55
+#: app/sea_saw_crm/models.py:50
 msgid "Base Models"
 msgstr "基础模型集合"
 
-#: sea_saw_crm/models.py:77
+#: app/sea_saw_crm/models.py:72
 msgid "Picklist"
 msgstr "下拉列表"
 
-#: sea_saw_crm/models.py:78
+#: app/sea_saw_crm/models.py:73
 msgid "Text"
 msgstr "文本"
 
-#: sea_saw_crm/models.py:79
+#: app/sea_saw_crm/models.py:74
 msgid "Numerical"
 msgstr "数值"
 
-#: sea_saw_crm/models.py:80
+#: app/sea_saw_crm/models.py:75
 msgid "Lookup"
 msgstr "查找"
 
-#: sea_saw_crm/models.py:81
+#: app/sea_saw_crm/models.py:76
 msgid "Date"
 msgstr "日期"
 
-#: sea_saw_crm/models.py:82
+#: app/sea_saw_crm/models.py:77
 msgid "Currency"
 msgstr "货币"
 
-#: sea_saw_crm/models.py:83 sea_saw_crm/models.py:236
+#: app/sea_saw_crm/models.py:78 app/sea_saw_crm/models.py:205
 msgid "Email"
 msgstr "电子邮件"
 
-#: sea_saw_crm/models.py:84
+#: app/sea_saw_crm/models.py:79
 msgid "Phone"
 msgstr "电话"
 
-#: sea_saw_crm/models.py:85
+#: app/sea_saw_crm/models.py:80
 msgid "URL"
 msgstr "网址"
 
-#: sea_saw_crm/models.py:95
+#: app/sea_saw_crm/models.py:91
 msgid "Field Name"
 msgstr "字段名称"
 
-#: sea_saw_crm/models.py:96
+#: app/sea_saw_crm/models.py:92
 msgid "Name of the field (must be unique within the same content type)."
 msgstr "字段名称（在相同内容类型内必须唯一）。"
 
-#: sea_saw_crm/models.py:102
+#: app/sea_saw_crm/models.py:98
 msgid "Field Type"
 msgstr "字段类型"
 
-#: sea_saw_crm/models.py:103
+#: app/sea_saw_crm/models.py:99
 msgid "Type of the field (e.g., text, picklist)."
 msgstr "字段的类型（例如：文本，下拉列表）。"
 
-#: sea_saw_crm/models.py:107
+#: app/sea_saw_crm/models.py:102
 msgid "Is Active"
 msgstr "是否启用"
 
-#: sea_saw_crm/models.py:108
+#: app/sea_saw_crm/models.py:102
 msgid "Indicates whether the field is active."
 msgstr "指示字段是否处于启用状态。"
 
-#: sea_saw_crm/models.py:112
+#: app/sea_saw_crm/models.py:105
 msgid "Is Mandatory"
 msgstr "是否必填"
 
-#: sea_saw_crm/models.py:113
+#: app/sea_saw_crm/models.py:105
 msgid "Indicates whether the field is mandatory."
 msgstr "指示字段是否为必填项。"
 
-#: sea_saw_crm/models.py:118 sea_saw_crm/serializers.py:175
+#: app/sea_saw_crm/models.py:110 app/sea_saw_crm/serializers.py:236
 msgid "Content Type"
 msgstr "内容类型"
 
-#: sea_saw_crm/models.py:119 sea_saw_crm/serializers.py:176
+#: app/sea_saw_crm/models.py:111 app/sea_saw_crm/serializers.py:236
 msgid "The model associated with this field."
 msgstr "与该字段关联的模型。"
 
-#: sea_saw_crm/models.py:124
+#: app/sea_saw_crm/models.py:116
 msgid "Extra Information"
 msgstr "额外信息"
 
-#: sea_saw_crm/models.py:125
+#: app/sea_saw_crm/models.py:117
 msgid "Additional metadata or configuration for the field."
 msgstr "字段的附加元数据或配置信息。"
 
-#: sea_saw_crm/models.py:131
+#: app/sea_saw_crm/models.py:123
 msgid "Field"
 msgstr "字段"
 
-#: sea_saw_crm/models.py:132
+#: app/sea_saw_crm/models.py:124
 msgid "Fields"
 msgstr "字段集合"
 
-#: sea_saw_crm/models.py:150
+#: app/sea_saw_crm/models.py:139
 msgid "Picklist fields must have extra information (e.g., picklist choices)."
 msgstr "下拉列表字段必须包含额外信息（例如，下拉列表选项）。"
 
-#: sea_saw_crm/models.py:162
+#: app/sea_saw_crm/models.py:153
 msgid "Company Name"
 msgstr "公司名称"
 
-#: sea_saw_crm/models.py:163
+#: app/sea_saw_crm/models.py:154
 msgid "The name of the company."
 msgstr "公司的名称。"
 
-#: sea_saw_crm/models.py:168
+#: app/sea_saw_crm/models.py:159
 msgid "Email Address"
 msgstr "电子邮件地址"
 
-#: sea_saw_crm/models.py:169
+#: app/sea_saw_crm/models.py:160
 msgid "The company's contact email address."
 msgstr "公司的联系电子邮件地址。"
 
-#: sea_saw_crm/models.py:175
+#: app/sea_saw_crm/models.py:166
 msgid "Mobile Number"
 msgstr "手机号码"
 
-#: sea_saw_crm/models.py:176
+#: app/sea_saw_crm/models.py:167
 msgid "The company's mobile phone number."
 msgstr "公司的手机号码。"
 
-#: sea_saw_crm/models.py:182 sea_saw_crm/models.py:248
+#: app/sea_saw_crm/models.py:173 app/sea_saw_crm/models.py:207
 msgid "Phone Number"
 msgstr "电话号码"
 
-#: sea_saw_crm/models.py:183
+#: app/sea_saw_crm/models.py:174
 msgid "The company's landline phone number."
 msgstr "公司的固定电话号码。"
 
-#: sea_saw_crm/models.py:189
+#: app/sea_saw_crm/models.py:180
 msgid "Home Phone"
 msgstr "家庭电话"
 
-#: sea_saw_crm/models.py:190
+#: app/sea_saw_crm/models.py:181
 msgid "The company's home phone number, if applicable."
 msgstr "公司的家庭电话号码（如适用）。"
 
-#: sea_saw_crm/models.py:195 sea_saw_crm/models.py:255
-#: sea_saw_crm/serializers.py:266
+#: app/sea_saw_crm/models.py:186 app/sea_saw_crm/models.py:208
+#: app/sea_saw_crm/serializers.py:309
 msgid "Company"
 msgstr "公司"
 
-#: sea_saw_crm/models.py:196
+#: app/sea_saw_crm/models.py:187
 msgid "Companies"
 msgstr "公司"
 
-#: sea_saw_crm/models.py:199
+#: app/sea_saw_crm/models.py:190
 msgid "Unnamed Company"
 msgstr "无名公司"
 
-#: sea_saw_crm/models.py:212
+#: app/sea_saw_crm/models.py:201
 msgid "First Name"
 msgstr "名字"
 
-#: sea_saw_crm/models.py:218
+#: app/sea_saw_crm/models.py:202
 msgid "Last Name"
 msgstr "姓"
 
-#: sea_saw_crm/models.py:224
+#: app/sea_saw_crm/models.py:203
 msgid "Customer Name"
 msgstr "客户名称"
 
-#: sea_saw_crm/models.py:230
+#: app/sea_saw_crm/models.py:204
 msgid "Job Title"
 msgstr "职位"
 
-#: sea_saw_crm/models.py:242
+#: app/sea_saw_crm/models.py:206
 msgid "Landline"
 msgstr "固定电话"
 
-#: sea_saw_crm/models.py:260 sea_saw_crm/models.py:571
+#: app/sea_saw_crm/models.py:209 app/sea_saw_crm/models.py:417
 msgid "Custom Fields"
 msgstr "自定义字段"
 
-#: sea_saw_crm/models.py:266 sea_saw_crm/models.py:326
+#: app/sea_saw_crm/models.py:214 app/sea_saw_crm/models.py:260
 msgid "Contact"
 msgstr "联系人"
 
-#: sea_saw_crm/models.py:267
+#: app/sea_saw_crm/models.py:215
 msgid "Contacts"
 msgstr "联系人"
 
-#: sea_saw_crm/models.py:285
+#: app/sea_saw_crm/models.py:233
 msgid "At least one contact method is required: email or phone."
 msgstr "至少需要一种联系方式：电子邮件或电话。"
 
-#: sea_saw_crm/models.py:291
+#: app/sea_saw_crm/models.py:240
 msgid "In Progress"
 msgstr "进行中"
 
-#: sea_saw_crm/models.py:292 sea_saw_crm/models.py:344
+#: app/sea_saw_crm/models.py:241 app/sea_saw_crm/models.py:278
 msgid "Finished"
 msgstr "已完成"
 
-#: sea_saw_crm/models.py:293 sea_saw_crm/models.py:345
+#: app/sea_saw_crm/models.py:242 app/sea_saw_crm/models.py:279
 msgid "Cancelled"
 msgstr "已取消"
 
-#: sea_saw_crm/models.py:294 sea_saw_crm/models.py:346
+#: app/sea_saw_crm/models.py:243 app/sea_saw_crm/models.py:280
 msgid "Delayed"
 msgstr "延误中"
 
-#: sea_saw_crm/models.py:295 sea_saw_crm/models.py:347
+#: app/sea_saw_crm/models.py:244 app/sea_saw_crm/models.py:281
 msgid "Issue Reported"
 msgstr "问题单"
 
-#: sea_saw_crm/models.py:304
+#: app/sea_saw_crm/models.py:250
 msgid "Contract Code"
 msgstr "合同号"
 
-#: sea_saw_crm/models.py:312
+#: app/sea_saw_crm/models.py:254
 msgid "Contract Stage"
 msgstr "合同进度"
 
-#: sea_saw_crm/models.py:318
+#: app/sea_saw_crm/models.py:257
 msgid "Contract Date"
 msgstr "签订日期"
 
-#: sea_saw_crm/models.py:333
+#: app/sea_saw_crm/models.py:267
 msgid "Contract"
 msgstr "联系人"
 
-#: sea_saw_crm/models.py:334
+#: app/sea_saw_crm/models.py:268
 msgid "Contracts"
 msgstr "联系人"
 
-#: sea_saw_crm/models.py:340
+#: app/sea_saw_crm/models.py:274
 msgid "In Production"
 msgstr "生产中"
 
-#: sea_saw_crm/models.py:341
+#: app/sea_saw_crm/models.py:275
 msgid "Finished Production"
 msgstr "完成生产"
 
-#: sea_saw_crm/models.py:342
+#: app/sea_saw_crm/models.py:276
 msgid "In Shipment"
 msgstr "运输中"
 
-#: sea_saw_crm/models.py:343
+#: app/sea_saw_crm/models.py:277
 msgid "In Payment"
 msgstr "支付中"
 
-#: sea_saw_crm/models.py:356
+#: app/sea_saw_crm/models.py:287
 msgid "Order Code"
 msgstr "生产批号"
 
-#: sea_saw_crm/models.py:362
+#: app/sea_saw_crm/models.py:291
 msgid "Estimated Delivery Date"
 msgstr "预计出货日期"
 
-#: sea_saw_crm/models.py:370
+#: app/sea_saw_crm/models.py:295
 msgid "Order Stage"
 msgstr "生产单进度"
 
-#: sea_saw_crm/models.py:376
+#: app/sea_saw_crm/models.py:299
 msgid "Delivery Date"
 msgstr "实际出货日期"
 
-#: sea_saw_crm/models.py:384
+#: app/sea_saw_crm/models.py:303
 msgid "Deposit"
 msgstr "预付金额"
 
-#: sea_saw_crm/models.py:390
+#: app/sea_saw_crm/models.py:307
 msgid "Deposit Date"
 msgstr "预付日期"
 
-#: sea_saw_crm/models.py:398
+#: app/sea_saw_crm/models.py:311
 msgid "Balance"
 msgstr "尾款金额"
 
-#: sea_saw_crm/models.py:404
+#: app/sea_saw_crm/models.py:315
 msgid "Balance Date"
 msgstr "尾款日期"
 
-#: sea_saw_crm/models.py:410
+#: app/sea_saw_crm/models.py:318
 msgid "Comment"
 msgstr "评论"
 
-#: sea_saw_crm/models.py:417
+#: app/sea_saw_crm/models.py:321
 msgid "Destination Port"
 msgstr "目的港"
 
-#: sea_saw_crm/models.py:426
+#: app/sea_saw_crm/models.py:325
+msgid "Shippment Term"
+msgstr "交易方式"
+
+#: app/sea_saw_crm/models.py:334
 msgid "Associated Contract"
 msgstr "关联合同"
 
-#: sea_saw_crm/models.py:433
+#: app/sea_saw_crm/models.py:341
 msgid "Order"
 msgstr "生产批号"
 
-#: sea_saw_crm/models.py:434
+#: app/sea_saw_crm/models.py:342
 msgid "Orders"
 msgstr "生产单"
 
-#: sea_saw_crm/models.py:448
+#: app/sea_saw_crm/models.py:353
 msgid "Product Name"
 msgstr "产品名称"
 
-#: sea_saw_crm/models.py:455
+#: app/sea_saw_crm/models.py:357
 msgid "Product Code"
 msgstr "产品代码"
 
-#: sea_saw_crm/models.py:462
+#: app/sea_saw_crm/models.py:361
 msgid "Product Type"
 msgstr "产品类型"
 
-#: sea_saw_crm/models.py:469
+#: app/sea_saw_crm/models.py:365
 msgid "Packaging Type"
 msgstr "外包装"
 
-#: sea_saw_crm/models.py:476
+#: app/sea_saw_crm/models.py:369
 msgid "Interior Packaging Type"
 msgstr "内包装"
 
-#: sea_saw_crm/models.py:483
+#: app/sea_saw_crm/models.py:372
 msgid "Size"
 msgstr "冰前规格"
 
-#: sea_saw_crm/models.py:490
+#: app/sea_saw_crm/models.py:374
 msgid "Unit"
 msgstr "单位"
 
-#: sea_saw_crm/models.py:496
+#: app/sea_saw_crm/models.py:376
 msgid "Glazing Ratio"
 msgstr "包冰比例"
 
-#: sea_saw_crm/models.py:502
+#: app/sea_saw_crm/models.py:378
 msgid "Quantity"
 msgstr "数量"
 
-#: sea_saw_crm/models.py:509
+#: app/sea_saw_crm/models.py:380
 msgid "Weight"
 msgstr "含冰重量/箱"
 
-#: sea_saw_crm/models.py:515
+#: app/sea_saw_crm/models.py:382
 msgid "Net Weight"
 msgstr "去冰净重/箱"
 
-#: sea_saw_crm/models.py:521
+#: app/sea_saw_crm/models.py:385
 msgid "Total Net Weight"
 msgstr "去冰总净重"
 
-#: sea_saw_crm/models.py:529
+#: app/sea_saw_crm/models.py:389
 msgid "Price"
 msgstr "价格"
 
-#: sea_saw_crm/models.py:537
+#: app/sea_saw_crm/models.py:393
 msgid "Total Price"
 msgstr "总价"
 
-#: sea_saw_crm/models.py:544
+#: app/sea_saw_crm/models.py:397
 msgid "Material Stage"
 msgstr "物料阶段"
 
-#: sea_saw_crm/models.py:550
+#: app/sea_saw_crm/models.py:401
 msgid "Production Progress Quantity"
 msgstr "生产进度数量"
 
-#: sea_saw_crm/models.py:556
+#: app/sea_saw_crm/models.py:405
 msgid "Production Progress Weight"
 msgstr "生产进度重量"
 
-#: sea_saw_crm/models.py:565
+#: app/sea_saw_crm/models.py:414
 msgid "Associated Order"
 msgstr "关联订单"
 
-#: sea_saw_crm/models.py:575
+#: app/sea_saw_crm/models.py:420
 msgid "Order Product"
 msgstr "生产产品"
 
-#: sea_saw_crm/models.py:576
+#: app/sea_saw_crm/models.py:421
 msgid "Order Products"
 msgstr "生产产品"
 
-#: sea_saw_crm/serializers.py:297
+#: app/sea_saw_crm/serializers.py:361
 msgid "Failed to assign company to the contact."
 msgstr "无法将此公司关联到联系人"
 
-#: sea_saw_crm/serializers.py:308
-msgid "Failed to assign compnay to the contact."
-msgstr "无法将此公司关联到联系人"
-
-#: sea_saw_crm/serializers.py:414
+#: app/sea_saw_crm/serializers.py:593
 msgid "Failed to assign contact to the deal."
 msgstr "无法将此联系人关联到订单"
+
+#~ msgid "Is Deleted"
+#~ msgstr "是否已删除"
+
+#~ msgid "Soft delete flag for marking this object as deleted."
+#~ msgstr "标记此对象为已删除的软删除标志。"
+
+#~ msgid "Failed to assign compnay to the contact."
+#~ msgstr "无法将此公司关联到联系人"
 
 #~ msgid "Stage"
 #~ msgstr "阶段"

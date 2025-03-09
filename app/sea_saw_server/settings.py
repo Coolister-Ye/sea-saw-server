@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import socket
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-!46^gn^&egu^@5%k9l(_b$wv^f3a=3n4i*u909dzm-@*jdmp*d")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-!46^gn^&egu^@5%k9l(_b$wv^f3a=3n4i*u909dzm-@*jdmp*d"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
@@ -50,6 +54,7 @@ INSTALLED_APPS = [
     "sea_saw_crm",
     "preference",
     "djoser",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -61,8 +66,14 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    'django.middleware.locale.LocaleMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+# debug_toolbar.middleware.DebugToolbarMiddleware相关配置
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = ["127.0.0.1"] + [ip[: ip.rfind(".")] + ".1" for ip in ips]
 
 ROOT_URLCONF = "sea_saw_server.urls"
 
@@ -102,7 +113,9 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -118,9 +131,9 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_L10N = True
 
-LANGUAGES = [('en-us', 'English'), ('zh-Hans', '简体中文')]
+LANGUAGES = [("en-us", "English"), ("zh-Hans", "简体中文")]
 
-LOCALE_PATHS = [BASE_DIR / 'locale']
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 USE_TZ = True
 
@@ -140,34 +153,32 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.DjangoModelPermissions'],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Simple jwt backend
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissions"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 5,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Simple jwt backend
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 
 AUTH_USER_MODEL = "sea_saw_auth.User"
 
-from datetime import timedelta
-
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # 令牌有效时间
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),  # 刷新令牌的有效时间
-    'ROTATE_REFRESH_TOKENS': True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 令牌有效时间
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),  # 刷新令牌的有效时间
+    "ROTATE_REFRESH_TOKENS": True,
 }
 
 REST_USE_JWT = True  # 配置 dj-rest-auth 使用 JWT
-REST_AUTH = {'TOKEN_MODEL': None}  # 禁用 Token 模型，避免冲突
+REST_AUTH = {"TOKEN_MODEL": None}  # 禁用 Token 模型，避免冲突
 
 FRONTEDN_HOST = [i for i in os.environ.get("FRONTEND_HOST", "").split(" ") if i != ""]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
-    "http://0.0.0.0:8000",
+    "http://localhost:8081",
 ] + FRONTEDN_HOST
 
 CSRF_TRUSTED_ORIGINS = [
@@ -175,7 +186,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://192.168.0.183:8000"
+    "http://192.168.0.183:8000",
 ] + FRONTEDN_HOST
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
@@ -185,8 +196,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 # 配置 Celery 使用 Redis 作为消息队列
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://127.0.0.1:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://127.0.0.1:6379/0")
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
 # CELERY_RESULT_BACKEND = 'django-db'
 
 # 可选配置：超时、任务队列等

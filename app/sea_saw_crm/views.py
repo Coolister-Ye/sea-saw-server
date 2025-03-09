@@ -91,7 +91,8 @@ class CompanyViewSet(RoleFilterMixin, BaseViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     filterset_class = CompanyFilter
-    filter_backends = (OrderingFilter, filters.DjangoFilterBackend)
+    filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    search_fields = ['^company_name']
 
 
 class ContractViewSet(RoleFilterMixin, BaseViewSet):

@@ -4,7 +4,7 @@ The server side of sea-saw application, which is based on Django
 ## Dependency
 Django, Celery worker, Celery beat, Flower, Redis, Postgres
 
-## quick start
+## Quick start
 - set server address
 ```python
 CORS_ALLOWED_ORIGINS = [
