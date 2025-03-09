@@ -31,8 +31,15 @@ class ContactAdmin(SafeDeleteAdmin):
 
 # Company Admin
 @admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ("company_name", "email", "mobile", "phone", "created_at")
+class CompanyAdmin(SafeDeleteAdmin):
+    list_display = (
+        highlight_deleted,
+        "company_name",
+        "email",
+        "mobile",
+        "phone",
+        "created_at",
+    ) + SafeDeleteAdmin.list_display
     search_fields = ("company_name", "email", "mobile", "phone")
     list_filter = ("created_at", "updated_at")
     ordering = ("company_name",)
@@ -70,8 +77,9 @@ class OrderAdmin(SafeDeleteAdmin):
 
 
 @admin.register(OrderProduct)
-class OrderProductAdmin(admin.ModelAdmin):
+class OrderProductAdmin(SafeDeleteAdmin):
     list_display = (
+        highlight_deleted,
         "pk",
         "product_name",
         "size",
@@ -85,5 +93,5 @@ class OrderProductAdmin(admin.ModelAdmin):
         "progress_material",
         "progress_quantity",
         "progress_weight",
-    )
+    ) + SafeDeleteAdmin.list_display
     ordering = ("created_at",)

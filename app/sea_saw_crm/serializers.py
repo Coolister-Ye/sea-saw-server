@@ -402,9 +402,12 @@ class ContactSerializer(BaseSerializer):
         validated_data["full_name"] = f"{first_name} {last_name}".strip()
         return validated_data
 
-    def handle_relations(self, instance, validated_data):
+    def create_or_update(self, instance, validated_data):
         """
-        Handle related fields like company.
+        Handles creation or update of a Contact instance with company assignment.
+        :param instance: Contact instance to update, or None for creation.
+        :param validated_data: Data for the Contact instance.
+        :return: Updated or newly created Contact instance.
         """
         validated_data.pop("company", None)
         if instance:
@@ -413,21 +416,15 @@ class ContactSerializer(BaseSerializer):
 
     def create(self, validated_data):
         """
-        Override create method to handle full_name and relations.
+        Creates a new Contact instance.
         """
-        validated_data = self.set_full_name(validated_data)
-        instance = super().create(validated_data)
-        self.handle_relations(instance, validated_data)
-        return instance
+        return self.create_or_update(None, validated_data)
 
     def update(self, instance, validated_data):
         """
-        Override update method to handle full_name and relations.
+        Updates an existing Contact instance.
         """
-        validated_data = self.set_full_name(validated_data)
-        validated_data = self.handle_relations(instance, validated_data)
-        instance = super().update(instance, validated_data)
-        return instance
+        return self.create_or_update(instance, validated_data)
 
 
 class OrderProductSerializer(BaseSerializer):
@@ -576,6 +573,7 @@ class OrderSerializer(BaseSerializer):
             "pk",
             "order_code",
             "destination_port",
+            "shippment_term",
             "etd",
             "deliver_date",
             "deposit",
@@ -602,12 +600,13 @@ class OrderSerializer4Prod(BaseSerializer):
             "order_code",
             "etd",
             "destination_port",
-            "products",
+            "stage",
             "owner",
             "created_at",
             "updated_at",
             "created_by",
             "updated_by",
+            "products",
         ]
 
     def __init__(self, *args, **kwargs):
