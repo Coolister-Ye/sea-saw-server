@@ -52,7 +52,8 @@ class ContractAdmin(SafeDeleteAdmin):
         "id",
         "contract_code",
         "contract_date",
-        "owner",
+        "created_by",
+        "owner"
     ) + SafeDeleteAdmin.list_display
     ordering = ("created_at",)
     field_to_highlight = "id"
@@ -71,6 +72,8 @@ class OrderAdmin(SafeDeleteAdmin):
         "deposit_date",
         "balance",
         "balance_date",
+        "created_by",
+        "owner"
     ) + SafeDeleteAdmin.list_display
     ordering = ("created_at",)
     field_to_highlight = "id"
@@ -93,5 +96,7 @@ class OrderProductAdmin(SafeDeleteAdmin):
         "progress_material",
         "progress_quantity",
         "progress_weight",
+        "created_by",
+        "owner"
     ) + SafeDeleteAdmin.list_display
     ordering = ("created_at",)

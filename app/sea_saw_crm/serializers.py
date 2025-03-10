@@ -198,16 +198,6 @@ class BaseSerializer(WritableNestedModelSerializer):
 
         return instance
 
-    def assign_owner(self, instance):
-        """
-        Assign the owner to the instance if provided in the initial data.
-        Owner cannot be updated to null if it's been set.
-        """
-        owner_data = self.initial_data.get("owner")
-        if owner_data and isinstance(owner_data, str):
-            self.initial_data["owner"] = {"username": owner_data}  # Normalize to dict
-        return self.assign_direct_relation(instance, "owner", User)
-
     def create(self, validated_data):
         """
         Create a new instance and assign the owner if necessary.
@@ -218,17 +208,15 @@ class BaseSerializer(WritableNestedModelSerializer):
         Returns:
             instance: The created instance with the owner assigned.
         """
-        owner = validated_data.pop("owner", None)
         user = self.get_context_user()
-        if owner and "owner" not in self.initial_data:
-            self.initial_data["owner"] = owner
+
+        # Assign created_by and default owner (if not provided explicitly)
         if user:
             validated_data["created_by"] = user.username
-            if not hasattr(self.initial_data, "owner"):
-                self.initial_data["owner"] = user
+            # Only set if owner is not provided
+            validated_data.setdefault("owner", user)
 
-        instance = super().create(validated_data)
-        return self.assign_owner(instance)
+        return super().create(validated_data)
 
     def update(self, instance, validated_data):
         """
@@ -244,10 +232,16 @@ class BaseSerializer(WritableNestedModelSerializer):
         user = self.get_context_user()
         if user:
             validated_data["updated_by"] = user.username
-            if not hasattr(self.initial_data, "owner"):
-                self.initial_data["owner"] = user
+
+        # Call the parent `update` method to apply updates
         instance = super().update(instance, validated_data)
-        return self.assign_owner(instance)
+
+        # Assign owner if it's not set already
+        if user and not instance.owner:
+            instance.owner = user
+            instance.save(update_fields=["owner"])
+
+        return instance
 
 
 class FieldSerializer(BaseSerializer):

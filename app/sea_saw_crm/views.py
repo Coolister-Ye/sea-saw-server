@@ -204,7 +204,10 @@ class OrderStats(BaseCompareStatsByMonth):
     @staticmethod
     def get_income(queryset):
         return queryset.aggregate(
-            total_income=Coalesce(Sum(F("deposit") + F("balance")), Decimal(0.0))
+            total_income=Coalesce(
+                Sum(Coalesce(F("deposit"), Decimal(0.0)) + Coalesce(F("balance"), Decimal(0.0))),
+                Decimal(0.0),
+            )
         )["total_income"]
 
     def get(self, request):
@@ -279,7 +282,6 @@ class OrderStatsByMonth(APIView):
         else:
             queryset = self.model.objects.none()
 
-        queryset = self.model.objects.all()
         orders_for_month = queryset.filter(etd__year=year, etd__month=month)
         grouped_orders = self.get_orders_grouped_by_etd(orders_for_month)
         return Response(grouped_orders)
