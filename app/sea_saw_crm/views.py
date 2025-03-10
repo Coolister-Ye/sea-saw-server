@@ -59,7 +59,7 @@ LOOKUP_TYPES = [
     "second",
     "time",
 ]
-LOOKUP_PATTERN = r'__(?:' + '|'.join(LOOKUP_TYPES) + r')$'
+LOOKUP_PATTERN = r"__(?:" + "|".join(LOOKUP_TYPES) + r")$"
 
 
 class BaseViewSet(viewsets.ModelViewSet):
@@ -84,7 +84,7 @@ class ContactViewSet(RoleFilterMixin, BaseViewSet):
     serializer_class = ContactSerializer
     filterset_class = ContactFilter
     filter_backends = (SearchFilter, filters.DjangoFilterBackend)
-    search_fields = ['^first_name', '^last_name']
+    search_fields = ["^first_name", "^last_name"]
 
 
 class CompanyViewSet(RoleFilterMixin, BaseViewSet):
@@ -92,7 +92,7 @@ class CompanyViewSet(RoleFilterMixin, BaseViewSet):
     serializer_class = CompanySerializer
     filterset_class = CompanyFilter
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
-    search_fields = ['^company_name']
+    search_fields = ["^company_name"]
 
 
 class ContractViewSet(RoleFilterMixin, BaseViewSet):
@@ -113,7 +113,7 @@ class OrderViewSet(BaseViewSet):
     filterset_class = OrderFilter
     filter_backends = (OrderingFilter, filters.DjangoFilterBackend)
     serializer_class = OrderSerializer4Prod
-    ordering_fields = ['pk', 'created_at', 'updated_at']
+    ordering_fields = ["pk", "created_at", "updated_at"]
 
 
 class BaseCompareStatsByMonth(APIView):
@@ -124,13 +124,21 @@ class BaseCompareStatsByMonth(APIView):
     def get_date_ranges():
         today = datetime.today()
         first_day_this_month = today.replace(day=1)
-        last_day_this_month = (first_day_this_month + relativedelta(months=1)) - relativedelta(days=1)
+        last_day_this_month = (
+            first_day_this_month + relativedelta(months=1)
+        ) - relativedelta(days=1)
         first_day_last_month = first_day_this_month - relativedelta(months=1)
         last_day_last_month = first_day_this_month - relativedelta(days=1)
 
         return {
-            "this_month": (make_aware(first_day_this_month), make_aware(last_day_this_month)),
-            "last_month": (make_aware(first_day_last_month), make_aware(last_day_last_month)),
+            "this_month": (
+                make_aware(first_day_this_month),
+                make_aware(last_day_this_month),
+            ),
+            "last_month": (
+                make_aware(first_day_last_month),
+                make_aware(last_day_last_month),
+            ),
         }
 
     def get_base_queryset(self):
@@ -139,8 +147,12 @@ class BaseCompareStatsByMonth(APIView):
     def get_queryset(self):
         base_queryset = self.get_base_queryset()
         date_range = self.get_date_ranges()
-        queryset_this_month = base_queryset.filter(created_at__range=date_range["this_month"])
-        queryset_last_month = base_queryset.filter(created_at__range=date_range["last_month"])
+        queryset_this_month = base_queryset.filter(
+            created_at__range=date_range["this_month"]
+        )
+        queryset_last_month = base_queryset.filter(
+            created_at__range=date_range["last_month"]
+        )
         return queryset_this_month, queryset_last_month
 
     def get(self, request):
@@ -152,16 +164,16 @@ class ContractStats(BaseCompareStatsByMonth):
 
     def get_base_queryset(self):
         user = self.request.user
-        user_groups = user.groups.values_list('name', flat=True)
+        user_groups = user.groups.values_list("name", flat=True)
         base_queryset = super().get_base_queryset()
         # Admin user can see all contract related stats
         if user.is_superuser or user.is_staff:
             return base_queryset
         # Sale user only see stats based on their permissin scope
-        if 'Sale' in user_groups:
+        if "Sale" in user_groups:
             return base_queryset.filter(owner__in=user.get_all_visible_users())
         # Production can also see all stats, this feature will be changed in the future
-        if 'Production' in user_groups:
+        if "Production" in user_groups:
             return base_queryset
         return base_queryset.none()
 
@@ -179,26 +191,28 @@ class OrderStats(BaseCompareStatsByMonth):
 
     def get_base_queryset(self):
         user = self.request.user
-        user_groups = user.groups.values_list('name', flat=True)
+        user_groups = user.groups.values_list("name", flat=True)
         base_queryset = super().get_base_queryset()
         if user.is_superuser or user.is_staff:
             return base_queryset
-        if 'Sale' in user_groups:
+        if "Sale" in user_groups:
             return base_queryset.filter(owner__in=user.get_all_visible_users())
-        if 'Production' in user_groups:
+        if "Production" in user_groups:
             return base_queryset
         return base_queryset.none()
 
     @staticmethod
     def get_income(queryset):
-        return queryset.aggregate(total_income=Coalesce(Sum(F('deposit') + F('balance')), Decimal(0.0)))['total_income']
+        return queryset.aggregate(
+            total_income=Coalesce(Sum(F("deposit") + F("balance")), Decimal(0.0))
+        )["total_income"]
 
     def get(self, request):
         orders_this_month, orders_last_month = self.get_queryset()
-        user_groups = self.request.user.groups.values_list('name', flat=True)
+        user_groups = self.request.user.groups.values_list("name", flat=True)
 
         # 如果用户是 "Production" 用户并且没有其他角色，直接返回不含 income 的数据
-        if 'Production' in user_groups and len(user_groups) == 1:
+        if "Production" in user_groups and len(user_groups) == 1:
             data = {
                 "orders_this_month_count": orders_this_month.count(),
                 "orders_last_month_count": orders_last_month.count(),
@@ -222,29 +236,48 @@ class OrderStatsByMonth(APIView):
     @staticmethod
     def get_orders_grouped_by_etd(queryset):
         grouped_orders = defaultdict(list)
-        orders = queryset.annotate(etd_date=TruncDate('etd')).values(
-            'etd_date', 'order_code', 'stage', 'owner__username'
+        orders = queryset.annotate(etd_date=TruncDate("etd")).values(
+            "etd_date", "order_code", "stage", "owner__username"
         )
 
         for order in orders:
-            etd_date = order['etd_date'].strftime('%Y-%m-%d') if order['etd_date'] else None
+            etd_date = (
+                order["etd_date"].strftime("%Y-%m-%d") if order["etd_date"] else None
+            )
             if etd_date:
                 grouped_orders[etd_date].append(
-                    {"order_code": order['order_code'], "stage": order['stage'], "owner": order['owner__username']}
+                    {
+                        "order_code": order["order_code"],
+                        "stage": order["stage"],
+                        "owner": order["owner__username"],
+                    }
                 )
 
         return dict(grouped_orders)
 
     def get(self, request):
-        year_month = request.query_params.get('date', None)
+        year_month = request.query_params.get("date", None)
         if not year_month:
             today = datetime.today()
             year_month = f"{today.year}-{today.month:02d}"
 
         try:
-            year, month = map(int, year_month.split('-'))
+            year, month = map(int, year_month.split("-"))
         except ValueError:
-            return Response({"error": "Invalid 'date' format. Expected 'YYYY-MM'."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid 'date' format. Expected 'YYYY-MM'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = self.request.user
+        user_groups = user.groups.values_list("name", flat=True)
+
+        if user.is_superuser or user.is_staff or "Production" in user_groups:
+            queryset = self.model.objects.all()
+        elif "Sale" in user_groups:
+            queryset = self.model.objects.filter(owner__in=user.get_all_visible_users())
+        else:
+            queryset = self.model.objects.none()
 
         queryset = self.model.objects.all()
         orders_for_month = queryset.filter(etd__year=year, etd__month=month)
@@ -260,8 +293,14 @@ class DownloadTaskView(DownloadView):
     # 映射不同对象类型到相应的模型和序列化器
     # Map different object types to corresponding models and serializers
     download_obj_mapping = {
-        "contracts": {"model": "sea_saw_crm.Contract", "serializer": "sea_saw_crm.ContractSerializer"},
-        "orders": {"model": "sea_saw_crm.Order", "serializer": "sea_saw_crm.OrderSerializer4Prod"},
+        "contracts": {
+            "model": "sea_saw_crm.Contract",
+            "serializer": "sea_saw_crm.ContractSerializer",
+        },
+        "orders": {
+            "model": "sea_saw_crm.Order",
+            "serializer": "sea_saw_crm.OrderSerializer4Prod",
+        },
     }
 
     def get_filters(self, request):
