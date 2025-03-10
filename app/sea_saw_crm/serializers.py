@@ -244,6 +244,8 @@ class BaseSerializer(WritableNestedModelSerializer):
         user = self.get_context_user()
         if user:
             validated_data["updated_by"] = user.username
+            if not hasattr(self.initial_data, "owner"):
+                self.initial_data["owner"] = user
         instance = super().update(instance, validated_data)
         return self.assign_owner(instance)
 
