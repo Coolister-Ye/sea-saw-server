@@ -396,6 +396,14 @@ class Order(BaseModel):
         verbose_name=_("Associated Contract"),
     )  # 关联合同 (Associated Contract)
 
+    total_amount = models.DecimalField(
+        max_digits=30,
+        decimal_places=5,
+        null=True,
+        blank=True,
+        verbose_name=_("Total Amount"),
+    )  # 总金额 (Total Amount)
+
     def __str__(self):
         return f"Order {self.order_code} - {self.stage}"  # 返回订单编号和状态 (Return Order Code and Stage)
 

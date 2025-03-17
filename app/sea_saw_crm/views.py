@@ -3,9 +3,17 @@ from datetime import datetime
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, F
-from django.db.models.functions import Coalesce, TruncDate
-from django.utils.timezone import make_aware
+from django.db.models import Sum, F, DecimalField, CharField, Func, Value
+from django.db.models.functions import (
+    Coalesce,
+    TruncDate,
+    ExtractYear,
+    ExtractMonth,
+    Cast,
+    Concat,
+    LPad,
+)
+from django.utils.timezone import make_aware, now
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, status
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -116,118 +124,117 @@ class OrderViewSet(BaseViewSet):
     ordering_fields = ["pk", "created_at", "updated_at"]
 
 
-class BaseCompareStatsByMonth(APIView):
-    permission_classes = [IsAuthenticated]
-    model = None  # Override this in subclasses
+class BaseStatsAPIView(APIView):
+    """抽取通用统计逻辑"""
 
-    @staticmethod
-    def get_date_ranges():
-        today = datetime.today()
-        first_day_this_month = today.replace(day=1)
-        last_day_this_month = (
-            first_day_this_month + relativedelta(months=1)
-        ) - relativedelta(days=1)
-        first_day_last_month = first_day_this_month - relativedelta(months=1)
-        last_day_last_month = first_day_this_month - relativedelta(days=1)
-
-        return {
-            "this_month": (
-                make_aware(first_day_this_month),
-                make_aware(last_day_this_month),
-            ),
-            "last_month": (
-                make_aware(first_day_last_month),
-                make_aware(last_day_last_month),
-            ),
-        }
-
-    def get_base_queryset(self):
-        return self.model.objects.all()
+    model = None
 
     def get_queryset(self):
-        base_queryset = self.get_base_queryset()
-        date_range = self.get_date_ranges()
-        queryset_this_month = base_queryset.filter(
-            created_at__range=date_range["this_month"]
-        )
-        queryset_last_month = base_queryset.filter(
-            created_at__range=date_range["last_month"]
-        )
-        return queryset_this_month, queryset_last_month
-
-    def get(self, request):
-        raise NotImplementedError("Subclasses must implement the `get` method.")
-
-
-class ContractStats(BaseCompareStatsByMonth):
-    model = Contract
-
-    def get_base_queryset(self):
+        """根据用户权限获取数据集"""
         user = self.request.user
-        user_groups = user.groups.values_list("name", flat=True)
-        base_queryset = super().get_base_queryset()
-        # Admin user can see all contract related stats
+        user_groups = set(user.groups.values_list("name", flat=True))
+        base_queryset = self.model.objects.all().only("created_at")
+
         if user.is_superuser or user.is_staff:
             return base_queryset
-        # Sale user only see stats based on their permissin scope
+
         if "Sale" in user_groups:
             return base_queryset.filter(owner__in=user.get_all_visible_users())
-        # Production can also see all stats, this feature will be changed in the future
+
         if "Production" in user_groups:
             return base_queryset
+
         return base_queryset.none()
 
+    def get_stats(self, value_field, period="month", lookback=3):
+        """
+        通用的统计方法
+        :param value_field: 需要统计的字段
+        :param period: "month" 或 "year"
+        :param lookback: 回溯时间，默认为 3（月/年）
+        """
+        filter_time = now() - relativedelta(**{f"{period}s": lookback})
+        queryset = self.get_queryset().filter(
+            created_at__gte=filter_time, deleted__isnull=True
+        )
+
+        if period == "month":
+            queryset = queryset.annotate(
+                year=ExtractYear("created_at"),
+                month=Cast(ExtractMonth("created_at"), output_field=CharField()),
+                formatted_month=LPad("month", 2, Value("0")),
+                date=Concat(
+                    "year", Value("-"), "formatted_month", output_field=CharField()
+                ),
+            )
+        else:
+            queryset = queryset.annotate(
+                date=Cast(ExtractYear("created_at"), output_field=CharField())
+            )
+
+        return queryset.values("date").annotate(
+            total=Coalesce(Sum(value_field, output_field=DecimalField()), Decimal(0.0))
+        )
+
+
+class ContractStats(BaseStatsAPIView):
+    model = Contract
+
     def get(self, request):
-        contracts_this_month, contracts_last_month = self.get_queryset()
         data = {
-            "contracts_this_month_count": contracts_this_month.count(),
-            "contracts_last_month_count": contracts_last_month.count(),
+            "contracts_count_by_month": self.get_stats(
+                Value(1), period="month", lookback=3
+            ),
+            "contracts_count_by_year": self.get_stats(
+                Value(1), period="year", lookback=3
+            ),
         }
         return Response(data)
 
 
-class OrderStats(BaseCompareStatsByMonth):
+class OrderStats(BaseStatsAPIView):
     model = Order
 
-    def get_base_queryset(self):
-        user = self.request.user
-        user_groups = user.groups.values_list("name", flat=True)
-        base_queryset = super().get_base_queryset()
-        if user.is_superuser or user.is_staff:
-            return base_queryset
-        if "Sale" in user_groups:
-            return base_queryset.filter(owner__in=user.get_all_visible_users())
-        if "Production" in user_groups:
-            return base_queryset
-        return base_queryset.none()
-
-    @staticmethod
-    def get_income(queryset):
-        return queryset.aggregate(
-            total_income=Coalesce(
-                Sum(Coalesce(F("deposit"), Decimal(0.0)) + Coalesce(F("balance"), Decimal(0.0))),
-                Decimal(0.0),
-            )
-        )["total_income"]
-
     def get(self, request):
-        orders_this_month, orders_last_month = self.get_queryset()
-        user_groups = self.request.user.groups.values_list("name", flat=True)
+        user_groups = set(request.user.groups.values_list("name", flat=True))
 
-        # 如果用户是 "Production" 用户并且没有其他角色，直接返回不含 income 的数据
-        if "Production" in user_groups and len(user_groups) == 1:
-            data = {
-                "orders_this_month_count": orders_this_month.count(),
-                "orders_last_month_count": orders_last_month.count(),
-            }
-        else:
-            # 对于非 Production 用户，计算 income
-            data = {
-                "orders_this_month_count": orders_this_month.count(),
-                "orders_last_month_count": orders_last_month.count(),
-                "orders_this_month_income": self.get_income(orders_this_month),
-                "orders_last_month_income": self.get_income(orders_last_month),
-            }
+        data = {
+            "orders_count_by_month": self.get_stats(
+                Value(1), period="month", lookback=3
+            ),
+            "orders_count_by_year": self.get_stats(Value(1), period="year", lookback=3),
+        }
+
+        if "Production" not in user_groups or len(user_groups) > 1:
+            data.update(
+                {
+                    "orders_received_by_month": self.get_stats(
+                        Coalesce(F("balance"), Decimal(0.0))
+                        + Coalesce(F("deposit"), Decimal(0.0)),
+                        period="month",
+                        lookback=3,
+                    ),
+                    "orders_receivable_by_year": self.get_stats(
+                        Coalesce(F("total_amount"), Decimal(0.0))
+                        - Coalesce(F("balance"), Decimal(0.0))
+                        - Coalesce(F("deposit"), Decimal(0.0)),
+                        period="year",
+                        lookback=3,
+                    ),
+                    "orders_total_amount_by_year": self.get_stats(
+                        F("total_amount"), period="year", lookback=3
+                    ),
+                    "orders_total_amount_by_month": self.get_stats(
+                        F("total_amount"), period="month", lookback=3
+                    ),
+                    "orders_received_by_year": self.get_stats(
+                        Coalesce(F("balance"), Decimal(0.0))
+                        + Coalesce(F("deposit"), Decimal(0.0)),
+                        period="year",
+                        lookback=3,
+                    ),
+                }
+            )
 
         return Response(data)
 

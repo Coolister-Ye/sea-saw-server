@@ -587,6 +587,7 @@ class OrderSerializer(BaseSerializer):
             "shippment_term",
             "etd",
             "deliver_date",
+            "total_amount",
             "deposit",
             "deposit_date",
             "balance",
@@ -594,6 +595,31 @@ class OrderSerializer(BaseSerializer):
             "stage",
             "products",
         ]
+
+    def calculate_total_amount(self, products):
+        """计算订单总金额"""
+        if len(products) == 0:
+            return None
+        return sum([product.get("total_price", 0) or 0 for product in products])
+
+    def create(self, validated_data):
+        """创建订单时计算总金额"""
+        products_data = validated_data.get("products", [])
+        validated_data["total_amount"] = self.calculate_total_amount(products_data)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        """更新订单时确保总金额正确"""
+        instance = super().update(instance, validated_data)
+
+        # 计算最新的总金额
+        updated_products = instance.products.all().values("total_price")
+        print("updated_products", updated_products)
+        if updated_products:
+            instance.total_amount = self.calculate_total_amount(updated_products)
+            instance.save()
+
+        return instance
 
 
 class OrderSerializer4Prod(BaseSerializer):
