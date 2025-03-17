@@ -82,7 +82,10 @@ class DownloadView(APIView):
         """
         model_name = request.data.get("model")
         if not model_name:
-            return Response({"detail": "Model name is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Model name is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Dynamically load model and serializer classes
         model_path = self.get_model_path(model_name)
@@ -96,24 +99,30 @@ class DownloadView(APIView):
         # Generate a unique file name to avoid duplication
         task_id = uuid.uuid4().hex
         file_name = f"{username}/{model_name}_{timezone.now().strftime('%Y%m%d%H%M%S')}_{task_id}.csv"
-        file_path = os.path.join(settings.MEDIA_ROOT, 'downloads', file_name)
+        file_path = os.path.join(settings.MEDIA_ROOT, "downloads", file_name)
 
         # Create a new download task record in the database
         task = DownloadTask.objects.create(
-            user=request.user, task_id=task_id, file_name=file_name, file_path=file_path, status="processing"
+            user=request.user,
+            task_id=task_id,
+            file_name=file_name,
+            file_path=file_path,
+            status="processing",
         )
 
         # Serialize task data for passing to async task
         task_json = DownloadTaskSerializer(task).data
 
         # Start the async task to generate the CSV file
-        generate_csv_task.delay_on_commit(model_path, serializer_path, filters, ordering, task_json)
+        generate_csv_task.delay_on_commit(
+            model_path, serializer_path, filters, ordering, task_json
+        )
 
         # Return task ID to inform the user the task has been created
         return Response(
             {
-                'task_id': task.id,  # Return the generated task ID
-                'message': 'The download task has been initiated.',  # Inform the user the task has been started
+                "task_id": task.id,  # Return the generated task ID
+                "message": "The download task has been initiated.",  # Inform the user the task has been started
             },
             status=status.HTTP_202_ACCEPTED,
         )

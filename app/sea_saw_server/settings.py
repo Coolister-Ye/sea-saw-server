@@ -179,6 +179,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
     "http://localhost:8081",
+    "http://localhost:8000",
 ] + FRONTEDN_HOST
 
 CSRF_TRUSTED_ORIGINS = [

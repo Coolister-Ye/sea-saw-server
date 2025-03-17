@@ -2,6 +2,7 @@ import importlib
 import itertools
 
 from rest_framework.serializers import ListSerializer, ModelSerializer
+from django.utils.translation import gettext as _
 
 
 def combine_lists(lst_a, lst_b):
@@ -45,7 +46,7 @@ def traverse(data, serializer, prefix=""):
     # 遍历数据中的每个字段，将字段的值通过序列化器进行处理
     for k, v in data.items():
         # 递归生成字段的前缀（如 'field1.subfield'）
-        _prefix = f'{prefix}.{k}' if prefix else k
+        _prefix = f"{prefix}.{k}" if prefix else k
         _serializer = serializer.fields[k]  # 获取字段对应的序列化器
         _result = traverse(v, _serializer, _prefix)  # 递归处理字段值
         if isinstance(_result, dict):
@@ -62,30 +63,36 @@ def traverse(data, serializer, prefix=""):
 
 def flatten_header(serializer, prefix=""):
     """
-    获取序列化器的所有字段名（包含嵌套字段），并生成一个包含所有字段路径的列表。
-    用于获取所有字段的头部信息（如字段的名称路径）。
+    获取序列化器的所有字段标签（包含嵌套字段），并返回 {字段路径: 字段标签} 的字典。
     """
-    # 如果序列化器是一个 ListSerializer，递归处理其子序列化器
+    # 如果序列化器是 ListSerializer，递归处理其子序列化器
     if isinstance(serializer, ListSerializer):
         return flatten_header(serializer.child, prefix)
 
-    # 如果序列化器不是 ModelSerializer，返回当前 prefix
+    # 如果不是 ModelSerializer，返回 {字段路径: label}，适用于基本字段
     if not isinstance(serializer, ModelSerializer):
-        return [prefix]
+        print(_(serializer.label))
+        return {prefix: _(serializer.label) if serializer.label else prefix}
 
-    result = []
-    # 遍历序列化器的字段，并递归处理每个字段
+    result = {}
+    # 遍历序列化器的字段
     for k, v in serializer.fields.items():
-        _prefix = f'{prefix}.{k}' if prefix else k  # 拼接当前字段的前缀
-        _headers = flatten_header(v, _prefix)  # 递归获取字段头部信息
-        result.extend(_headers)  # 将所有头部信息扩展到结果列表中
+
+        # 拼接字段路径，保证嵌套字段名称完整
+        _prefix = f"{prefix}.{k}" if prefix else k
+
+        # 递归获取字段的头部信息
+        _headers = flatten_header(v, _prefix)
+
+        # 更新字典（而不是 extend）
+        result.update(_headers)
 
     return result
 
 
 def flatten(queryset, serializer):
     """
-    序列化给定的 queryset，并将结果进行扁平化处理。
+    序列化给定的 queryset, 并将结果进行扁平化处理。
     同时生成字段头部信息（字段名的路径）。
     """
     # 使用序列化器序列化 queryset 数据
@@ -93,6 +100,8 @@ def flatten(queryset, serializer):
 
     # 获取字段的头部信息
     headers = flatten_header(serialized)
+
+    print("@@@headers", headers)
 
     # 对序列化后的数据进行扁平化处理
     data = traverse(serialized.data, serialized)
@@ -135,6 +144,8 @@ def dynamic_import_serializer(app_name, serializer_name):
         serializer_class = getattr(serializers_module, serializer_name)
         return serializer_class
     except ImportError as e:
-        raise Exception(f"Failed to import serializer {serializer_name} from app {app_name}: {e}")
+        raise Exception(
+            f"Failed to import serializer {serializer_name} from app {app_name}: {e}"
+        )
     except AttributeError:
         raise Exception(f"Serializer {serializer_name} not found in app {app_name}")

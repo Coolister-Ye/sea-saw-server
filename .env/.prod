@@ -8,7 +8,7 @@ SQL_PASSWORD=sea_saw_passwd
 SQL_HOST=db
 SQL_PORT=5432
 DATABASE=postgres
-FRONTEND_HOST=http://192.168.0.183
+FRONTEND_HOST=http://localhost
 
 CELERY_BROKER=redis://redis:6379/0
 CELERY_BACKEND=redis://redis:6379/0

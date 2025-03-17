@@ -320,6 +320,7 @@ class DownloadTaskView(DownloadView):
         filters_dict = super().get_filters(request)  # 获取父类的 filters 字典
         # Get the filters dictionary from the parent class
         user = request.user
+        user_groups = set(user.groups.values_list("name", flat=True))
 
         # 如果是匿名用户，返回空查询条件
         # If the user is anonymous, return empty filter conditions
@@ -332,10 +333,16 @@ class DownloadTaskView(DownloadView):
         if user.is_superuser or user.is_staff:
             return filters_dict
 
+        if "Production" in user_groups:
+            return filters_dict
+
         # 非管理员用户，基于用户的可见性权限来过滤
         # For non-admin users, filter based on their visibility permissions
         visible_users = user.get_all_visible_users()
-        filters_dict["owner__in"] = visible_users  # 增加过滤条件，限制查询可见的用户
+        visible_users = [user.pk for user in visible_users]
+        filters_dict["owner__pk__in"] = (
+            visible_users  # 增加过滤条件，限制查询可见的用户
+        )
         # Add filter condition to restrict query to visible users
 
         return filters_dict
