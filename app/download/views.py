@@ -8,6 +8,7 @@ from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.filters import OrderingFilter
 
 from sea_saw_server import settings
 from .metadata import CustomMetadata
@@ -138,6 +139,8 @@ class UserDownloadTasksView(ListAPIView):
     serializer_class = DownloadTaskSerializer
     metadata_class = CustomMetadata
     pagination_class = CustomPageNumberPagination
+    filter_backends = (OrderingFilter,)
+    ordering_fields = ["created_at"]
 
     def get_queryset(self):
         """
