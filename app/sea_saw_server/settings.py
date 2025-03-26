@@ -71,6 +71,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
+# Debug toolbar
 # debug_toolbar.middleware.DebugToolbarMiddleware相关配置
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS = ["127.0.0.1"] + [ip[: ip.rfind(".")] + ".1" for ip in ips]
@@ -178,16 +179,11 @@ FRONTEDN_HOST = [i for i in os.environ.get("FRONTEND_HOST", "").split(" ") if i 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
-    "http://localhost:8081",
-    "http://localhost:8000",
 ] + FRONTEDN_HOST
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://192.168.0.183:8000",
 ] + FRONTEDN_HOST
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"

@@ -1,6 +1,7 @@
 DEBUG=1
 SECRET_KEY=sea-saw-server
-DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 192.168.0.88 192.168.3.204 [::1]
+DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+FRONTEND_HOST=http://localhost:8081
 
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=sea_saw_dev
@@ -9,7 +10,6 @@ SQL_PASSWORD=sea_saw_passwd
 SQL_HOST=db
 SQL_PORT=5432
 DATABASE=postgres
-FRONTEND_HOST=http://192.168.3.204:8001 http://localhost:8001
 
 CELERY_BROKER=redis://redis:6379/0
 CELERY_BACKEND=redis://redis:6379/0
