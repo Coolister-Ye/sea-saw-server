@@ -17,7 +17,11 @@ If your project is behind a proxy (e.g., a corporate firewall), set up the proxy
 environment variables:
 
 ```shell
-export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897
+```
+
+```shell
+docker-compose down -v
 ```
 
 ### References

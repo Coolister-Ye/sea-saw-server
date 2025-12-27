@@ -7,19 +7,21 @@ from sea_saw_auth.models import User, Role
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['pk', 'name']
+        fields = "__all__"
 
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
-        fields = ['pk', 'name']
+        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """User Serializer"""
+
     role = RoleSerializer()
     groups = GroupSerializer(many=True)
 
     class Meta:
         model = User
-        fields = ['pk', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'role', 'groups']
+        fields = "__all__"

@@ -155,7 +155,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissions"],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "proxy_pagination.ProxyPagination",
+    # "DEFAULT_PAGINATION_CLASS": "sea_saw_crm.pagination.CustomPageNumberPagination",
     "PAGE_SIZE": 5,
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",  # Simple jwt backend
@@ -199,3 +200,11 @@ CELERY_TASK_SERIALIZER = "json"
 
 # 可选配置：超时、任务队列等
 CELERY_TASK_SOFT_TIME_LIMIT = 300  # 单个任务超时时间（秒）
+
+# Pagination settings
+PROXY_PAGINATION_PARAM = "pager"
+PROXY_PAGINATION_DEFAULT = "rest_framework.pagination.PageNumberPagination"
+PROXY_PAGINATION_MAPPING = {
+    "cursor": "rest_framework.pagination.CursorPagination",
+    "limit_offset": "rest_framework.pagination.LimitOffsetPagination",
+}
