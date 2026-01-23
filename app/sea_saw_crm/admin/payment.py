@@ -1,33 +1,43 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
-from ..models import PaymentRecord
-from .order import Order
+from ..models.payment import Payment
+from ..models import Attachment
 
 
-@admin.register(PaymentRecord)
-class PaymentRecordAdmin(SafeDeleteAdmin):
+class PaymentAttachmentInline(GenericTabularInline):
+    """Inline for payment attachments (using unified Attachment model)"""
+    model = Attachment
+    extra = 1
+    fields = ('file', 'file_name', 'description')
+    readonly_fields = ("file_name", "attachment_type")
+    ct_field = "content_type"
+    ct_fk_field = "object_id"
+
+
+@admin.register(Payment)
+class PaymentAdmin(SafeDeleteAdmin):
     """
-    Admin for PaymentRecord
-    - 支持搜索、过滤、排序
-    - 显示订单剩余未收金额
+    Admin for Payment model with GenericForeignKey
+    - Supports both Order and PurchaseOrder payments
+    - Search, filter, and sorting capabilities
     """
 
     list_display = (
         highlight_deleted,
         "payment_code",
-        "order",
+        "payment_type",
+        "related_object_display",
         "payment_date",
         "amount",
         "currency",
         "payment_method",
-        "order_unpaid_amount",
         "created_by",
     ) + SafeDeleteAdmin.list_display
 
     search_fields = (
         "payment_code",
-        "order__order_code",
         "bank_reference",
         "remark",
     )
@@ -36,6 +46,7 @@ class PaymentRecordAdmin(SafeDeleteAdmin):
         "payment_method",
         "currency",
         "payment_date",
+        "content_type",
         "created_at",
         "deleted",
     )
@@ -44,9 +55,9 @@ class PaymentRecordAdmin(SafeDeleteAdmin):
 
     readonly_fields = (
         "payment_code",
+        "payment_type",
         "created_at",
         "updated_at",
-        "order_unpaid_amount",
     )
 
     fieldsets = (
@@ -55,15 +66,15 @@ class PaymentRecordAdmin(SafeDeleteAdmin):
             {
                 "fields": (
                     "payment_code",
-                    "order",
+                    "payment_type",
+                    "content_type",
+                    "object_id",
                     "payment_date",
                     "amount",
                     "currency",
                     "payment_method",
                     "bank_reference",
-                    "attachment",
                     "remark",
-                    "order_unpaid_amount",
                 )
             },
         ),
@@ -77,9 +88,20 @@ class PaymentRecordAdmin(SafeDeleteAdmin):
     )
 
     field_to_highlight = "payment_code"
+    inlines = [PaymentAttachmentInline]
 
-    def order_unpaid_amount(self, obj):
-        """显示订单剩余未收金额"""
-        return obj.order_unpaid_amount
+    def related_object_display(self, obj):
+        """Display the related object (Order or PurchaseOrder)"""
+        if obj.related_object:
+            return str(obj.related_object)
+        return "-"
 
-    order_unpaid_amount.short_description = "Unpaid Amount"
+    related_object_display.short_description = "Related Object"
+
+
+# Legacy alias for backward compatibility
+PaymentRecordAdmin = PaymentAdmin
+
+
+# PaymentAttachment is now managed by unified AttachmentAdmin
+# See admin/attachment.py

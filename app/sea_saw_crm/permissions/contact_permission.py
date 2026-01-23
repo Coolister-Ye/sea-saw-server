@@ -1,52 +1,67 @@
-from rest_framework import permissions
+"""
+Contact 权限类
+
+专门针对 Contact 模型的权限控制。
+Contact 允许 Admin 和 Sale 角色访问，基于 owner 进行访问控制。
+"""
+
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
-class ContactPermission(permissions.BasePermission):
+class ContactAdminPermission(BasePermission):
     """
-    Permissions for Contact model:
-    - SALE can create/list only visible contacts, retrieve own visible contacts, update/delete own contacts
-    - ADMIN can do anything
+    Contact Admin 权限
+
+    Admin 角色对所有 Contact 有完全权限。
     """
 
     def has_permission(self, request, view):
-        user = request.user
-        role_type = getattr(user.role, "role_type", None)
+        return getattr(request.user.role, "role_type", None) == "ADMIN"
 
-        if not user.is_authenticated:
+    def has_object_permission(self, request, view, obj):
+        return True  # admin 对所有对象都有权限
+
+
+class ContactSalePermission(BasePermission):
+    """
+    Contact Sale 权限
+
+    Sale 角色基于 owner 的 Contact 权限：
+    - 读取权限：可以查看自己或可见用户创建的联系人
+    - 创建权限：可以创建新联系人
+    - 修改/删除权限：只能修改/删除自己创建的联系人
+    """
+
+    def has_permission(self, request, view):
+        role_type = getattr(request.user.role, "role_type", None)
+        if role_type != "SALE":
             return False
 
-        # CREATE / LIST / OPTIONS / HEAD
-        if view.action in ["create", "list", "options", "head"]:
-            return role_type in ["SALE", "ADMIN"]
-
-        # RETRIEVE / UPDATE / PARTIAL_UPDATE / DESTROY
-        if view.action in ["retrieve", "update", "partial_update", "destroy"]:
-            return role_type in ["SALE", "ADMIN"]
-
-        return False
+        # Sale 允许所有声明的操作（具体限制在对象级权限）
+        return view.action in {
+            "list",
+            "retrieve",
+            "create",
+            "update",
+            "partial_update",
+            "destroy",
+        }
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        role_type = getattr(user.role, "role_type", None)
-
-        # ADMIN 可以操作所有对象
-        if role_type == "ADMIN":
-            return True
-
-        # SALE 权限逻辑
-        if role_type == "SALE":
-            if view.action == "retrieve":
-                return self._is_visible(user, obj)
-            elif view.action in ["update", "partial_update", "destroy"]:
-                return getattr(obj, "owner", None) == user
-
-        return False
-
-    def _is_visible(self, user, obj):
         owner = getattr(obj, "owner", None)
-        if not owner:
+
+        if request.method in SAFE_METHODS:
+            # 读取权限：自己或可见用户创建的联系人
+            if owner == user:
+                return True
+
+            # 检查是否在可见用户列表中
+            get_visible_users = getattr(owner, "get_all_visible_users", None)
+            if callable(get_visible_users):
+                return user in get_visible_users()
+
             return False
-        get_users = getattr(owner, "get_all_visible_users", None)
-        if not callable(get_users):
-            return False
-        return user in get_users()
+        else:
+            # 修改/删除权限：仅 owner
+            return owner == user

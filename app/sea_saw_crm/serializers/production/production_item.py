@@ -4,6 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from ..base import BaseSerializer
 from ...models.production import ProductionItem
 
+# =====================================================
+# Field factory
+# =====================================================
+
 
 def order_item_readonly_field(field_name, label):
     return serializers.CharField(
@@ -13,33 +17,27 @@ def order_item_readonly_field(field_name, label):
     )
 
 
-class ProductionItemSerializer(BaseSerializer):
-    """ProductionItem base serializer."""
+# =====================================================
+# Base Serializer
+# =====================================================
 
-    # -------- order_item display fields --------
-    product_name = order_item_readonly_field("product_name", _("Product Name"))
-    specification = order_item_readonly_field("specification", _("Specification"))
-    outter_packaging = order_item_readonly_field(
-        "outter_packaging", _("Outter Packaging")
-    )
-    inner_packaging = order_item_readonly_field("inner_packaging", _("Inner Packaging"))
-    size = order_item_readonly_field("size", _("Size"))
-    unit = order_item_readonly_field("unit", _("Unit"))
-    glazing = order_item_readonly_field("glazing", _("Glazing"))
-    gross_weight = order_item_readonly_field("gross_weight", _("Gross Weight"))
-    net_weight = order_item_readonly_field("net_weight", _("Net Weight"))
+
+class ProductionItemSerializer(BaseSerializer):
+    """
+    Base serializer for production items.
+
+    Fields from AbstarctItemBase are marked as read-only by default.
+    Subclasses can override read_only_fields for different access patterns.
+    """
+
+    # -------- order_item field --------
     order_qty = order_item_readonly_field("order_qty", _("Order Quantity"))
-    total_gross_weight = order_item_readonly_field(
-        "total_gross_weight", _("Total Gross Weight")
-    )
-    total_net_weight = order_item_readonly_field(
-        "total_net_weight", _("Total Net Weight")
-    )
 
     class Meta:
         model = ProductionItem
         fields = [
             "id",
+            # AbstarctItemBase fields (from ProductionItem model)
             "product_name",
             "specification",
             "outter_packaging",
@@ -49,38 +47,63 @@ class ProductionItemSerializer(BaseSerializer):
             "glazing",
             "gross_weight",
             "net_weight",
+            # order_item field
             "order_qty",
-            "total_gross_weight",
-            "total_net_weight",
+            # ProductionItem specific fields
             "planned_qty",
             "produced_qty",
+            "produced_gross_weight",
+            "produced_net_weight",
+        ]
+        read_only_fields = [
+            "product_name",
+            "specification",
+            "outter_packaging",
+            "inner_packaging",
+            "size",
+            "unit",
+            "glazing",
+            "gross_weight",
+            "net_weight",
         ]
 
 
+# =====================================================
+# Role-based serializers
+# =====================================================
+
+
 class ProductionItemSerializerForAdmin(ProductionItemSerializer):
-    """Admin 完全读写"""
+    """
+    Admin: full access to production fields.
+    - AbstarctItemBase fields → read-only
+    - order_qty → read-only
+    - planned_qty, produced_qty, produced_gross_weight, produced_net_weight → editable
+    """
 
     pass
 
 
-# ===============================
-# FIXED VERSION
-# ===============================
 class ProductionItemSerializerForSales(ProductionItemSerializer):
-    """Sales: read-only"""
+    """Sales: all fields read-only"""
 
     class Meta(ProductionItemSerializer.Meta):
         read_only_fields = ProductionItemSerializer.Meta.fields
 
 
 class ProductionItemSerializerForProduction(ProductionItemSerializer):
-    """Production: editable quantities"""
+    """
+    Production: can edit production fields.
+    - AbstarctItemBase fields → read-only
+    - order_qty → read-only
+    - planned_qty, produced_qty, produced_gross_weight, produced_net_weight → editable
+    """
 
     pass
 
 
 class ProductionItemSerializerForWarehouse(ProductionItemSerializer):
-    """Warehouse: read-only"""
+    """Warehouse: all fields read-only"""
 
     class Meta(ProductionItemSerializer.Meta):
         read_only_fields = ProductionItemSerializer.Meta.fields

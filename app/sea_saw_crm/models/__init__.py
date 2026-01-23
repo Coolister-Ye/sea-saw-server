@@ -2,10 +2,14 @@ from .base import BaseModel, Field
 from .company import Company
 from .contact import Contact
 from .contract import Contract
+from .supplier import Supplier
+from .attachment import Attachment, AttachmentType
 from .order import Order, OrderItem, OrderStatusType
 from .production import ProductionOrder, ProductionItem
+from .purchase import PurchaseOrder, PurchaseItem
 from .outbound import OutboundOrder, OutboundItem
-from .payment import PaymentRecord
+from .payment import Payment
+from .pipeline import Pipeline, PipelineStatusType, PipelineType
 
 __all__ = [
     "BaseModel",
@@ -13,12 +17,27 @@ __all__ = [
     "Company",
     "Contact",
     "Contract",
+    "Supplier",
+    # Unified Attachment
+    "Attachment",
+    "AttachmentType",
+    # Order
     "Order",
     "OrderItem",
+    "OrderStatusType",
+    # Production
     "ProductionOrder",
     "ProductionItem",
+    # Purchase
+    "PurchaseOrder",
+    "PurchaseItem",
+    # Outbound
     "OutboundOrder",
     "OutboundItem",
-    "PaymentRecord",
-    "OrderStatusType",
+    # Payment
+    "Payment",
+    # Pipeline
+    "Pipeline",
+    "PipelineStatusType",
+    "PipelineType",
 ]

@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Order, OrderItem
+from ..models import Order, OrderItem, Attachment
 
 
 class OrderItemInline(admin.TabularInline):
@@ -31,6 +32,17 @@ class OrderItemInline(admin.TabularInline):
         "total_net_weight",
     )
     show_change_link = True
+
+
+class OrderAttachmentInline(GenericTabularInline):
+    """Inline for Order Attachments (using unified Attachment model)"""
+
+    model = Attachment
+    extra = 0
+    fields = ["file", "file_name", "description"]
+    readonly_fields = ["file_name", "attachment_type"]
+    ct_field = "content_type"
+    ct_fk_field = "object_id"
 
 
 @admin.register(Order)
@@ -79,7 +91,7 @@ class OrderAdmin(SafeDeleteAdmin):
         "updated_at",
     )
 
-    inlines = [OrderItemInline]
+    inlines = [OrderItemInline, OrderAttachmentInline]
 
     fieldsets = (
         (

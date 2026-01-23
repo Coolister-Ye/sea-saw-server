@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from ..models.contact import Contact
 from ..models.company import Company
@@ -9,46 +10,33 @@ from .company import CompanySerializer
 
 class ContactSerializer(BaseSerializer):
     """
-    Serializer for the Contact model.
-    - 复用 BaseSerializer 的 owner/created_by/updated_by
-    - 复用 BaseSerializer 的 assign_direct_relation
-    - company 为只读展示，写入时从 initial_data 中解析
+    Serializer for the Contact model with optimized field order.
+    - Excludes created_by and updated_by fields
+    - company is displayed as nested object but accepts company_id on write
     """
 
-    company = CompanySerializer(
-        fields={"pk", "company_name", "address"},
+    company = CompanySerializer(read_only=True, label=_("Company"))
+    company_id = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(),
+        source="company",
         required=False,
         allow_null=True,
-        read_only=True,
-        label=_("Company"),
+        write_only=True,
+        label=_("Company ID"),
     )
 
     class Meta(BaseSerializer.Meta):
         model = Contact
-        fields = ["id", "name", "title", "email", "mobile", "phone", "company"]
-
-    # -----------------------------------------------------
-    # CREATE
-    # -----------------------------------------------------
-    def create(self, validated_data):
-        # 先移除 company，因为 company 是只读字段，由 assign_direct_relation 处理
-        validated_data.pop("company", None)
-
-        instance = super().create(validated_data)
-
-        # 使用 BaseSerializer 提供的通用关系分配方法
-        self.assign_direct_relation(instance, "company", Company)
-
-        return instance
-
-    # -----------------------------------------------------
-    # UPDATE
-    # -----------------------------------------------------
-    def update(self, instance, validated_data):
-        validated_data.pop("company", None)
-
-        instance = super().update(instance, validated_data)
-
-        self.assign_direct_relation(instance, "company", Company)
-
-        return instance
+        fields = [
+            "id",
+            "name",
+            "title",
+            "company",
+            "company_id",
+            "email",
+            "mobile",
+            "phone",
+            "owner",
+            "created_at",
+            "updated_at",
+        ]

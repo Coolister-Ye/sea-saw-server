@@ -1,127 +1,191 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.parsers import FormParser, JSONParser
+from ..parsers import NestedMultiPartParser
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied, ValidationError
 
-from ..models import Order
-from ..metadata import OrderMetadata
-from ..constants import OrderStatus
-from ..serializers import (
+from ..models.order import Order
+from ..models.pipeline import Pipeline
+from ..serializers.order import (
+    OrderSerializerForOrderView,
     OrderSerializerForAdmin,
-    OrderSerializerForProduction,
     OrderSerializerForSales,
-    OrderSerializerForWarehouse,
 )
-from ..permissions import IsAdmin, IsProduction, IsSale, IsWarehouse, CanTransitionOrder
+from ..serializers.pipeline import (
+    PipelineSerializerForAdmin,
+    PipelineSerializerForSales,
+)
+from ..permissions import OrderAdminPermission, OrderSalePermission
+from ..metadata import OrderMetadata
+from ..mixins import ReturnRelatedMixin
 
 
-class ProxyOrderViewSet(ModelViewSet):
+class OrderViewSet(ModelViewSet):
+    """
+    ViewSet for Order (standalone access).
+
+    Note: Pipeline is now the main entry point for business workflows.
+    This ViewSet provides direct access to Order entities for:
+    - Legacy API compatibility
+    - Direct order management when not using pipeline workflow
+    - Read-only access for reporting and queries
+
+    For new workflows, use PipelineViewSet instead.
+    """
+
     queryset = Order.objects.all()
-    metadata_class = OrderMetadata
+    serializer_class = OrderSerializerForOrderView
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
     permission_classes = [
         IsAuthenticated,
-        IsAdmin | IsSale | IsProduction | IsWarehouse,
+        OrderAdminPermission | OrderSalePermission,
     ]
+    metadata_class = OrderMetadata
+    search_fields = ["order_code", "remark", "comment", "contact__name"]
+    ordering_fields = [
+        "order_code",
+        "order_date",
+        "delivery_date",
+        "total_amount",
+        "created_at",
+        "updated_at",
+    ]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        # Filter out soft-deleted records
+        return super().get_queryset().filter(deleted__isnull=True)
+
+    def perform_update(self, serializer):
+        """
+        Update order with automatic pipeline synchronization.
+
+        When order fields are updated, related pipeline fields are automatically synced:
+        - contact → pipeline.contact
+        - order_date → pipeline.order_date
+        - total_amount → pipeline.total_amount
+
+        The synchronization is handled by the serializer's update() method.
+        """
+        serializer.save()
+
+
+class NestedOrderViewSet(ReturnRelatedMixin, OrderViewSet):
+    """
+    ViewSet for Order operations nested under a specific Pipeline.
+
+    Handles CRUD operations for orders that belong to a specific pipeline.
+    Related pipeline can be provided via:
+      - Query parameter: ?related_pipeline=<pipeline_id>
+      - Request body: {"related_pipeline": <pipeline_id>}
+
+    URL: /api/sea-saw-crm/nested-orders/
+    """
+
+    parser_classes = (JSONParser, NestedMultiPartParser, FormParser)
 
     role_serializer_map = {
         "ADMIN": OrderSerializerForAdmin,
         "SALE": OrderSerializerForSales,
-        "PRODUCTION": OrderSerializerForProduction,
-        "WAREHOUSE": OrderSerializerForWarehouse,
     }
 
-    def get_serializer_class(self):
-        role = getattr(self.request.user.role, "role_type", None)
-        serializer = self.role_serializer_map.get(role)
-        if not serializer:
-            raise PermissionDenied("No serializer for this role")
-        return serializer
+    # ReturnRelatedMixin configuration
+    related_field_name = "pipeline"
+    role_related_serializer_map = {
+        "ADMIN": PipelineSerializerForAdmin,
+        "SALE": PipelineSerializerForSales,
+    }
 
     def get_queryset(self):
+        """
+        Filter orders by related_pipeline if provided in query params.
+        Soft-deleted records are already filtered by parent class.
+        """
         qs = super().get_queryset()
-        user = self.request.user
-        role = getattr(user.role, "role_type", None)
-
-        if role == "SALE":
-            get_visibles = getattr(user, "get_all_visible_users", None)
-            visible_users = get_visibles() if callable(get_visibles) else [user]
-            return qs.filter(owner__in=visible_users)
-
-        if role == "PRODUCTION":
-            return qs.filter(status__in=OrderStatus.PRODUCTION_VISIBLE)
-
-        if role == "WAREHOUSE":
-            return qs.filter(status__in=OrderStatus.WAREHOUSE_VISIBLE)
-
+        related_pipeline_id = self.request.query_params.get("related_pipeline")
+        if related_pipeline_id:
+            # Use 'pipeline' since it's a OneToOne reverse relation from Pipeline to Order
+            qs = qs.filter(pipeline=related_pipeline_id)
         return qs
 
-    # -----------------------------
-    # Custom actions
-    # -----------------------------
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[IsAuthenticated, IsProduction | IsAdmin],
-    )
-    def create_production(self, request, pk=None):
-        order = self.get_object()
-        try:
-            order.create_production(user=request.user)
-        except ValidationError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def get_serializer_class(self):
+        """
+        Select serializer based on user role.
+        """
+        role = getattr(getattr(self.request.user, "role", None), "role_type", None)
+        serializer_class = self.role_serializer_map.get(role)
+        if not serializer_class:
+            raise PermissionDenied(f"No serializer configured for role {role}")
+        return serializer_class
 
-        # 根据当前用户角色选择 Order serializer
-        serializer_class = self.get_serializer_class()
-        serializer = serializer_class(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_serializer(self, *args, **kwargs):
+        """
+        Get serializer instance.
 
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[IsAuthenticated, IsWarehouse | IsAdmin],
-    )
-    def create_outbound(self, request, pk=None):
-        order = self.get_object()
-        try:
-            order.create_outbound(user=request.user)
-        except ValidationError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        Note: related_pipeline is provided via query params for filtering and validation,
+        but is not injected into serializer data since it's a reverse OneToOne relation
+        that cannot be set directly on Order.
+        """
+        return super().get_serializer(*args, **kwargs)
 
-        # 根据当前用户角色选择 Order serializer
-        serializer_class = self.get_serializer_class()
-        serializer = serializer_class(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):  # noqa: ARG002
+        """
+        Nested order endpoint does not support CREATE operations.
+        Orders must be created through the Pipeline API.
+        This endpoint is only for UPDATE operations on existing orders.
 
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[
-            IsAuthenticated,
-            CanTransitionOrder,
-        ],
-    )
-    def transition(self, request, pk=None):
-        order = self.get_object()
-        action_name = request.data.get("action")
+        Raises:
+            ValidationError: Always raised to prevent creation through nested endpoint
+        """
+        raise ValidationError(
+            {
+                "detail": "Cannot create orders through nested endpoint. "
+                "Orders must be created through the Pipeline API (POST /api/sea-saw-crm/pipelines/). "
+                "Use this endpoint only for updating existing orders."
+            }
+        )
 
-        if not action_name:
-            return Response(
-                {"detail": "action is required"},
-                status=status.HTTP_400_BAD_REQUEST,
+    def perform_update(self, serializer):
+        """
+        Validate and update order with automatic pipeline synchronization:
+        1. Prevent changing related_pipeline of an existing order
+        2. Prevent creating new order_items (only allow updates to existing items)
+        3. Automatically sync updated fields to related pipeline
+        """
+        instance = self.get_object()
+
+        # Validate related_pipeline hasn't changed
+        # Get the pipeline ID from query params (since it's not in serializer data)
+        requested_pipeline_id = self.request.query_params.get("related_pipeline")
+        current_pipeline_id = (
+            getattr(instance.pipeline, "id", None)
+            if hasattr(instance, "pipeline")
+            else None
+        )
+
+        if requested_pipeline_id and current_pipeline_id != int(requested_pipeline_id):
+            raise ValidationError(
+                {
+                    "related_pipeline": f"Cannot change related_pipeline from {current_pipeline_id} "
+                    f"to {requested_pipeline_id}. Use standalone API to reassign."
+                }
             )
 
+        # Save through serializer, which handles pipeline synchronization
+        serializer.save()
+
+    def _validate_pipeline_access(self, pipeline_id):
+        """
+        Ensure user has access to the related pipeline.
+        Raises ValidationError if pipeline does not exist.
+        """
         try:
-            order.transition(action_name, user=request.user)
-        except ValidationError as e:
-            return Response(
-                {"detail": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
+            pipeline = Pipeline.objects.get(pk=pipeline_id)
+        except Pipeline.DoesNotExist:
+            raise ValidationError(
+                {"related_pipeline": f"Pipeline {pipeline_id} does not exist"}
             )
 
-        serializer = self.get_serializer(order)
-        return Response(serializer.data)
+        return pipeline

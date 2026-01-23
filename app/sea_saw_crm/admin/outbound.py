@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
-from ..models import OutboundOrder, OutboundItem
+from ..models import OutboundOrder, OutboundItem, Attachment
 
 
 class OutboundItemInline(admin.TabularInline):
@@ -18,6 +19,17 @@ class OutboundItemInline(admin.TabularInline):
     show_change_link = True
 
 
+class OutboundAttachmentInline(GenericTabularInline):
+    """Inline for Outbound Attachments (using unified Attachment model)"""
+
+    model = Attachment
+    extra = 0
+    fields = ["file", "file_name", "description"]
+    readonly_fields = ["file_name", "attachment_type"]
+    ct_field = "content_type"
+    ct_fk_field = "object_id"
+
+
 @admin.register(OutboundOrder)
 class OutboundOrderAdmin(SafeDeleteAdmin):
     """
@@ -30,7 +42,6 @@ class OutboundOrderAdmin(SafeDeleteAdmin):
     list_display = (
         highlight_deleted,
         "outbound_code",
-        "order",
         "outbound_date",
         "status",
         "container_no",
@@ -64,7 +75,7 @@ class OutboundOrderAdmin(SafeDeleteAdmin):
 
     readonly_fields = ("outbound_code", "created_at", "updated_at")
 
-    inlines = [OutboundItemInline]
+    inlines = [OutboundItemInline, OutboundAttachmentInline]
 
     fieldsets = (
         (

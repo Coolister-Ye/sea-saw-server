@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
-from ..models import ProductionOrder, ProductionItem
+from ..models import ProductionOrder, ProductionItem, Attachment
 from .order import OrderItem
 
 
@@ -20,6 +21,19 @@ class ProductionItemInline(admin.TabularInline):
     )
     readonly_fields = ("progress_rate",)
     show_change_link = True
+
+
+class ProductionAttachmentInline(GenericTabularInline):
+    """
+    内联显示 Production Attachments (using unified Attachment model)
+    """
+
+    model = Attachment
+    extra = 0
+    fields = ("file", "file_name", "description")
+    readonly_fields = ("file_name", "attachment_type")
+    ct_field = "content_type"
+    ct_fk_field = "object_id"
 
 
 @admin.register(ProductionOrder)
@@ -59,7 +73,7 @@ class ProductionOrderAdmin(SafeDeleteAdmin):
     )
 
     ordering = ("-created_at",)
-    inlines = [ProductionItemInline]
+    inlines = [ProductionItemInline, ProductionAttachmentInline]
 
     readonly_fields = ("production_code", "created_at", "updated_at")
     fieldsets = (
@@ -75,7 +89,6 @@ class ProductionOrderAdmin(SafeDeleteAdmin):
                     "status",
                     "remark",
                     "comment",
-                    "production_files",
                 )
             },
         ),
@@ -118,3 +131,7 @@ class ProductionItemAdmin(SafeDeleteAdmin):
 
     readonly_fields = ("progress_rate",)
     ordering = ("-created_at",)
+
+
+# ProductionAttachment is now managed by unified AttachmentAdmin
+# See admin/attachment.py

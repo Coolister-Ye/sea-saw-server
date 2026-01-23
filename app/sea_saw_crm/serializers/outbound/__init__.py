@@ -5,12 +5,17 @@ from .outbound_item import (
     OutboundItemSerializerForProduction,
     OutboundItemSerializerForWarehouse,
 )
-from .outbound_order import (
+# Nested serializers (for use within Pipeline)
+from .outbound_order_nested import (
     OutboundOrderSerializer,
     OutboundOrderSerializerForAdmin,
     OutboundOrderSerializerForSales,
     OutboundOrderSerializerForProduction,
     OutboundOrderSerializerForWarehouse,
+)
+# Standalone serializers (for direct OutboundOrder access)
+from .outbound_order_standalone import (
+    OutboundOrderSerializerForOutboundView,
 )
 
 
@@ -20,9 +25,12 @@ __all__ = [
     "OutboundItemSerializerForSales",
     "OutboundItemSerializerForProduction",
     "OutboundItemSerializerForWarehouse",
+    # Nested serializers
     "OutboundOrderSerializer",
     "OutboundOrderSerializerForAdmin",
     "OutboundOrderSerializerForSales",
     "OutboundOrderSerializerForProduction",
     "OutboundOrderSerializerForWarehouse",
+    # Standalone serializers
+    "OutboundOrderSerializerForOutboundView",
 ]

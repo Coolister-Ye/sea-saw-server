@@ -117,21 +117,6 @@ class BaseSerializer(WritableNestedModelSerializer):
             self._apply_field_filtering(fields_to_include)
 
     # --------------------------
-    # Custom safe nested delete/update
-    # --------------------------
-    def perform_nested_delete_or_update(
-        self, pks_to_delete, model_class, instance, related_field, field_source
-    ):
-        """
-        Only allow nested deletion when NOT partial update.
-        Prevents accidental deletion on PATCH.
-        """
-        if not self.partial:
-            return super().perform_nested_delete_or_update(
-                pks_to_delete, model_class, instance, related_field, field_source
-            )
-
-    # --------------------------
     # Assign direct relation utility
     # --------------------------
     def assign_direct_relation(

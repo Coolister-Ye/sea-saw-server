@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from ..models.contract import Contract
 from ..models.contact import Contact
@@ -10,23 +11,30 @@ from .contact import ContactSerializer
 class ContractSerializer(BaseSerializer):
     """
     Contract serializer for admin and sales users.
-    - 使用 BaseSerializer 的 assign_direct_relation 来处理 contact 关系
+    - contact 显示为嵌套对象，写入时使用 contact_id
     - orders 设置为只读（一般合同不允许直接编辑订单）
     """
 
     contact = ContactSerializer(
         fields={
             "pk",
-            "full_name",
+            "name",
             "title",
             "email",
             "mobile",
             "phone",
             "company",
         },
+        read_only=True,
+        label=_("Contact"),
+    )
+    contact_id = serializers.PrimaryKeyRelatedField(
+        queryset=Contact.objects.all(),
+        source="contact",
         required=True,
         allow_null=False,
-        label=_("Contact"),
+        write_only=True,
+        label=_("Contact ID"),
     )
 
     class Meta(BaseSerializer.Meta):
@@ -40,30 +48,6 @@ class ContractSerializer(BaseSerializer):
             "created_at",
             "updated_at",
             "contact",
+            "contact_id",
             "orders",
         ]
-
-    # -----------------------------------------------------
-    # CREATE
-    # -----------------------------------------------------
-    def create(self, validated_data):
-        validated_data.pop("contact", None)
-
-        instance = super().create(validated_data)
-
-        # 使用 BaseSerializer 的通用关系方法
-        self.assign_direct_relation(instance, "contact", Contact)
-
-        return instance
-
-    # -----------------------------------------------------
-    # UPDATE
-    # -----------------------------------------------------
-    def update(self, instance, validated_data):
-        validated_data.pop("contact", None)
-
-        instance = super().update(instance, validated_data)
-
-        self.assign_direct_relation(instance, "contact", Contact)
-
-        return instance
