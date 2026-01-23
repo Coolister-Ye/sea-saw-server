@@ -1,0 +1,279 @@
+name: Deploy to Tencent Cloud Production
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  workflow_dispatch:  # 允许手动触发
+
+env:
+  DOCKER_REGISTRY: ccr.ccs.tencentyun.com  # 腾讯云容器镜像服务
+  IMAGE_NAMESPACE: sea-saw  # 命名空间
+  IMAGE_NAME: backend
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd app
+          pip install -r requirements.txt
+
+      - name: Run linting
+        run: |
+          cd app
+          pip install flake8
+          flake8 --ignore=E501,F401,W503,F811,E402 .
+
+      - name: Run tests
+        run: |
+          cd app
+          python manage.py test
+
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+
+    strategy:
+      matrix:
+        service: [web, celery_worker, celery_beat, flower]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Tencent Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
+          file: ./app/compose/prod/django/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+  deploy:
+    name: Deploy to Tencent Cloud Server
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.TENCENT_SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.TENCENT_SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Copy deployment files
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+          SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          # 复制 docker-compose 和配置文件
+          scp -r docker-compose.prod.yml nginx ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
+          scp deploy.sh ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
+
+      - name: Deploy to production
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+          SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+        run: |
+          ssh ${SERVER_USER}@${SERVER_IP} << 'ENDSSH'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            echo "🚀 Starting deployment..."
+
+            # 登录腾讯云容器镜像服务
+            echo "🔐 Logging in to Tencent Container Registry..."
+            echo "${{ secrets.TCR_PASSWORD }}" | docker login ${{ env.DOCKER_REGISTRY }} -u "${{ secrets.TCR_USERNAME }}" --password-stdin
+
+            # 拉取最新镜像
+            echo "📥 Pulling latest Docker images..."
+            docker-compose -f docker-compose.prod.yml pull
+
+            # 备份数据库
+            echo "💾 Backing up database..."
+            ./deploy.sh backup || echo "⚠️ Backup failed, continuing..."
+
+            # 停止旧服务
+            echo "🛑 Stopping old services..."
+            docker-compose -f docker-compose.prod.yml down
+
+            # 启动新服务
+            echo "🚀 Starting new services..."
+            docker-compose -f docker-compose.prod.yml up -d
+
+            # 等待服务就绪
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 30
+
+            # 运行数据库迁移
+            echo "🗄️ Running database migrations..."
+            docker-compose -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
+
+            # 收集静态文件
+            echo "📦 Collecting static files..."
+            docker-compose -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
+
+            # 检查服务状态
+            echo "🏥 Checking service health..."
+            docker-compose -f docker-compose.prod.yml ps
+
+            # 清理旧镜像
+            echo "🧹 Cleaning up old images..."
+            docker image prune -af --filter "until=72h"
+
+            echo "✅ Deployment completed successfully!"
+          ENDSSH
+
+      - name: Health check
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+        run: |
+          echo "🏥 Performing health check..."
+          max_retries=5
+          retry_count=0
+
+          until curl -f http://${SERVER_IP}:8000/health/ || [ $retry_count -eq $max_retries ]; do
+            echo "⏳ Waiting for service to be ready... ($retry_count/$max_retries)"
+            retry_count=$((retry_count + 1))
+            sleep 10
+          done
+
+          if [ $retry_count -eq $max_retries ]; then
+            echo "❌ Health check failed!"
+            exit 1
+          fi
+
+          echo "✅ Service is healthy!"
+
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
+
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.TENCENT_SSH_PRIVATE_KEY }}
+
+      - name: Rollback deployment
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+          SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh ${SERVER_USER}@${SERVER_IP} << 'ENDSSH'
+            set -e
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            echo "⚠️ Deployment failed, rolling back..."
+
+            # 恢复最新备份
+            echo "🔄 Restoring latest backup..."
+            LATEST_BACKUP=$(ls -t backups/backup_*.sql.gz | head -1)
+            if [ -n "$LATEST_BACKUP" ]; then
+              gunzip -c "$LATEST_BACKUP" | docker-compose -f docker-compose.prod.yml exec -T db psql -U sea_saw_prod_user sea_saw_prod
+              echo "✅ Database restored from backup"
+            fi
+
+            # 重启服务
+            docker-compose -f docker-compose.prod.yml up -d
+
+            echo "✅ Rollback completed"
+          ENDSSH
+
+  notify:
+    name: Send Notification
+    runs-on: ubuntu-latest
+    needs: [test, build-and-push, deploy]
+    if: always()
+
+    steps:
+      - name: Determine status
+        id: status
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=✅ Sea-Saw 后端部署成功" >> $GITHUB_OUTPUT
+            echo "color=info" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=❌ Sea-Saw 后端部署失败" >> $GITHUB_OUTPUT
+            echo "color=warning" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send WeChat Work notification
+        if: ${{ secrets.WECHAT_WEBHOOK_URL != '' }}
+        run: |
+          curl -X POST "${{ secrets.WECHAT_WEBHOOK_URL }}" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"msgtype\": \"markdown\",
+              \"markdown\": {
+                \"content\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n**分支**: ${{ github.ref_name }}\n**提交**: \`${{ github.sha }}\`\n**提交者**: ${{ github.actor }}\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
+              }
+            }"
+
+      - name: Send DingTalk notification
+        if: ${{ secrets.DINGTALK_WEBHOOK_URL != '' }}
+        run: |
+          curl -X POST "${{ secrets.DINGTALK_WEBHOOK_URL }}" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"msgtype\": \"markdown\",
+              \"markdown\": {
+                \"title\": \"${{ steps.status.outputs.message }}\",
+                \"text\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.sha }}\n\n**提交者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
+              }
+            }"

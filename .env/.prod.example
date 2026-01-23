@@ -1,0 +1,44 @@
+# Django Settings
+DEBUG=0
+SECRET_KEY=your-secret-key-here-CHANGE-THIS-IN-PRODUCTION
+DJANGO_ALLOWED_HOSTS=yourdomain.com www.yourdomain.com
+
+# Frontend Configuration
+FRONTEND_HOST=https://yourdomain.com
+CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+
+# Database Configuration
+DATABASE=postgres
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=sea_saw_prod
+SQL_USER=sea_saw_prod_user
+SQL_PASSWORD=CHANGE-THIS-STRONG-PASSWORD
+SQL_HOST=db
+SQL_PORT=5432
+
+# Redis Configuration
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# Celery Configuration
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+# Email Configuration
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Security Settings
+SECURE_SSL_REDIRECT=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_PRELOAD=True
+
+# Logging
+LOG_LEVEL=INFO

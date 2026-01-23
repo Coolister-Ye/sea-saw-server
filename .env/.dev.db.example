@@ -1,0 +1,4 @@
+# PostgreSQL Database Configuration for Development
+POSTGRES_USER=sea_saw_dev_user
+POSTGRES_PASSWORD=sea_saw_dev_password
+POSTGRES_DB=sea_saw_dev

@@ -1,0 +1,4 @@
+# PostgreSQL Database Configuration for Production
+POSTGRES_USER=sea_saw_prod_user
+POSTGRES_PASSWORD=CHANGE-THIS-STRONG-PASSWORD
+POSTGRES_DB=sea_saw_prod
