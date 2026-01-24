@@ -62,8 +62,6 @@ class PaymentRecordSerializer(BaseSerializer):
         return value
 
     def validate(self, attrs):
-        request = self.context.get("request")
-
         # update 时禁止改 order
         if self.instance and "order" in attrs:
             # 只有当 order 真的变了才报错

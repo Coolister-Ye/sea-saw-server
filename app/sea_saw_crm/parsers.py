@@ -138,7 +138,7 @@ class NestedMultiPartParser(DRFMultiPartParser):
                     j += 1
 
                 # Extract the bracket content
-                bracket_content = key[i + 1 : j]
+                bracket_content = key[i + 1:j]
 
                 # Check if it's a number (array index)
                 if bracket_content.isdigit():
