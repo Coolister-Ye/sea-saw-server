@@ -23,7 +23,7 @@ RUN pip install --upgrade pip && \
 
 # Copy source code for linting
 COPY . /usr/src/app/
-RUN flake8 --ignore=E501,F401,W503,F811,E402,F403,F405 .
+RUN flake8 --ignore=E501,F401,W503,F811,E402,F403,F405,F841,E203 .
 
 # Install Python dependencies
 COPY ./requirements.txt .

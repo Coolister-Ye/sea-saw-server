@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 
 from .models import Contract, Contact, Company, Order
-from .filtersets import *
+from .filters import DateTimeAwareFilter
 
 
 class BaseFilter(filters.FilterSet):
