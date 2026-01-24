@@ -11,7 +11,9 @@ ENV SHELL_DIR=/usr/src/sh \
 
 # 安装系统依赖 (netcat-openbsd 是 Debian Bookworm 中 netcat 的现代替代品)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends netcat-openbsd && \
+    apt-get install -y --no-install-recommends \
+        netcat-openbsd \
+        curl && \
     rm -rf /var/lib/apt/lists/*
 
 # 安装 pip 依赖

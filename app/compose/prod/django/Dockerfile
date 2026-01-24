@@ -59,7 +59,9 @@ WORKDIR $APP_HOME
 
 # Install runtime dependencies (netcat-openbsd is the modern replacement for netcat in Debian Bookworm)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends netcat-openbsd && \
+    apt-get install -y --no-install-recommends \
+        netcat-openbsd \
+        curl && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy Python wheels and install dependencies

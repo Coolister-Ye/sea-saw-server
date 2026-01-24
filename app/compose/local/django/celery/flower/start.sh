@@ -13,6 +13,4 @@ until worker_ready; do
 done
 >&2 echo 'Celery workers is available'
 
-celery -A sea_saw_server  \
-    --broker="${CELERY_BROKER}" \
-    flower
+celery -A sea_saw_server flower
