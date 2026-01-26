@@ -276,11 +276,11 @@ jobs:
           fi
 
       - name: Send WeChat Work notification
-        if: ${{ secrets.WECHAT_WEBHOOK_URL != '' }}
         env:
           WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
         run: |
           if [ -n "$WEBHOOK_URL" ]; then
+            echo "Sending WeChat Work notification..."
             curl -X POST "$WEBHOOK_URL" \
               -H 'Content-Type: application/json' \
               -d "{
@@ -289,14 +289,16 @@ jobs:
                   \"content\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n**状态**: ${{ steps.status.outputs.details }}\n**分支**: ${{ github.ref_name }}\n**提交**: \`${{ github.sha }}\`\n**提交者**: ${{ github.actor }}\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
                 }
               }"
+          else
+            echo "WeChat webhook not configured, skipping notification"
           fi
 
       - name: Send DingTalk notification
-        if: ${{ secrets.DINGTALK_WEBHOOK_URL != '' }}
         env:
           WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK_URL }}
         run: |
           if [ -n "$WEBHOOK_URL" ]; then
+            echo "Sending DingTalk notification..."
             curl -X POST "$WEBHOOK_URL" \
               -H 'Content-Type: application/json' \
               -d "{
@@ -306,4 +308,6 @@ jobs:
                   \"text\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n\n**状态**: ${{ steps.status.outputs.details }}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.sha }}\n\n**提交者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
                 }
               }"
+          else
+            echo "DingTalk webhook not configured, skipping notification"
           fi
