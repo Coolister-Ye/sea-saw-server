@@ -167,9 +167,9 @@ jobs:
             echo "💾 Backing up database..."
             ./deploy.sh backup || echo "⚠️ Backup failed, continuing..."
 
-            # 停止旧服务
+            # 停止旧服务并清理
             echo "🛑 Stopping old services..."
-            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml down --remove-orphans
 
             # 启动新服务
             echo "🚀 Starting new services..."
@@ -267,18 +267,32 @@ jobs:
 
             echo "⚠️ Deployment failed, rolling back..."
 
+            # 停止所有容器并清理
+            echo "🛑 Stopping all containers..."
+            docker compose -f docker-compose.prod.yml down --remove-orphans || true
+
             # 恢复最新备份
             echo "🔄 Restoring latest backup..."
             LATEST_BACKUP=\$(ls -t backups/backup_*.sql.gz 2>/dev/null | head -1)
             if [ -n "\$LATEST_BACKUP" ]; then
+              # 启动数据库服务
+              docker compose -f docker-compose.prod.yml up -d db
+              sleep 10
+
+              # 恢复数据库
               gunzip -c "\$LATEST_BACKUP" | docker compose -f docker-compose.prod.yml exec -T db psql -U sea_saw_prod_user sea_saw_prod
               echo "✅ Database restored from backup"
+
+              # 启动所有服务
+              docker compose -f docker-compose.prod.yml up -d
             else
-              echo "⚠️ No backup found, skipping database restore"
+              echo "⚠️ No backup found, attempting to restart existing services..."
+              docker compose -f docker-compose.prod.yml up -d
             fi
 
-            # 重启服务
-            docker compose -f docker-compose.prod.yml up -d
+            # 检查服务状态
+            echo "🏥 Checking service status..."
+            docker compose -f docker-compose.prod.yml ps
 
             echo "✅ Rollback completed"
           ENDSSH
