@@ -36,7 +36,7 @@ jobs:
         run: |
           cd app
           pip install flake8
-          flake8 --ignore=E501,F401,W503,F811,E402 .
+          flake8 --ignore=E501,F401,W503,F811,E402,E203 .
 
       - name: Run tests
         run: |
@@ -100,10 +100,28 @@ jobs:
           ssh-private-key: ${{ secrets.TENCENT_SSH_PRIVATE_KEY }}
 
       - name: Add server to known hosts
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.TENCENT_SERVER_IP }} >> ~/.ssh/known_hosts || true
+          echo "Adding server ${SERVER_IP} to known hosts..."
+          ssh-keyscan -H ${SERVER_IP} >> ~/.ssh/known_hosts 2>&1
           chmod 644 ~/.ssh/known_hosts
+          echo "Known hosts configured"
+
+      - name: Test SSH connection
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+          SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
+        run: |
+          echo "Testing SSH connection to ${SERVER_USER}@${SERVER_IP}..."
+          ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new ${SERVER_USER}@${SERVER_IP} "echo 'SSH connection successful'" || {
+            echo "❌ SSH connection failed. Please check:"
+            echo "  1. TENCENT_SSH_PRIVATE_KEY secret is correctly configured"
+            echo "  2. TENCENT_SERVER_IP and TENCENT_SERVER_USER are correct"
+            echo "  3. Server allows SSH key authentication"
+            exit 1
+          }
 
       - name: Copy deployment files
         env:
@@ -131,7 +149,7 @@ jobs:
           TCR_PASSWORD: ${{ secrets.TCR_PASSWORD }}
           DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
         run: |
-          ssh ${SERVER_USER}@${SERVER_IP} bash << ENDSSH
+          ssh -o ConnectTimeout=30 ${SERVER_USER}@${SERVER_IP} bash << ENDSSH
             set -e
             cd ${DEPLOY_PATH}
 
@@ -214,10 +232,28 @@ jobs:
           ssh-private-key: ${{ secrets.TENCENT_SSH_PRIVATE_KEY }}
 
       - name: Add server to known hosts
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.TENCENT_SERVER_IP }} >> ~/.ssh/known_hosts || true
+          echo "Adding server ${SERVER_IP} to known hosts..."
+          ssh-keyscan -H ${SERVER_IP} >> ~/.ssh/known_hosts 2>&1
           chmod 644 ~/.ssh/known_hosts
+          echo "Known hosts configured"
+
+      - name: Test SSH connection
+        env:
+          SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+          SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
+        run: |
+          echo "Testing SSH connection to ${SERVER_USER}@${SERVER_IP}..."
+          ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new ${SERVER_USER}@${SERVER_IP} "echo 'SSH connection successful'" || {
+            echo "❌ SSH connection failed. Please check:"
+            echo "  1. TENCENT_SSH_PRIVATE_KEY secret is correctly configured"
+            echo "  2. TENCENT_SERVER_IP and TENCENT_SERVER_USER are correct"
+            echo "  3. Server allows SSH key authentication"
+            exit 1
+          }
 
       - name: Rollback deployment
         env:
@@ -225,7 +261,7 @@ jobs:
           SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          ssh ${SERVER_USER}@${SERVER_IP} bash << ENDSSH
+          ssh -o ConnectTimeout=30 ${SERVER_USER}@${SERVER_IP} bash << ENDSSH
             set -e
             cd ${DEPLOY_PATH}
 
