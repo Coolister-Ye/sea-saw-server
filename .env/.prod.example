@@ -1,44 +1,72 @@
-# Django Settings
+# Django Core Settings
+# Disable debug mode in production (never set to 1 in production)
 DEBUG=0
+# SECURITY WARNING: Generate a strong random secret key for production
 SECRET_KEY=your-secret-key-here-CHANGE-THIS-IN-PRODUCTION
+# Space-separated list of allowed hosts/domains (replace with your actual domain)
 DJANGO_ALLOWED_HOSTS=yourdomain.com www.yourdomain.com
 
 # Frontend Configuration
+# Frontend host URL for CORS and redirects (use HTTPS in production)
 FRONTEND_HOST=https://yourdomain.com
+# Comma-separated list of allowed origins for CORS requests
 CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 
-# Database Configuration
-DATABASE=postgres
+# PostgreSQL Database Configuration
+# Database engine backend
 SQL_ENGINE=django.db.backends.postgresql
+# Database name for production environment
 SQL_DATABASE=sea_saw_prod
+# Database user credentials (IMPORTANT: use strong password in production)
 SQL_USER=sea_saw_prod_user
 SQL_PASSWORD=CHANGE-THIS-STRONG-PASSWORD
+# Database host (use 'db' for Docker container, 'localhost' for local PostgreSQL)
 SQL_HOST=db
+# PostgreSQL default port
 SQL_PORT=5432
+# Database type identifier (used by docker-compose)
+DATABASE=postgres
 
 # Redis Configuration
+# Redis host (use 'redis' for Docker container, 'localhost' for local Redis)
 REDIS_HOST=redis
+# Redis default port
 REDIS_PORT=6379
 
-# Celery Configuration
-CELERY_BROKER_URL=redis://redis:6379/0
-CELERY_RESULT_BACKEND=redis://redis:6379/0
+# Celery Task Queue Configuration
+# Redis URL for Celery message broker (database 0)
+CELERY_BROKER=redis://redis:6379/0
+# Redis URL for storing task results (database 0)
+CELERY_BACKEND=redis://redis:6379/0
 
-# Email Configuration
+# Email Configuration (SMTP for production)
+# Use SMTP backend to send real emails in production
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# SMTP server host (example: Gmail, replace with your SMTP server)
 EMAIL_HOST=smtp.gmail.com
+# SMTP server port (587 for TLS, 465 for SSL)
 EMAIL_PORT=587
+# Enable TLS encryption for email
 EMAIL_USE_TLS=True
+# Email account username (replace with your email)
 EMAIL_HOST_USER=your-email@gmail.com
+# Email account password or app-specific password
 EMAIL_HOST_PASSWORD=your-app-password
 
 # Security Settings
+# Redirect all HTTP requests to HTTPS (only enable after SSL is configured)
 SECURE_SSL_REDIRECT=True
+# Only send session cookie over HTTPS
 SESSION_COOKIE_SECURE=True
+# Only send CSRF cookie over HTTPS
 CSRF_COOKIE_SECURE=True
+# HTTP Strict Transport Security max age (1 year in seconds)
 SECURE_HSTS_SECONDS=31536000
+# Apply HSTS to all subdomains
 SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+# Allow browser HSTS preloading (adds domain to browser's hardcoded HTTPS list)
 SECURE_HSTS_PRELOAD=True
 
-# Logging
+# Logging Configuration
+# Log level for production (INFO hides debug logs, use WARNING or ERROR for less verbosity)
 LOG_LEVEL=INFO

@@ -1,14 +1,68 @@
+# Django Core Settings
+# Disable debug mode in production (never set to 1 in production)
 DEBUG=0
+# SECURITY WARNING: Change this to a strong random secret key in production
 SECRET_KEY=sea-saw-server
+# Space-separated list of allowed hosts/domains/IPs that can serve this app
 DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 192.168.0.183 [::1]
+
+# Frontend Configuration
+# Frontend host URL for CORS and redirects
+FRONTEND_HOST=http://localhost
+# Comma-separated list of allowed origins for CORS requests
+CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1
+
+# PostgreSQL Database Configuration
+# Database engine backend
 SQL_ENGINE=django.db.backends.postgresql
+# Database name for production environment
 SQL_DATABASE=sea_saw_prod
+# Database user credentials (IMPORTANT: use strong password in production)
 SQL_USER=sea_saw
 SQL_PASSWORD=sea_saw_passwd
+# Database host (use 'db' for Docker container, 'localhost' for local PostgreSQL)
 SQL_HOST=db
+# PostgreSQL default port
 SQL_PORT=5432
+# Database type identifier (used by docker-compose)
 DATABASE=postgres
-FRONTEND_HOST=http://localhost
 
+# Redis Configuration
+# Redis host (use 'redis' for Docker container, 'localhost' for local Redis)
+REDIS_HOST=redis
+# Redis default port
+REDIS_PORT=6379
+
+# Celery Task Queue Configuration
+# Redis URL for Celery message broker (database 0)
 CELERY_BROKER=redis://redis:6379/0
+# Redis URL for storing task results (database 0)
 CELERY_BACKEND=redis://redis:6379/0
+
+# Email Configuration (SMTP for production)
+# Use SMTP backend to send real emails in production
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# SMTP server host (example: Gmail)
+EMAIL_HOST=smtp.gmail.com
+# SMTP server port (587 for TLS, 465 for SSL)
+EMAIL_PORT=587
+# Enable TLS encryption for email
+EMAIL_USE_TLS=True
+# Email account username
+EMAIL_HOST_USER=your-email@gmail.com
+# Email account password or app-specific password
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Security Settings
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT=True
+# Only send session cookie over HTTPS
+SESSION_COOKIE_SECURE=True
+# Only send CSRF cookie over HTTPS
+CSRF_COOKIE_SECURE=True
+# HTTP Strict Transport Security max age (1 year in seconds)
+SECURE_HSTS_SECONDS=31536000
+
+# Logging Configuration
+# Log level for production (INFO hides debug logs)
+LOG_LEVEL=INFO

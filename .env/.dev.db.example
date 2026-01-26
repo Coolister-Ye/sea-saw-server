@@ -1,4 +1,11 @@
 # PostgreSQL Database Configuration for Development
+# This file is used by the PostgreSQL Docker container (docker-compose.yml)
+
+# PostgreSQL superuser name
 POSTGRES_USER=sea_saw_dev_user
+
+# PostgreSQL superuser password
 POSTGRES_PASSWORD=sea_saw_dev_password
+
+# Default database to create on initialization
 POSTGRES_DB=sea_saw_dev

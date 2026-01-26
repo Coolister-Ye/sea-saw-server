@@ -1,3 +1,11 @@
+# PostgreSQL Database Configuration for Production
+# This file is used by the PostgreSQL Docker container (docker-compose.prod.yml)
+
+# PostgreSQL superuser name
 POSTGRES_USER=sea_saw
+
+# PostgreSQL superuser password (IMPORTANT: use strong password in production)
 POSTGRES_PASSWORD=sea_saw_passwd
+
+# Default database to create on initialization
 POSTGRES_DB=sea_saw_prod

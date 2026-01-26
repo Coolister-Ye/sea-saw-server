@@ -1,36 +1,48 @@
-# Django Settings
+# Django Core Settings
+# Enable debug mode for detailed error pages and development features
 DEBUG=1
+# Secret key for cryptographic signing (change this in production)
 SECRET_KEY=your-secret-key-here-change-in-production
+# Space-separated list of allowed hosts/domains ([::1] is IPv6 localhost)
 DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
 
 # Frontend Configuration
+# Frontend host URL for CORS and redirects (should match Expo dev server)
 FRONTEND_HOST=http://localhost:8001
+# Comma-separated list of allowed origins for CORS requests
 CORS_ALLOWED_ORIGINS=http://localhost:8001,http://127.0.0.1:8001
 
-# Database Configuration
-DATABASE=postgres
+# PostgreSQL Database Configuration
+# Database engine backend
 SQL_ENGINE=django.db.backends.postgresql
+# Database name for development environment
 SQL_DATABASE=sea_saw_dev
+# Database user credentials
 SQL_USER=sea_saw_dev_user
 SQL_PASSWORD=sea_saw_dev_password
+# Database host (use 'db' for Docker container, 'localhost' for local PostgreSQL)
 SQL_HOST=db
+# PostgreSQL default port
 SQL_PORT=5432
+# Database type identifier (used by docker-compose)
+DATABASE=postgres
 
 # Redis Configuration
+# Redis host (use 'redis' for Docker container, 'localhost' for local Redis)
 REDIS_HOST=redis
+# Redis default port
 REDIS_PORT=6379
 
-# Celery Configuration
-CELERY_BROKER_URL=redis://redis:6379/0
-CELERY_RESULT_BACKEND=redis://redis:6379/0
+# Celery Task Queue Configuration
+# Redis URL for Celery message broker (database 0)
+CELERY_BROKER=redis://redis:6379/0
+# Redis URL for storing task results (database 0)
+CELERY_BACKEND=redis://redis:6379/0
 
-# Email Configuration (optional)
+# Email Configuration
+# Console backend prints emails to stdout instead of sending them (for development)
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
-EMAIL_HOST=
-EMAIL_PORT=
-EMAIL_USE_TLS=
-EMAIL_HOST_USER=
-EMAIL_HOST_PASSWORD=
 
-# Logging
+# Logging Configuration
+# Log level for development (DEBUG shows all logs)
 LOG_LEVEL=DEBUG
