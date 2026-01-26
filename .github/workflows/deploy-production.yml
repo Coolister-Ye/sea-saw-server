@@ -153,6 +153,9 @@ jobs:
             set -e
             cd ${DEPLOY_PATH}
 
+            # 设置统一的项目名称
+            export COMPOSE_PROJECT_NAME=sea-saw-server
+
             echo "🚀 Starting deployment..."
 
             # 登录腾讯云容器镜像服务
@@ -161,7 +164,7 @@ jobs:
 
             # 拉取最新镜像
             echo "📥 Pulling latest Docker images..."
-            docker compose -f docker-compose.prod.yml pull
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
 
             # 备份数据库
             echo "💾 Backing up database..."
@@ -169,11 +172,11 @@ jobs:
 
             # 停止旧服务并清理
             echo "🛑 Stopping old services..."
-            docker compose -f docker-compose.prod.yml down --remove-orphans
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans
 
             # 启动新服务
             echo "🚀 Starting new services..."
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d
 
             # 等待服务就绪
             echo "⏳ Waiting for services to be healthy..."
@@ -181,15 +184,15 @@ jobs:
 
             # 运行数据库迁移
             echo "🗄️ Running database migrations..."
-            docker compose -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
 
             # 收集静态文件
             echo "📦 Collecting static files..."
-            docker compose -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
 
             # 检查服务状态
             echo "🏥 Checking service health..."
-            docker compose -f docker-compose.prod.yml ps
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml ps
 
             # 清理旧镜像
             echo "🧹 Cleaning up old images..."
@@ -262,37 +265,71 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           ssh -o ConnectTimeout=30 ${SERVER_USER}@${SERVER_IP} bash << ENDSSH
-            set -e
             cd ${DEPLOY_PATH}
+
+            # 设置统一的项目名称
+            export COMPOSE_PROJECT_NAME=sea-saw-server
 
             echo "⚠️ Deployment failed, rolling back..."
 
-            # 停止所有容器并清理
-            echo "🛑 Stopping all containers..."
-            docker compose -f docker-compose.prod.yml down --remove-orphans || true
+            # 强制停止并移除所有相关容器（包括使用端口的容器）
+            echo "🛑 Forcefully stopping all containers..."
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans --volumes || true
+
+            # 清理可能占用端口的孤立容器
+            echo "🧹 Cleaning up containers that might be using critical ports..."
+            # 查找并停止所有可能占用关键端口的容器
+            docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" | grep -E '6379|5432|8000' | awk '{print \$1}' | grep -v CONTAINER | xargs -r docker rm -f || true
+
+            # 清理所有已停止的容器
+            docker container prune -f || true
+
+            # 确保端口已释放
+            echo "🔍 Verifying ports are free..."
+            sleep 3
+            for port in 6379 5432 8000; do
+              if netstat -tuln 2>/dev/null | grep -q ":\$port " || ss -tuln 2>/dev/null | grep -q ":\$port "; then
+                echo "⚠️ Port \$port still in use. Checking process..."
+                # 尝试找到并终止占用端口的进程
+                fuser -k \$port/tcp 2>/dev/null || true
+                sleep 2
+              else
+                echo "✅ Port \$port is free"
+              fi
+            done
 
             # 恢复最新备份
             echo "🔄 Restoring latest backup..."
             LATEST_BACKUP=\$(ls -t backups/backup_*.sql.gz 2>/dev/null | head -1)
             if [ -n "\$LATEST_BACKUP" ]; then
               # 启动数据库服务
-              docker compose -f docker-compose.prod.yml up -d db
+              echo "🗄️ Starting database service..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d db
               sleep 10
 
               # 恢复数据库
-              gunzip -c "\$LATEST_BACKUP" | docker compose -f docker-compose.prod.yml exec -T db psql -U sea_saw_prod_user sea_saw_prod
+              echo "📥 Restoring database from backup..."
+              gunzip -c "\$LATEST_BACKUP" | docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T db psql -U sea_saw_prod_user sea_saw_prod
               echo "✅ Database restored from backup"
 
               # 启动所有服务
-              docker compose -f docker-compose.prod.yml up -d
+              echo "🚀 Starting all services..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d
             else
               echo "⚠️ No backup found, attempting to restart existing services..."
-              docker compose -f docker-compose.prod.yml up -d
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d || {
+                echo "❌ Failed to start services. Manual intervention required."
+                exit 1
+              }
             fi
+
+            # 等待服务启动
+            echo "⏳ Waiting for services to stabilize..."
+            sleep 20
 
             # 检查服务状态
             echo "🏥 Checking service status..."
-            docker compose -f docker-compose.prod.yml ps
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml ps
 
             echo "✅ Rollback completed"
           ENDSSH

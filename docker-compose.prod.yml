@@ -38,8 +38,7 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env/.prod.db
-    ports:
-      - "5432:5432"
+    # Port removed - only accessible within Docker network (prevents conflicts)
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
       interval: 10s
@@ -84,8 +83,7 @@ services:
 
   redis:
     image: redis:latest
-    ports:
-      - "6379:6379"
+    # Port removed - only accessible within Docker network (prevents conflicts)
     volumes:
       - redis_data:/data
     healthcheck:

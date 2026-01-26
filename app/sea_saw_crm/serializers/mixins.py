@@ -10,7 +10,6 @@ class PipelineSyncMixin:
     When an Order is updated, certain fields should be synced to its Pipeline:
     - contact → pipeline.contact
     - order_date → pipeline.order_date
-    - total_amount → pipeline.total_amount
 
     Usage:
         class MyOrderSerializer(PipelineSyncMixin, BaseSerializer):
@@ -27,7 +26,6 @@ class PipelineSyncMixin:
         Args:
             order: Order instance to sync from
         """
-        print("sync_to_pipeline")
         if not hasattr(order, "pipeline") or not order.pipeline:
             return
 

@@ -157,11 +157,6 @@ class OrderModelManager(BaseModelManager):
             pipeline.order_date = order.order_date
             update_fields.append('order_date')
 
-        # Sync total_amount if changed
-        if pipeline.total_amount != order.total_amount:
-            pipeline.total_amount = order.total_amount
-            update_fields.append('total_amount')
-
         # Save if there are changes
         if update_fields:
             if user:

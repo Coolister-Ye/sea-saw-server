@@ -60,20 +60,18 @@ class OrderModelManagerTestCase(TestCase):
             order=self.order,
             pipeline_code="PL2026-000001",
             contact=self.contact1,
-            order_date=date(2026, 1, 15),
-            total_amount=Decimal("1000.00")
+            order_date=date(2026, 1, 15)
         )
 
     def test_update_with_pipeline_by_id(self):
         """Test updating order by ID syncs pipeline"""
         new_date = date(2026, 1, 20)
-        new_amount = Decimal("1500.00")
 
         updated_order = Order.objects.update_with_pipeline(
             order_id=self.order.id,
             user=self.user,
             order_date=new_date,
-            total_amount=new_amount
+            contact=self.contact2
         )
 
         # Refresh pipeline from database
@@ -81,11 +79,11 @@ class OrderModelManagerTestCase(TestCase):
 
         # Verify order was updated
         self.assertEqual(updated_order.order_date, new_date)
-        self.assertEqual(updated_order.total_amount, new_amount)
+        self.assertEqual(updated_order.contact, self.contact2)
 
         # Verify pipeline was synced
         self.assertEqual(self.pipeline.order_date, new_date)
-        self.assertEqual(self.pipeline.total_amount, new_amount)
+        self.assertEqual(self.pipeline.contact, self.contact2)
 
     def test_update_with_pipeline_by_instance(self):
         """Test updating order by instance syncs pipeline"""
@@ -107,14 +105,12 @@ class OrderModelManagerTestCase(TestCase):
     def test_update_with_pipeline_multiple_fields(self):
         """Test updating multiple fields syncs all to pipeline"""
         new_date = date(2026, 2, 1)
-        new_amount = Decimal("2000.00")
 
         Order.objects.update_with_pipeline(
             instance=self.order,
             user=self.user,
             contact=self.contact2,
-            order_date=new_date,
-            total_amount=new_amount
+            order_date=new_date
         )
 
         # Refresh pipeline from database
@@ -123,7 +119,6 @@ class OrderModelManagerTestCase(TestCase):
         # Verify all fields were synced
         self.assertEqual(self.pipeline.contact, self.contact2)
         self.assertEqual(self.pipeline.order_date, new_date)
-        self.assertEqual(self.pipeline.total_amount, new_amount)
 
     def test_update_with_pipeline_no_pipeline(self):
         """Test updating order without pipeline doesn't raise error"""
@@ -138,10 +133,10 @@ class OrderModelManagerTestCase(TestCase):
         updated_order = Order.objects.update_with_pipeline(
             instance=order_no_pipeline,
             user=self.user,
-            total_amount=Decimal("500.00")
+            contact=self.contact1
         )
 
-        self.assertEqual(updated_order.total_amount, Decimal("500.00"))
+        self.assertEqual(updated_order.contact, self.contact1)
 
     def test_update_with_pipeline_no_changes(self):
         """Test updating with same values doesn't trigger unnecessary saves"""
@@ -150,20 +145,20 @@ class OrderModelManagerTestCase(TestCase):
             instance=self.order,
             user=self.user,
             order_date=self.order.order_date,
-            total_amount=self.order.total_amount
+            contact=self.order.contact
         )
 
         # Pipeline should remain unchanged
         self.pipeline.refresh_from_db()
         self.assertEqual(self.pipeline.order_date, self.order.order_date)
-        self.assertEqual(self.pipeline.total_amount, self.order.total_amount)
+        self.assertEqual(self.pipeline.contact, self.order.contact)
 
     def test_update_with_pipeline_raises_without_id_or_instance(self):
         """Test that ValueError is raised if neither order_id nor instance is provided"""
         with self.assertRaises(ValueError) as context:
             Order.objects.update_with_pipeline(
                 user=self.user,
-                total_amount=Decimal("1000.00")
+                contact=self.contact1
             )
 
         self.assertIn("Either order_id or instance must be provided", str(context.exception))
@@ -174,15 +169,13 @@ class OrderModelManagerTestCase(TestCase):
         order2 = Order.objects.create_with_user(
             user=self.user,
             order_code="SO2026-000003",
-            order_date=date(2026, 1, 17),
-            total_amount=Decimal("800.00")
+            order_date=date(2026, 1, 17)
         )
         pipeline2 = Pipeline.objects.create_with_user(
             user=self.user,
             order=order2,
             pipeline_code="PL2026-000002",
-            order_date=date(2026, 1, 17),
-            total_amount=Decimal("800.00")
+            order_date=date(2026, 1, 17)
         )
 
         # Bulk update both orders
@@ -210,7 +203,7 @@ class OrderModelManagerTestCase(TestCase):
         Order.objects.update_with_pipeline(
             instance=self.order,
             user=self.user,
-            total_amount=Decimal("1200.00")
+            contact=self.contact2
         )
 
         # Refresh pipeline

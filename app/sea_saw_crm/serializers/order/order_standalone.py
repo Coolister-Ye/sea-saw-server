@@ -17,6 +17,7 @@ from ...models.order import Order
 from ...models.pipeline import Pipeline
 from ...models import Contact, Attachment
 from ...mixins import ReusableAttachmentWriteMixin
+from ..mixins import PipelineSyncMixin
 
 
 class PipelineNestedSerializer(BaseSerializer):
@@ -30,7 +31,7 @@ class PipelineNestedSerializer(BaseSerializer):
 
 
 class OrderSerializerForOrderView(
-    ReusableAttachmentWriteMixin, UniqueFieldsMixin, BaseSerializer
+    PipelineSyncMixin, ReusableAttachmentWriteMixin, UniqueFieldsMixin, BaseSerializer
 ):
     """
     Order serializer for OrderViewSet (standalone access).
@@ -120,12 +121,21 @@ class OrderSerializerForOrderView(
         return instance
 
     def update(self, instance, validated_data):
-        """Handle related_pipeline assignment."""
+        """
+        Handle Order update with automatic Pipeline synchronization.
+
+        When order fields are updated, related pipeline fields are automatically synced:
+        - contact → pipeline.contact
+        - order_date → pipeline.order_date
+        """
         # Note: 'pipeline' is popped because it's a reverse OneToOne relation
         # and cannot be set directly on Order update
         validated_data.pop("pipeline", None)
 
         # Attachments are handled by ReusableAttachmentWriteMixin
         instance = super().update(instance, validated_data)
-        # Pipeline should be managed from Pipeline side, not Order side
+
+        # Sync to pipeline if it exists (from PipelineSyncMixin)
+        self.sync_to_pipeline(instance)
+
         return instance
