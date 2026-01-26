@@ -276,26 +276,34 @@ jobs:
           fi
 
       - name: Send WeChat Work notification
-        if: secrets.WECHAT_WEBHOOK_URL != ''
+        if: ${{ secrets.WECHAT_WEBHOOK_URL != '' }}
+        env:
+          WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
         run: |
-          curl -X POST "${{ secrets.WECHAT_WEBHOOK_URL }}" \
-            -H 'Content-Type: application/json' \
-            -d "{
-              \"msgtype\": \"markdown\",
-              \"markdown\": {
-                \"content\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n**状态**: ${{ steps.status.outputs.details }}\n**分支**: ${{ github.ref_name }}\n**提交**: \`${{ github.sha }}\`\n**提交者**: ${{ github.actor }}\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
-              }
-            }"
+          if [ -n "$WEBHOOK_URL" ]; then
+            curl -X POST "$WEBHOOK_URL" \
+              -H 'Content-Type: application/json' \
+              -d "{
+                \"msgtype\": \"markdown\",
+                \"markdown\": {
+                  \"content\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n**状态**: ${{ steps.status.outputs.details }}\n**分支**: ${{ github.ref_name }}\n**提交**: \`${{ github.sha }}\`\n**提交者**: ${{ github.actor }}\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
+                }
+              }"
+          fi
 
       - name: Send DingTalk notification
-        if: secrets.DINGTALK_WEBHOOK_URL != ''
+        if: ${{ secrets.DINGTALK_WEBHOOK_URL != '' }}
+        env:
+          WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK_URL }}
         run: |
-          curl -X POST "${{ secrets.DINGTALK_WEBHOOK_URL }}" \
-            -H 'Content-Type: application/json' \
-            -d "{
-              \"msgtype\": \"markdown\",
-              \"markdown\": {
-                \"title\": \"${{ steps.status.outputs.message }}\",
-                \"text\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n\n**状态**: ${{ steps.status.outputs.details }}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.sha }}\n\n**提交者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
-              }
-            }"
+          if [ -n "$WEBHOOK_URL" ]; then
+            curl -X POST "$WEBHOOK_URL" \
+              -H 'Content-Type: application/json' \
+              -d "{
+                \"msgtype\": \"markdown\",
+                \"markdown\": {
+                  \"title\": \"${{ steps.status.outputs.message }}\",
+                  \"text\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n\n**状态**: ${{ steps.status.outputs.details }}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.sha }}\n\n**提交者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
+                }
+              }"
+          fi
