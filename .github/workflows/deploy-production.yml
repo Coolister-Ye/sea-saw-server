@@ -6,11 +6,22 @@ on:
       - main
       - production
   workflow_dispatch:  # 允许手动触发
+    inputs:
+      build_mode:
+        description: 'Build mode: registry (build and push to registry) or local (build on server)'
+        required: false
+        default: 'local'
+        type: choice
+        options:
+          - local
+          - registry
 
 env:
-  DOCKER_REGISTRY: ccr.ccs.tencentyun.com  # 腾讯云容器镜像服务
+  DOCKER_REGISTRY: hkccr.ccs.tencentyun.com  # 腾讯云容器镜像服务 (Hong Kong)
   IMAGE_NAMESPACE: sea-saw  # 命名空间
   IMAGE_NAME: backend
+  # Default to 'local' mode for push events, use input for manual triggers
+  BUILD_MODE: ${{ github.event.inputs.build_mode || 'local' }}
 
 jobs:
   test:
@@ -47,7 +58,7 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production') && github.event.repository.default_branch != '' && (github.event.inputs.build_mode == 'registry' || (github.event_name == 'push' && vars.BUILD_MODE == 'registry'))
 
     steps:
       - name: Checkout code
@@ -87,8 +98,8 @@ jobs:
   deploy:
     name: Deploy to Tencent Cloud Server
     runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    needs: test
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production') && always() && needs.test.result == 'success'
 
     steps:
       - name: Checkout code
@@ -128,23 +139,46 @@ jobs:
           SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
           SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          BUILD_MODE: ${{ env.BUILD_MODE }}
         run: |
+          echo "📦 Copying deployment files to server (mode: ${BUILD_MODE})..."
+
+          # 复制应用代码 (仅在 local 模式)
+          if [ "${BUILD_MODE}" = "local" ]; then
+            echo "Copying app directory for local build..."
+            rsync -avz --delete \
+              --exclude='*.pyc' \
+              --exclude='__pycache__' \
+              --exclude='.git' \
+              --exclude='*.sqlite3' \
+              --exclude='staticfiles' \
+              --exclude='mediafiles' \
+              app/ ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/app/
+          else
+            echo "Skipping app directory copy (using registry images)"
+          fi
+
           # 复制 docker-compose 和配置文件
-          scp -r docker-compose.prod.yml ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
+          echo "Copying docker-compose and config files..."
+          scp docker-compose.prod.yml ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
+
           if [ -d "nginx" ]; then
             scp -r nginx ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
           fi
+
           if [ -f "deploy.sh" ]; then
             scp deploy.sh ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
             ssh ${SERVER_USER}@${SERVER_IP} "chmod +x ${DEPLOY_PATH}/deploy.sh"
           fi
+
+          echo "✅ Files copied successfully"
 
       - name: Deploy to production
         env:
           SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
           SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-          IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+          BUILD_MODE: ${{ env.BUILD_MODE }}
           TCR_USERNAME: ${{ secrets.TCR_USERNAME }}
           TCR_PASSWORD: ${{ secrets.TCR_PASSWORD }}
           DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
@@ -156,15 +190,7 @@ jobs:
             # 设置统一的项目名称
             export COMPOSE_PROJECT_NAME=sea-saw-server
 
-            echo "🚀 Starting deployment..."
-
-            # 登录腾讯云容器镜像服务
-            echo "🔐 Logging in to Tencent Container Registry..."
-            echo "${TCR_PASSWORD}" | docker login ${DOCKER_REGISTRY} -u "${TCR_USERNAME}" --password-stdin
-
-            # 拉取最新镜像
-            echo "📥 Pulling latest Docker images..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
+            echo "🚀 Starting deployment (mode: ${BUILD_MODE})..."
 
             # 备份数据库
             echo "💾 Backing up database..."
@@ -174,9 +200,39 @@ jobs:
             echo "🛑 Stopping old services..."
             docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans
 
-            # 启动新服务
-            echo "🚀 Starting new services..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d
+            # 清理可能占用端口的孤立容器
+            echo "🧹 Cleaning up containers that might be using critical ports..."
+            docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" | grep -E '6379|5432|8000|5555' | awk '{print \$1}' | grep -v CONTAINER | xargs -r docker rm -f || true
+
+            # 确保关键端口已释放
+            echo "🔍 Verifying critical ports are free..."
+            sleep 3
+            for port in 6379 5432 8000 5555; do
+              if netstat -tuln 2>/dev/null | grep -q ":\$port " || ss -tuln 2>/dev/null | grep -q ":\$port "; then
+                echo "⚠️ Port \$port still in use, attempting to free it..."
+                fuser -k \$port/tcp 2>/dev/null || true
+                sleep 2
+              else
+                echo "✅ Port \$port is free"
+              fi
+            done
+
+            # 根据模式选择部署方式
+            if [ "${BUILD_MODE}" = "registry" ]; then
+              # Registry 模式：登录并拉取镜像
+              echo "🔐 Logging in to Tencent Container Registry..."
+              echo "${TCR_PASSWORD}" | docker login ${DOCKER_REGISTRY} -u "${TCR_USERNAME}" --password-stdin
+
+              echo "📥 Pulling latest Docker images from registry..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
+
+              echo "🚀 Starting services with registry images..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d
+            else
+              # Local 模式：本地构建
+              echo "🔨 Building and starting services locally..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --build
+            fi
 
             # 等待服务就绪
             echo "⏳ Waiting for services to be healthy..."
@@ -279,7 +335,7 @@ jobs:
             # 清理可能占用端口的孤立容器
             echo "🧹 Cleaning up containers that might be using critical ports..."
             # 查找并停止所有可能占用关键端口的容器
-            docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" | grep -E '6379|5432|8000' | awk '{print \$1}' | grep -v CONTAINER | xargs -r docker rm -f || true
+            docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" | grep -E '6379|5432|8000|5555' | awk '{print \$1}' | grep -v CONTAINER | xargs -r docker rm -f || true
 
             # 清理所有已停止的容器
             docker container prune -f || true
@@ -287,7 +343,7 @@ jobs:
             # 确保端口已释放
             echo "🔍 Verifying ports are free..."
             sleep 3
-            for port in 6379 5432 8000; do
+            for port in 6379 5432 8000 5555; do
               if netstat -tuln 2>/dev/null | grep -q ":\$port " || ss -tuln 2>/dev/null | grep -q ":\$port "; then
                 echo "⚠️ Port \$port still in use. Checking process..."
                 # 尝试找到并终止占用端口的进程
@@ -347,15 +403,15 @@ jobs:
           if [ "${{ needs.test.result }}" != "success" ]; then
             echo "status=failure" >> $GITHUB_OUTPUT
             echo "message=❌ Sea-Saw 后端测试失败" >> $GITHUB_OUTPUT
-            echo "details=测试阶段失败，未进行构建和部署" >> $GITHUB_OUTPUT
-          elif [ "${{ needs.build-and-push.result }}" != "success" ]; then
+            echo "details=测试阶段失败，未进行部署" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.build-and-push.result }}" == "failure" ]; then
             echo "status=failure" >> $GITHUB_OUTPUT
             echo "message=❌ Sea-Saw 后端镜像构建失败" >> $GITHUB_OUTPUT
             echo "details=镜像构建失败，未进行部署" >> $GITHUB_OUTPUT
           elif [ "${{ needs.deploy.result }}" == "success" ]; then
             echo "status=success" >> $GITHUB_OUTPUT
             echo "message=✅ Sea-Saw 后端部署成功" >> $GITHUB_OUTPUT
-            echo "details=所有服务已成功部署并通过健康检查" >> $GITHUB_OUTPUT
+            echo "details=所有服务已成功构建、部署并通过健康检查" >> $GITHUB_OUTPUT
           else
             echo "status=failure" >> $GITHUB_OUTPUT
             echo "message=❌ Sea-Saw 后端部署失败" >> $GITHUB_OUTPUT

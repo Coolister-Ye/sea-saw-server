@@ -1,5 +1,6 @@
 services:
   web:
+    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -56,6 +57,7 @@ services:
           memory: 512M
 
   nginx:
+    image: hkccr.ccs.tencentyun.com/sea-saw/nginx:latest
     build: ./nginx
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -103,6 +105,7 @@ services:
           memory: 256M
 
   celery_worker:
+    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -134,6 +137,7 @@ services:
           memory: 512M
 
   celery_beat:
+    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -159,6 +163,7 @@ services:
           memory: 256M
 
   flower:
+    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
