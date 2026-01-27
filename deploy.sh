@@ -92,7 +92,7 @@ start_prod() {
 
     docker-compose -f docker-compose.prod.yml -p sea_saw_prod up --build -d
     print_info "Production environment started successfully!"
-    print_info "Access the application at: http://localhost:8000"
+    print_info "Access the application at: http://localhost"
     print_info "Flower (Celery monitoring): http://localhost:5555"
     print_warn "Remember to create a superuser: docker-compose -f docker-compose.prod.yml exec web python manage.py createsuperuser"
 }

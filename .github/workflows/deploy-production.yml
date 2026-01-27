@@ -188,7 +188,7 @@ jobs:
             cd ${DEPLOY_PATH}
 
             # 设置统一的项目名称
-            export COMPOSE_PROJECT_NAME=sea-saw-server
+            export COMPOSE_PROJECT_NAME=sea_saw_prod
 
             echo "🚀 Starting deployment (mode: ${BUILD_MODE})..."
 
@@ -265,7 +265,7 @@ jobs:
           max_retries=5
           retry_count=0
 
-          until curl -f http://${SERVER_IP}:8000/health/ || [ $retry_count -eq $max_retries ]; do
+          until curl -f http://${SERVER_IP}/health/ || [ $retry_count -eq $max_retries ]; do
             echo "⏳ Waiting for service to be ready... ($retry_count/$max_retries)"
             retry_count=$((retry_count + 1))
             sleep 10
@@ -324,7 +324,7 @@ jobs:
             cd ${DEPLOY_PATH}
 
             # 设置统一的项目名称
-            export COMPOSE_PROJECT_NAME=sea-saw-server
+            export COMPOSE_PROJECT_NAME=sea_saw_prod
 
             echo "⚠️ Deployment failed, rolling back..."
 
