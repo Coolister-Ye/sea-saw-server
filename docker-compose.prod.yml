@@ -63,7 +63,7 @@ services:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
     ports:
-      - "80:80"
+      - "8000:80"
     depends_on:
       web:
         condition: service_healthy
