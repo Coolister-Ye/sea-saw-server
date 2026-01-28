@@ -260,12 +260,14 @@ jobs:
       - name: Health check
         env:
           SERVER_IP: ${{ secrets.TENCENT_SERVER_IP }}
+          SERVER_USER: ${{ secrets.TENCENT_SERVER_USER }}
         run: |
           echo "🏥 Performing health check..."
           max_retries=5
           retry_count=0
 
-          until curl -f http://${SERVER_IP}:8000/health/ || [ $retry_count -eq $max_retries ]; do
+          # Health check via SSH (port 8000 is only exposed within Docker network)
+          until ssh ${SERVER_USER}@${SERVER_IP} "docker exec sea-saw-backend curl -sf http://localhost:8000/health/" || [ $retry_count -eq $max_retries ]; do
             echo "⏳ Waiting for service to be ready... ($retry_count/$max_retries)"
             retry_count=$((retry_count + 1))
             sleep 10
