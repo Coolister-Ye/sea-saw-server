@@ -1,6 +1,7 @@
 services:
   web:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    container_name: sea-saw-backend
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -24,6 +25,8 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    networks:
+      - sea-saw-network
     deploy:
       resources:
         limits:
@@ -35,6 +38,7 @@ services:
 
   db:
     image: postgres:15
+    container_name: sea-saw-db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -47,6 +51,8 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+    networks:
+      - sea-saw-network
     deploy:
       resources:
         limits:
@@ -90,6 +96,7 @@ services:
 
   redis:
     image: redis:latest
+    container_name: sea-saw-redis
     # Port removed - only accessible within Docker network (prevents conflicts)
     volumes:
       - redis_data:/data
@@ -100,6 +107,8 @@ services:
       retries: 5
       start_period: 5s
     restart: unless-stopped
+    networks:
+      - sea-saw-network
     deploy:
       resources:
         limits:
@@ -111,6 +120,7 @@ services:
 
   celery_worker:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    container_name: sea-saw-celery-worker
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -132,6 +142,8 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+    networks:
+      - sea-saw-network
     deploy:
       resources:
         limits:
@@ -143,6 +155,7 @@ services:
 
   celery_beat:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    container_name: sea-saw-celery-beat
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -158,6 +171,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - sea-saw-network
     deploy:
       resources:
         limits:
@@ -169,6 +184,7 @@ services:
 
   flower:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    container_name: sea-saw-flower
     build:
       context: ./app
       dockerfile: ./compose/prod/django/Dockerfile
@@ -189,6 +205,8 @@ services:
       retries: 3
       start_period: 20s
     restart: unless-stopped
+    networks:
+      - sea-saw-network
     deploy:
       resources:
         limits:
@@ -200,6 +218,15 @@ services:
 
 volumes:
   postgres_data:
+    name: sea-saw-postgres-data
   static_volume:
+    name: sea-saw-backend-static
   redis_data:
+    name: sea-saw-redis-data
   media_volume:
+    name: sea-saw-backend-media
+
+networks:
+  sea-saw-network:
+    name: sea-saw-network
+    driver: bridge
