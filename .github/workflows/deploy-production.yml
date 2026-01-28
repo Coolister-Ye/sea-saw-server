@@ -267,7 +267,7 @@ jobs:
           retry_count=0
 
           # Health check via SSH (port 8000 is only exposed within Docker network)
-          until ssh ${SERVER_USER}@${SERVER_IP} "docker exec sea-saw-backend curl -sf http://localhost:8000/health/" || [ $retry_count -eq $max_retries ]; do
+          until ssh ${SERVER_USER}@${SERVER_IP} "docker exec sea-saw-backend curl -sf http://localhost:8000/admin/login/" || [ $retry_count -eq $max_retries ]; do
             echo "⏳ Waiting for service to be ready... ($retry_count/$max_retries)"
             retry_count=$((retry_count + 1))
             sleep 10
