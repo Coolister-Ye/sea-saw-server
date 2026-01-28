@@ -56,6 +56,9 @@ services:
           cpus: '0.5'
           memory: 512M
 
+  # DEPRECATED: This nginx service is replaced by unified gateway in docker-compose.unified.yml
+  # Keeping this for backward compatibility with standalone backend deployment
+  # For production, use docker-compose.unified.yml which provides a unified gateway
   nginx:
     image: hkccr.ccs.tencentyun.com/sea-saw/nginx:latest
     build: ./nginx
@@ -82,6 +85,8 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    profiles:
+      - standalone  # Only start with --profile standalone
 
   redis:
     image: redis:latest
