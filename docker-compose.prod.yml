@@ -228,5 +228,5 @@ volumes:
 
 networks:
   sea-saw-network:
+    external: true
     name: sea-saw-network
-    driver: bridge
