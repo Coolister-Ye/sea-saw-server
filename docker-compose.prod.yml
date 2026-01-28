@@ -45,7 +45,7 @@ services:
       - .env/.prod.db
     # Port removed - only accessible within Docker network (prevents conflicts)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
