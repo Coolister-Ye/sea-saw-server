@@ -26,6 +26,7 @@ class UserRegisterView(CreateAPIView):
     """Register a new user account"""
 
     permission_classes = [AllowAny]
+    authentication_classes = []  # Disable authentication to bypass CSRF check
     serializer_class = UserCreateSerializer
 
     def create(self, request, *args, **kwargs):

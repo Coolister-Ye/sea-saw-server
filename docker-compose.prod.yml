@@ -62,38 +62,6 @@ services:
           cpus: '0.5'
           memory: 512M
 
-  # DEPRECATED: This nginx service is replaced by unified gateway in docker-compose.unified.yml
-  # Keeping this for backward compatibility with standalone backend deployment
-  # For production, use docker-compose.unified.yml which provides a unified gateway
-  nginx:
-    image: hkccr.ccs.tencentyun.com/sea-saw/nginx:latest
-    build: ./nginx
-    volumes:
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-    ports:
-      - "8000:80"
-    depends_on:
-      web:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/admin/login/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    profiles:
-      - standalone  # Only start with --profile standalone
-
   redis:
     image: redis:latest
     container_name: sea-saw-redis
