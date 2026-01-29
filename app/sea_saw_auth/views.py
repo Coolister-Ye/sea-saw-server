@@ -1,5 +1,3 @@
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,12 +22,11 @@ class UserDetailView(APIView):
         return Response(serializer.data)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class UserRegisterView(CreateAPIView):
     """Register a new user account"""
 
     permission_classes = [AllowAny]
-    authentication_classes = []  # Disable authentication to bypass CSRF check
+    authentication_classes = []  # No authentication required for registration
     serializer_class = UserCreateSerializer
 
     def create(self, request, *args, **kwargs):
