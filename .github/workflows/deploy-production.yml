@@ -227,11 +227,11 @@ jobs:
               docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
 
               echo "🚀 Starting services with registry images..."
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
             else
               # Local 模式：本地构建
               echo "🔨 Building and starting services locally..."
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --build
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --build --force-recreate
             fi
 
             # 等待服务就绪

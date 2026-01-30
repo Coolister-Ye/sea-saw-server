@@ -90,7 +90,7 @@ start_prod() {
         exit 0
     fi
 
-    docker-compose -f docker-compose.prod.yml -p sea_saw_prod up --build -d
+    docker-compose -f docker-compose.prod.yml -p sea_saw_prod up --build --force-recreate -d
     print_info "Production environment started successfully!"
     print_info "Backend API: http://localhost:8000"
     print_info "Flower (Celery monitoring): http://localhost:5555"

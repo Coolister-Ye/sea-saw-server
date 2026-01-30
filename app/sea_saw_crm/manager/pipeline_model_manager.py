@@ -37,6 +37,7 @@ class PipelineModelManager(BaseModelManager):
         user=None,
         order_date=None,
         contact_id=None,
+        company_id=None,
         currency="USD",
         total_amount=0,
         remark=None,
@@ -51,6 +52,7 @@ class PipelineModelManager(BaseModelManager):
             user: User creating the pipeline
             order_date: Order date (defaults to today)
             contact_id: Contact ID for the order
+            company_id: Company ID for the order and pipeline
             currency: Currency code (default: USD)
             total_amount: Total amount (default: 0)
             remark: Remark for the pipeline
@@ -67,6 +69,7 @@ class PipelineModelManager(BaseModelManager):
             user=user,
             order_date=order_date or timezone.now().date(),
             contact_id=contact_id,
+            company_id=company_id,  # Pass company_id to Order
             currency=currency,
             total_amount=total_amount,
             comment=remark or "Auto-created from pipeline",
@@ -77,6 +80,7 @@ class PipelineModelManager(BaseModelManager):
             user=user,
             order=order,
             contact_id=contact_id,
+            company_id=company_id,  # Pass company_id to Pipeline
             order_date=order_date or timezone.now().date(),
             remark=remark,
             **extra_fields,

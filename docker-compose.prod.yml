@@ -1,3 +1,5 @@
+name: sea-saw-server
+
 services:
   web:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest

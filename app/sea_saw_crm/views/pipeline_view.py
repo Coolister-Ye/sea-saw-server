@@ -137,6 +137,7 @@ class PipelineViewSet(
                 user=request.user,
                 order_date=data.get("order_date"),
                 contact_id=data.get("contact_id"),
+                company_id=data.get("company_id"),  # Pass company_id
                 currency=data.get("currency", "USD"),
                 total_amount=data.get("total_amount", 0),
                 remark=data.get("remark"),
