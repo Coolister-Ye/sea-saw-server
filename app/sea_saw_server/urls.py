@@ -18,6 +18,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import path, include, re_path
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -25,7 +26,13 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
+
+
 urlpatterns = [
+    path("health/", health_check, name="health_check"),
     path("admin/", admin.site.urls),
     path("api/auth/dj/", include("dj_rest_auth.urls")),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
