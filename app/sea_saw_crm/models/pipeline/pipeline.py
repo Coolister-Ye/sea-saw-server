@@ -22,6 +22,7 @@ from django.db.models import Sum
 
 from ..base import BaseModel
 from ..contact import Contact
+from ..company import Company
 from .enums import PipelineStatusType, PipelineType, ActiveEntityType
 from ...manager.pipeline_model_manager import PipelineModelManager
 
@@ -80,7 +81,17 @@ class Pipeline(BaseModel):
         help_text=_("The main sales order for this pipeline"),
     )
 
-    # Contact Info
+    # Customer Info
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="pipelines",
+        verbose_name=_("Company"),
+        help_text=_("Customer company for this pipeline"),
+    )
+
     contact = models.ForeignKey(
         Contact,
         on_delete=models.SET_NULL,
@@ -155,6 +166,10 @@ class Pipeline(BaseModel):
         # Auto-generate pipeline code if not set
         if not self.pipeline_code:
             self.pipeline_code = self.generate_code()
+
+        # Sync company from order if not set
+        if not self.company and self.order and self.order.company:
+            self.company = self.order.company
 
         # Sync contact from order if not set
         if not self.contact and self.order and self.order.contact:

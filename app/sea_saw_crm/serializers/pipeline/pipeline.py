@@ -16,9 +16,11 @@ from drf_writable_nested.mixins import UniqueFieldsMixin
 
 from ..base import BaseSerializer
 from ...models import Pipeline, Contact
+from ...models.company import Company
 from ...services import PipelineStateService
 
 from ..contact import ContactSerializer
+from ..company import CompanySerializer
 from ..order import (
     OrderSerializerForAdmin,
     OrderSerializerForSales,
@@ -57,6 +59,15 @@ class BasePipelineSerializer(BaseSerializer):
     """
 
     allowed_actions = serializers.SerializerMethodField()
+    company = CompanySerializer(read_only=True, label=_("Company"))
+    company_id = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(),
+        source="company",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Company ID"),
+    )
     contact = ContactSerializer(read_only=True, label=_("Contact"))
     contact_id = serializers.PrimaryKeyRelatedField(
         queryset=Contact.objects.all(),
@@ -90,6 +101,8 @@ BASE_FIELDS = [
     "status",
     "active_entity",
     "order",
+    "company",
+    "company_id",
     "contact",
     "contact_id",
     "order_date",
@@ -140,6 +153,7 @@ class PipelineSerializerForAdmin(UniqueFieldsMixin, BasePipelineSerializer):
             "allowed_actions",
         ]
         read_only_fields = [
+            "active_entity",
             "confirmed_at",
             "completed_at",
             "cancelled_at",
@@ -184,6 +198,7 @@ class PipelineSerializerForSales(UniqueFieldsMixin, BasePipelineSerializer):
             "allowed_actions",
         ]
         read_only_fields = [
+            "active_entity",
             "production_orders",
             "purchase_orders",
             "outbound_orders",
@@ -250,6 +265,7 @@ class PipelineSerializerForWarehouse(BasePipelineSerializer):
             "allowed_actions",
         ]
         read_only_fields = [
+            "active_entity",
             "pipeline_code",
             "pipeline_type",
             "status",

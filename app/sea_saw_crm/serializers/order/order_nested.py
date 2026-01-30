@@ -10,10 +10,12 @@ from drf_writable_nested.mixins import UniqueFieldsMixin
 
 from ..base import BaseSerializer
 from ...models import Order, Contact, OrderStatusType
+from ...models.company import Company
 from ...mixins import ReusableAttachmentWriteMixin
 from ..mixins import PipelineSyncMixin
 
 from ..contact import ContactSerializer
+from ..company import CompanySerializer
 from ..shared import AttachmentSerializer
 
 from .order_item import (
@@ -35,6 +37,16 @@ class BaseOrderSerializer(
     所有 Order serializer 的基类
     统一处理 attachments 的 create / update
     """
+
+    company = CompanySerializer(read_only=True, label=_("Company"))
+    company_id = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(),
+        source="company",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Company ID"),
+    )
 
     contact = ContactSerializer(read_only=True, label=_("Contact"))
     contact_id = serializers.PrimaryKeyRelatedField(
@@ -84,6 +96,8 @@ BASE_FIELDS = [
     "id",
     "order_code",
     "order_date",
+    "company",
+    "company_id",
     "contact",
     "contact_id",
     "etd",
