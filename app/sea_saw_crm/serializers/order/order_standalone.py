@@ -12,10 +12,12 @@ from drf_writable_nested.mixins import UniqueFieldsMixin
 from ..base import BaseSerializer
 from ..shared import AttachmentSerializer
 from ..contact import ContactSerializer
+from ..company import CompanySerializer
 from .order_item import OrderItemSerializerForAdmin
 from ...models.order import Order
 from ...models.pipeline import Pipeline
 from ...models import Contact, Attachment
+from ...models.company import Company
 from ...mixins import ReusableAttachmentWriteMixin
 from ..mixins import PipelineSyncMixin
 
@@ -39,6 +41,16 @@ class OrderSerializerForOrderView(
     - Displays related_pipeline as nested object
     - Includes full order items and attachments
     """
+
+    company = CompanySerializer(read_only=True, label=_("Company"))
+    company_id = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(),
+        source="company",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Company ID"),
+    )
 
     contact = ContactSerializer(read_only=True, label=_("Contact"))
     contact_id = serializers.PrimaryKeyRelatedField(
@@ -87,6 +99,8 @@ class OrderSerializerForOrderView(
             "id",
             "order_code",
             "order_date",
+            "company",
+            "company_id",
             "contact",
             "contact_id",
             "etd",

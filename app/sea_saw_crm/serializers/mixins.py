@@ -32,6 +32,11 @@ class PipelineSyncMixin:
         pipeline = order.pipeline
         update_fields = []
 
+        # Sync company if changed
+        if pipeline.company != order.company:
+            pipeline.company = order.company
+            update_fields.append("company")
+
         # Sync contact if changed
         if pipeline.contact != order.contact:
             pipeline.contact = order.contact

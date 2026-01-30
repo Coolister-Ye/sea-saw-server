@@ -11,6 +11,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 
 from ..base import AbstractOrderBase
 from ..contact import Contact
+from ..company import Company
 from .enums import OrderStatusType
 from ...manager.order_model_manager import OrderModelManager
 
@@ -37,12 +38,22 @@ class Order(AbstractOrderBase):
         verbose_name=_("Order Date"),
     )
 
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders",
+        verbose_name=_("Company"),
+        help_text=_("The company associated with this order."),
+    )
+
     contact = models.ForeignKey(
         Contact,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="contacts",
+        related_name="orders",
         verbose_name=_("Contact"),
     )
 
