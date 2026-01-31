@@ -245,7 +245,7 @@ docker exec -it sea-saw-backend bash
 pip install python-magic==0.4.27
 
 # 或者重新构建容器
-cd /opt/sea-saw/backend
+cd /home/sea-saw/sea-saw-server
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
@@ -272,7 +272,7 @@ git commit -m "Add file upload validators to Attachment model"
 ssh appuser@<server-ip>
 
 # 拉取最新的 gateway 代码
-cd /opt/sea-saw/gateway
+cd /home/sea-saw/sea-saw-gateway
 git pull origin main
 
 # 测试 nginx 配置

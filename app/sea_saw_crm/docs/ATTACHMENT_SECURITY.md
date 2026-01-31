@@ -185,7 +185,7 @@ docker logs sea-saw-gateway --tail 50
 docker exec sea-saw-gateway nginx -t
 
 # 重启gateway（如果nginx -t成功）
-cd /opt/sea-saw/gateway
+cd /home/sea-saw/sea-saw-gateway
 docker compose restart
 ```
 

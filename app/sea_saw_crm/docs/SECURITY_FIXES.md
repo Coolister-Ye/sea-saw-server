@@ -205,7 +205,7 @@ def dynamic_import_model(app_name, model_name):
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 
 # 将输出添加到 .env/.prod 文件
-echo "SECRET_KEY=<生成的密钥>" >> /opt/sea-saw/backend/.env/.prod
+echo "SECRET_KEY=<生成的密钥>" >> /home/sea-saw/sea-saw-server/.env/.prod
 ```
 
 #### 2. 设置数据库密码
@@ -230,13 +230,13 @@ POSTGRES_PASSWORD=<相同的强密码>
 
 ```bash
 ssh appuser@<server-ip>
-cd /opt/sea-saw/backend
+cd /home/sea-saw/sea-saw-server
 cp -r .env .env.backup.$(date +%Y%m%d)
 ```
 
 #### 2. 更新环境变量
 
-编辑 `/opt/sea-saw/backend/.env/.prod`:
+编辑 `/home/sea-saw/sea-saw-server/.env/.prod`:
 ```bash
 # 添加SECRET_KEY（必需）
 SECRET_KEY=<你生成的密钥>
@@ -306,7 +306,7 @@ docker exec -it sea-saw-backend python manage.py shell
 
 ```bash
 # 1. 恢复旧版本代码
-cd /opt/sea-saw/backend
+cd /home/sea-saw/sea-saw-server
 git checkout <上一个commit-id>
 
 # 2. 重新部署

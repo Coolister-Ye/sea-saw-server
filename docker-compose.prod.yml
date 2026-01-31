@@ -91,9 +91,6 @@ services:
   celery_worker:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     container_name: sea-saw-celery-worker
-    build:
-      context: ./app
-      dockerfile: ./compose/prod/django/Dockerfile
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
@@ -126,9 +123,6 @@ services:
   celery_beat:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     container_name: sea-saw-celery-beat
-    build:
-      context: ./app
-      dockerfile: ./compose/prod/django/Dockerfile
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
@@ -155,9 +149,6 @@ services:
   flower:
     image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
     container_name: sea-saw-flower
-    build:
-      context: ./app
-      dockerfile: ./compose/prod/django/Dockerfile
     command: /home/app/sh/start-flower.sh
     env_file:
       - .env/.prod
