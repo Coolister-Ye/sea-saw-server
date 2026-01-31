@@ -46,7 +46,7 @@ RUN addgroup --system app && \
     adduser --system --group app
 
 # Create directory structure
-RUN mkdir -p /home/app/web/staticfiles /home/app/sh
+RUN mkdir -p /home/app/web/staticfiles /home/app/web/mediafiles /home/app/sh
 
 # Set environment variables
 ENV HOME=/home/app \

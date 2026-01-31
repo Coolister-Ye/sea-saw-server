@@ -158,6 +158,7 @@ class BaseMetadata(SimpleMetadata):
 
         attrs = [
             "read_only",
+            "write_only",
             "label",
             "help_text",
             "min_length",
