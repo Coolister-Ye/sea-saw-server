@@ -18,6 +18,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from ..base import BaseModel
 from .enums import AttachmentType
+from ...validators import validate_file_upload
 
 
 def attachment_file_path(instance, filename):
@@ -102,8 +103,9 @@ class Attachment(BaseModel):
     # File fields
     file = models.FileField(
         upload_to=attachment_file_path,
+        validators=[validate_file_upload],
         verbose_name=_("File"),
-        help_text=_("Upload file. Files are organized by entity type and date."),
+        help_text=_("Upload file. Files are organized by entity type and date. Max size: 50MB. Allowed types: PDF, Office documents, images, archives."),
     )
 
     file_name = models.CharField(

@@ -49,6 +49,29 @@ from ..payment.payment_nested import PaymentNestedSerializer as PaymentRecordSer
 
 
 # =====================================================
+# Shared field groups
+# =====================================================
+
+BASE_FIELDS = [
+    "id",
+    "pipeline_code",
+    "pipeline_type",
+    "status",
+    "active_entity",
+    "order",
+    "company",
+    "company_id",
+    "contact",
+    "contact_id",
+    "order_date",
+    "confirmed_at",
+    "completed_at",
+    "cancelled_at",
+    "remark",
+]
+
+
+# =====================================================
 # Base Serializers
 # =====================================================
 
@@ -80,7 +103,17 @@ class BasePipelineSerializer(BaseSerializer):
 
     class Meta(BaseSerializer.Meta):
         model = Pipeline
-        fields = "__all__"
+        # Explicitly define all fields to prevent mass assignment vulnerability
+        # Child classes can extend this list with additional fields
+        fields = BASE_FIELDS + [
+            "owner",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+            "allowed_actions",
+        ]
+        read_only_fields = ["id", "status", "created_at", "updated_at", "allowed_actions"]
 
     def get_allowed_actions(self, obj):
         request = self.context.get("request")
@@ -88,29 +121,6 @@ class BasePipelineSerializer(BaseSerializer):
             return []
         # Use PipelineStateService for state management
         return PipelineStateService.get_allowed_actions(obj, request.user)
-
-
-# =====================================================
-# Shared field groups
-# =====================================================
-
-BASE_FIELDS = [
-    "id",
-    "pipeline_code",
-    "pipeline_type",
-    "status",
-    "active_entity",
-    "order",
-    "company",
-    "company_id",
-    "contact",
-    "contact_id",
-    "order_date",
-    "confirmed_at",
-    "completed_at",
-    "cancelled_at",
-    "remark",
-]
 
 
 # =====================================================

@@ -28,7 +28,6 @@ class DateTimeAwareFilter(Filter):
                 if lookup == "exact":
                     start = datetime.combine(parsed, time.min)
                     end = datetime.combine(parsed, time.max)
-                    print("start-end", start, end)
                     return qs.filter(**{f"{field_name}__range": (start, end)})
                 else:
                     value = datetime.combine(parsed, time.min)
@@ -38,7 +37,6 @@ class DateTimeAwareFilter(Filter):
         # Range value: should be a tuple/list or dict
         elif lookup == "range":
             start, end = None, None
-            print("range value", value)
             if isinstance(value, (list, tuple)) and len(value) == 2:
                 start = parse_date(value[0]) if isinstance(value[0], str) else value[0]
                 end = parse_date(value[1]) if isinstance(value[1], str) else value[1]

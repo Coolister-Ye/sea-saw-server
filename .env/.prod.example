@@ -1,8 +1,19 @@
 # Django Core Settings
 # Disable debug mode in production (never set to 1 in production)
 DEBUG=0
-# SECURITY WARNING: Generate a strong random secret key for production
-SECRET_KEY=your-secret-key-here-CHANGE-THIS-IN-PRODUCTION
+
+# CRITICAL: Django Secret Key (REQUIRED - NO DEFAULT VALUE)
+# This key is used for cryptographic signing (sessions, cookies, tokens, etc.)
+# Generate a secure random key with this command:
+#   python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+# SECURITY REQUIREMENTS:
+#   - Must be set via environment variable (no default fallback)
+#   - Must be at least 50 characters long
+#   - Must be cryptographically random
+#   - NEVER commit to version control
+#   - NEVER reuse from development environment
+#   - Rotate periodically (every 90 days recommended)
+SECRET_KEY=
 # Space-separated list of allowed hosts/domains (replace with your actual domain)
 DJANGO_ALLOWED_HOSTS=yourdomain.com www.yourdomain.com
 
@@ -17,9 +28,17 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 SQL_ENGINE=django.db.backends.postgresql
 # Database name for production environment
 SQL_DATABASE=sea_saw_prod
-# Database user credentials (IMPORTANT: use strong password in production)
+
+# CRITICAL: Database Credentials (REQUIRED - NO DEFAULT VALUES)
+# SECURITY REQUIREMENTS:
+#   - Must be set via environment variables
+#   - Password must be strong (min 16 chars, mixed case, numbers, symbols)
+#   - NEVER use default credentials ('user'/'password')
+#   - NEVER commit to version control
+#   - Rotate passwords periodically
+# Generate strong password with: openssl rand -base64 32
 SQL_USER=sea_saw_prod_user
-SQL_PASSWORD=CHANGE-THIS-STRONG-PASSWORD
+SQL_PASSWORD=
 # Database host (use 'db' for Docker container, 'localhost' for local PostgreSQL)
 SQL_HOST=db
 # PostgreSQL default port

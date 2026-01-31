@@ -1,8 +1,14 @@
 # Django Core Settings
 # Enable debug mode for detailed error pages and development features
 DEBUG=1
-# Secret key for cryptographic signing (change this in production)
-SECRET_KEY=your-secret-key-here-change-in-production
+
+# CRITICAL: Django Secret Key (REQUIRED)
+# This key is used for cryptographic signing (sessions, cookies, tokens, etc.)
+# Generate a secure random key with this command:
+#   python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+# NEVER commit the actual secret key to version control
+# NEVER use the same key in development and production
+SECRET_KEY=django-insecure-dev-key-replace-with-generated-key-for-security
 # Space-separated list of allowed hosts/domains ([::1] is IPv6 localhost)
 DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
 

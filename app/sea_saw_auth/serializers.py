@@ -8,13 +8,22 @@ from sea_saw_auth.models import User, Role
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = "__all__"
+        fields = ["id", "name", "permissions"]
+        read_only_fields = ["id"]
 
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
-        fields = "__all__"
+        fields = [
+            "id",
+            "role_name",
+            "role_type",
+            "parent",
+            "is_peer_visible",
+            "description",
+        ]
+        read_only_fields = ["id"]
 
 
 class UserSerializer(serializers.ModelSerializer):

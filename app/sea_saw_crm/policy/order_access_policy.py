@@ -187,12 +187,10 @@ class OrderAccessPolicy(AccessPolicy):
     @classmethod
     def scope_queryset(cls, request, qs):
         role = getattr(request.user.role, "role_type", None)
-        print("role", role)
 
         if role == "SALE":
             user = request.user
             get_visibles = getattr(user, "get_all_visible_users", None)
-            print("get_visibles", get_visibles)
             visible_users = get_visibles() if callable(get_visibles) else [user]
             return qs.filter(owner__in=visible_users)
 

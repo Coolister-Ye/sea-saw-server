@@ -13,6 +13,7 @@ from .production_view import ProductionOrderViewSet, NestedProductionOrderViewSe
 from .purchase_view import NestedPurchaseOrderViewSet
 from .outbound_view import NestedOutboundOrderViewSet
 from .content_type_view import ContentTypeView
+from .attachment_view import SecureAttachmentDownloadView
 
 __all__ = [
     "FieldListView",
@@ -30,4 +31,5 @@ __all__ = [
     "NestedPurchaseOrderViewSet",
     "NestedOutboundOrderViewSet",
     "ContentTypeView",
+    "SecureAttachmentDownloadView",
 ]

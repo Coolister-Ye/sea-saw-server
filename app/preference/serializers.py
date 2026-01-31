@@ -1,6 +1,9 @@
+import logging
 from rest_framework import serializers
 
 from preference.models import UserColumnPreference
+
+logger = logging.getLogger(__name__)
 
 
 class UserColumnPreferenceSerializer(serializers.ModelSerializer):
@@ -13,8 +16,8 @@ class UserColumnPreferenceSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # 获取当前用户
         request = self.context.get('request')
-        print("request.user", request.user)
         if request and request.user:
+            logger.debug(f"Creating preference for user: {request.user}")
             validated_data["user"] = request.user
         return super().create(validated_data)
 

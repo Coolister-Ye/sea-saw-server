@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from ..base import BaseSerializer
@@ -39,10 +40,26 @@ class BaseAttachmentSerializer(BaseSerializer):
         return super().to_internal_value(data)
 
     def get_file_url(self, obj):
-        if not obj.file:
+        """
+        Generate secure download URL for attachment.
+
+        Uses the protected download endpoint instead of direct media URL.
+        This ensures permission checks are enforced on every download.
+
+        Returns:
+            str: URL to the secure download endpoint
+        """
+        if not obj.file or not obj.pk:
             return None
 
         request = self.context.get("request")
+
+        # Generate URL to the secure download endpoint
+        download_path = reverse(
+            "sea-saw-crm:attachment-download",
+            kwargs={"attachment_id": obj.pk}
+        )
+
         if request:
-            return request.build_absolute_uri(obj.file.url)
-        return obj.file.url
+            return request.build_absolute_uri(download_path)
+        return download_path

@@ -20,13 +20,25 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-!46^gn^&egu^@5%k9l(_b$wv^f3a=3n4i*u909dzm-@*jdmp*d"
-)
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "0").lower() in ("true", "1", "yes")
+# Default to DEBUG=True for local development
+# Production should explicitly set DEBUG=0 in environment configuration
+DEBUG = os.environ.get("DEBUG", "1").lower() in ("true", "1", "yes")
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# In production (DEBUG=False): SECRET_KEY must be set via environment variable
+# In development (DEBUG=True): fallback to insecure default for convenience
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        # Development: use insecure default key (WARNING: never use in production!)
+        SECRET_KEY = "django-insecure-dev-key-FOR-DEVELOPMENT-ONLY-change-in-production"
+    else:
+        # Production: require SECRET_KEY to be set
+        raise ValueError(
+            "SECRET_KEY environment variable is not set. "
+            "Generate a secure key with: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'"
+        )
 
 # Parse ALLOWED_HOSTS from environment variable
 ALLOWED_HOSTS = [
@@ -115,14 +127,32 @@ TEMPLATES = [
 # DATABASE
 # =============================================================================
 
+# Database configuration
+# For development: SQLite with defaults is allowed
+# For production: PostgreSQL credentials must be set via environment variables
+DB_ENGINE = os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3")
+DB_NAME = os.environ.get("SQL_DATABASE", str(BASE_DIR / "db.sqlite3"))
+DB_USER = os.environ.get("SQL_USER")
+DB_PASSWORD = os.environ.get("SQL_PASSWORD")
+DB_HOST = os.environ.get("SQL_HOST", "localhost")
+DB_PORT = os.environ.get("SQL_PORT", "5432")
+
+# Security: require credentials for PostgreSQL (production)
+if "postgresql" in DB_ENGINE:
+    if not DB_USER or not DB_PASSWORD:
+        raise ValueError(
+            "SQL_USER and SQL_PASSWORD environment variables must be set for PostgreSQL. "
+            "Never use default credentials in production."
+        )
+
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", str(BASE_DIR / "db.sqlite3")),
-        "USER": os.environ.get("SQL_USER", "user"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
+        "ENGINE": DB_ENGINE,
+        "NAME": DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
     }
 }
 

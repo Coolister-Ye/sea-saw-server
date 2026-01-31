@@ -26,6 +26,27 @@ from .order_item import (
 )
 
 # =====================================================
+# Shared field groups
+# =====================================================
+
+BASE_FIELDS = [
+    "id",
+    "order_code",
+    "order_date",
+    "company",
+    "company_id",
+    "contact",
+    "contact_id",
+    "etd",
+    "status",
+    "active_entity",
+    "loading_port",
+    "destination_port",
+    "shipment_term",
+]
+
+
+# =====================================================
 # Base Serializer for Nested Operations
 # =====================================================
 
@@ -84,29 +105,22 @@ class BaseOrderSerializer(
 
     class Meta(BaseSerializer.Meta):
         model = Order
-        fields = "__all__"
-        read_only_fields = ["status"]
-
-
-# =====================================================
-# Shared field groups
-# =====================================================
-
-BASE_FIELDS = [
-    "id",
-    "order_code",
-    "order_date",
-    "company",
-    "company_id",
-    "contact",
-    "contact_id",
-    "etd",
-    "status",
-    "active_entity",
-    "loading_port",
-    "destination_port",
-    "shipment_term",
-]
+        # Explicitly define all fields to prevent mass assignment vulnerability
+        # Child classes can extend this list with additional fields
+        fields = BASE_FIELDS + [
+            "inco_terms",
+            "currency",
+            "deposit",
+            "balance",
+            "total_amount",
+            "comment",
+            "owner",
+            "created_by",
+            "updated_by",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["status", "id", "created_at", "updated_at"]
 
 
 # =====================================================

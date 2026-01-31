@@ -101,18 +101,74 @@ def flatten(queryset, serializer):
     # 获取字段的头部信息
     headers = flatten_header(serialized)
 
-    print("@@@headers", headers)
-
     # 对序列化后的数据进行扁平化处理
     data = traverse(serialized.data, serialized)
 
     return data, headers
 
 
+# Security: Whitelist of allowed apps and models for dynamic import
+# This prevents code injection via importlib
+ALLOWED_MODELS = {
+    'sea_saw_crm': [
+        'Order', 'Contract', 'Company', 'Contact', 'Pipeline',
+        'Payment', 'ProductionOrder', 'PurchaseOrder', 'OutboundOrder',
+        'Supplier', 'Product', 'Attachment'
+    ],
+    'sea_saw_auth': [
+        'User', 'Role'
+    ],
+    'download': [
+        'DownloadTask'
+    ],
+    # Add more apps and models as needed
+}
+
+ALLOWED_SERIALIZERS = {
+    'sea_saw_crm': [
+        'OrderSerializer', 'OrderSerializer4Prod', 'ContractSerializer',
+        'CompanySerializer', 'ContactSerializer', 'PipelineSerializer',
+        'PaymentSerializer', 'ProductionOrderSerializer',
+        'PurchaseOrderSerializer', 'OutboundOrderSerializer',
+        'SupplierSerializer', 'ProductSerializer'
+    ],
+    'sea_saw_auth': [
+        'UserSerializer', 'RoleSerializer'
+    ],
+    'download': [
+        'DownloadTaskSerializer'
+    ],
+    # Add more apps and serializers as needed
+}
+
+
 def dynamic_import_model(app_name, model_name):
     """
     Dynamically import a model given an app name and model name as strings.
+
+    Security: Uses whitelist to prevent arbitrary module imports.
+
+    Args:
+        app_name: Name of the Django app (must be in ALLOWED_MODELS)
+        model_name: Name of the model class (must be in ALLOWED_MODELS[app_name])
+
+    Raises:
+        ValueError: If app_name or model_name is not in whitelist
+        Exception: If import fails
     """
+    # Security check: validate against whitelist
+    if app_name not in ALLOWED_MODELS:
+        raise ValueError(
+            f"Security Error: App '{app_name}' is not in the allowed apps list. "
+            f"Allowed apps: {list(ALLOWED_MODELS.keys())}"
+        )
+
+    if model_name not in ALLOWED_MODELS[app_name]:
+        raise ValueError(
+            f"Security Error: Model '{model_name}' is not allowed for app '{app_name}'. "
+            f"Allowed models: {ALLOWED_MODELS[app_name]}"
+        )
+
     try:
         # Construct the module path (e.g., 'myapp.models')
         module_path = f"{app_name}.models"
@@ -132,7 +188,30 @@ def dynamic_import_model(app_name, model_name):
 def dynamic_import_serializer(app_name, serializer_name):
     """
     Dynamically import a serializer given an app name and serializer name as strings.
+
+    Security: Uses whitelist to prevent arbitrary module imports.
+
+    Args:
+        app_name: Name of the Django app (must be in ALLOWED_SERIALIZERS)
+        serializer_name: Name of the serializer class (must be in ALLOWED_SERIALIZERS[app_name])
+
+    Raises:
+        ValueError: If app_name or serializer_name is not in whitelist
+        Exception: If import fails
     """
+    # Security check: validate against whitelist
+    if app_name not in ALLOWED_SERIALIZERS:
+        raise ValueError(
+            f"Security Error: App '{app_name}' is not in the allowed apps list. "
+            f"Allowed apps: {list(ALLOWED_SERIALIZERS.keys())}"
+        )
+
+    if serializer_name not in ALLOWED_SERIALIZERS[app_name]:
+        raise ValueError(
+            f"Security Error: Serializer '{serializer_name}' is not allowed for app '{app_name}'. "
+            f"Allowed serializers: {ALLOWED_SERIALIZERS[app_name]}"
+        )
+
     try:
         # Construct the module path (e.g., 'myapp.serializers')
         module_path = f"{app_name}.serializers"

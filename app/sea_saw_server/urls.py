@@ -46,6 +46,10 @@ urlpatterns = [
     re_path(r"^auth/", include("djoser.urls")),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Only serve media files directly in development
+# In production, use secure download view with permission checks
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 # debug_toolbar.middleware.DebugToolbarMiddleware相关配置
 urlpatterns += [path("__debug__/", include("debug_toolbar.urls"))]

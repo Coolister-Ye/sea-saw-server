@@ -24,3 +24,4 @@ whitenoise==6.9.0
 pandas
 drf-proxy-pagination
 drf-access-policy===1.5.0
+python-magic==0.4.27  # File MIME type detection for upload security
