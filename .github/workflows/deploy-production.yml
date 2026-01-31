@@ -229,9 +229,15 @@ jobs:
               echo "🚀 Starting services with registry images..."
               docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
             else
-              # Local 模式：本地构建
-              echo "🔨 Building and starting services locally..."
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --build --force-recreate
+              # Local 模式：从本地代码重新构建
+              echo "🗑️ Removing old registry images to force local rebuild..."
+              docker rmi ${DOCKER_REGISTRY}/sea-saw/backend:latest || true
+
+              echo "🔨 Building services from local code (no cache)..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml build --no-cache
+
+              echo "🚀 Starting services with locally built images..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
             fi
 
             # 等待服务就绪
