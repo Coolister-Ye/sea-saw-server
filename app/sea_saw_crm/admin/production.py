@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
-from ..models import ProductionOrder, ProductionItem, Attachment
+from sea_saw_attachment.models import Attachment
+from ..models import ProductionOrder, ProductionItem
 from .order import OrderItem
 
 

@@ -6,7 +6,7 @@ from drf_writable_nested.mixins import UniqueFieldsMixin
 from ..base import BaseSerializer
 from ..shared import AttachmentSerializer
 from ...models.payment import Payment
-from ...models import Attachment
+from sea_saw_attachment.models import Attachment
 from ...mixins import ReusableAttachmentWriteMixin
 
 

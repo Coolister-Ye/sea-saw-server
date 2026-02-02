@@ -3,7 +3,7 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
 from ..models.payment import Payment
-from ..models import Attachment
+from sea_saw_attachment.models import Attachment
 
 
 class PaymentAttachmentInline(GenericTabularInline):

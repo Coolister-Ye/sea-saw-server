@@ -9,7 +9,7 @@ from .purchase_item import (
 )
 
 from ...models.purchase import PurchaseOrder
-from ...models import Attachment
+from sea_saw_attachment.models import Attachment
 
 from django.utils.translation import gettext_lazy as _
 from drf_writable_nested.mixins import UniqueFieldsMixin

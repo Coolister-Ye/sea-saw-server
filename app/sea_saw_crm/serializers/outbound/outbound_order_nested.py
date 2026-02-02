@@ -16,7 +16,7 @@ from .outbound_item import (
 )
 
 from ...models.outbound import OutboundOrder
-from ...models import Attachment
+from sea_saw_attachment.models import Attachment
 from ...mixins import ReusableAttachmentWriteMixin
 
 from django.utils.translation import gettext_lazy as _

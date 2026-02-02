@@ -1,7 +1,6 @@
-from .base_attachment import BaseAttachmentSerializer
-from .attachment import AttachmentSerializer
+# Re-export AttachmentSerializer from sea_saw_attachment app
+from sea_saw_attachment.serializers import AttachmentSerializer
 
 __all__ = [
-    "BaseAttachmentSerializer",
     "AttachmentSerializer",
 ]

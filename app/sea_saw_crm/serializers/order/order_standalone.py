@@ -16,7 +16,8 @@ from ..company import CompanySerializer
 from .order_item import OrderItemSerializerForAdmin
 from ...models.order import Order
 from ...models.pipeline import Pipeline
-from ...models import Contact, Attachment
+from sea_saw_attachment.models import Attachment
+from ...models import Contact
 from ...models.company import Company
 from ...mixins import ReusableAttachmentWriteMixin
 from ..mixins import PipelineSyncMixin

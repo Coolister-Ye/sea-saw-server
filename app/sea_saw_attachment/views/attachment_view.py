@@ -23,8 +23,9 @@ class SecureAttachmentDownloadView(APIView):
     3. File path is validated to prevent directory traversal attacks
     4. Uses X-Accel-Redirect (Nginx) for efficient file serving in production
 
-    URL Pattern: /api/sea-saw-crm/attachments/<attachment_id>/download/
+    URL Pattern: /api/attachments/<attachment_id>/download/
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, attachment_id):
@@ -71,17 +72,18 @@ class SecureAttachmentDownloadView(APIView):
             protected_url = f"/protected-media/{relative_path}"
 
             response = Response(status=status.HTTP_200_OK)
-            response['X-Accel-Redirect'] = protected_url
-            response['Content-Type'] = self._get_content_type(attachment.file_name)
-            response['Content-Disposition'] = f'attachment; filename="{attachment.file_name}"'
+            response["X-Accel-Redirect"] = protected_url
+            response["Content-Type"] = self._get_content_type(attachment.file_name)
+            response[
+                "Content-Disposition"
+            ] = f'attachment; filename="{attachment.file_name}"'
             return response
 
         # Development: serve file directly with Django
         response = FileResponse(
-            open(file_path, 'rb'),
-            content_type=self._get_content_type(attachment.file_name)
+            open(file_path, "rb"), content_type=self._get_content_type(attachment.file_name)
         )
-        response['Content-Disposition'] = f'attachment; filename="{attachment.file_name}"'
+        response["Content-Disposition"] = f'attachment; filename="{attachment.file_name}"'
         return response
 
     def _has_permission(self, user, attachment):
@@ -115,28 +117,24 @@ class SecureAttachmentDownloadView(APIView):
             return True
 
         # Check if user is the owner of the related entity
-        if hasattr(related_object, 'owner') and related_object.owner == user:
+        if hasattr(related_object, "owner") and related_object.owner == user:
             return True
 
         # Check if user created the related entity
-        if hasattr(related_object, 'created_by') and related_object.created_by == user:
+        if hasattr(related_object, "created_by") and related_object.created_by == user:
             return True
 
         # Check if user updated the related entity (has edit access)
-        if hasattr(related_object, 'updated_by') and related_object.updated_by == user:
+        if hasattr(related_object, "updated_by") and related_object.updated_by == user:
             return True
 
         # Role-based access: check if user can see the entity owner
         # based on role hierarchy (using the existing get_all_visible_users method)
-        if hasattr(related_object, 'owner') and related_object.owner:
-            visible_users = user.get_all_visible_users()
-            if related_object.owner in visible_users:
-                return True
-
-        # Same department access (optional - uncomment if needed)
-        # if hasattr(related_object, 'owner') and related_object.owner:
-        #     if user.department and user.department == related_object.owner.department:
-        #         return True
+        if hasattr(related_object, "owner") and related_object.owner:
+            if hasattr(user, "get_all_visible_users"):
+                visible_users = user.get_all_visible_users()
+                if related_object.owner in visible_users:
+                    return True
 
         # Default: deny access
         return False
@@ -152,5 +150,6 @@ class SecureAttachmentDownloadView(APIView):
             str: MIME type
         """
         import mimetypes
+
         content_type, _ = mimetypes.guess_type(filename)
-        return content_type or 'application/octet-stream'
+        return content_type or "application/octet-stream"

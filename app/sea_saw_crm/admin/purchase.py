@@ -5,10 +5,10 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.utils.translation import gettext_lazy as _
 
+from sea_saw_attachment.models import Attachment
 from ..models import (
     PurchaseOrder,
     PurchaseItem,
-    Attachment,
 )
 
 

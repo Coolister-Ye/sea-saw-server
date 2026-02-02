@@ -1,4 +1,4 @@
-from ..models import Attachment
+from sea_saw_attachment.models import Attachment
 
 
 class ReusableAttachmentWriteMixin:

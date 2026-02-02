@@ -3,7 +3,7 @@ from .company import Company
 from .contact import Contact
 from .contract import Contract
 from .supplier import Supplier
-from .attachment import Attachment, AttachmentType
+# Attachment moved to sea_saw_attachment app
 from .order import Order, OrderItem, OrderStatusType
 from .production import ProductionOrder, ProductionItem
 from .purchase import PurchaseOrder, PurchaseItem
@@ -18,9 +18,6 @@ __all__ = [
     "Contact",
     "Contract",
     "Supplier",
-    # Unified Attachment
-    "Attachment",
-    "AttachmentType",
     # Order
     "Order",
     "OrderItem",

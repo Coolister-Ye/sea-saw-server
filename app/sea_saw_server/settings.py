@@ -73,7 +73,9 @@ INSTALLED_APPS = [
     "djoser",
     "debug_toolbar",
     "whitenoise.runserver_nostatic",
-    # Local apps
+    # Local apps - ordered by dependency
+    "sea_saw_base",  # Base models and utilities (MUST be first)
+    "sea_saw_attachment",  # Unified attachment management
     "download",
     "sea_saw_auth",
     "sea_saw_crm",

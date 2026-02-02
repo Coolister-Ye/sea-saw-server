@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
-from ..models import OutboundOrder, OutboundItem, Attachment
+from sea_saw_attachment.models import Attachment
+from ..models import OutboundOrder, OutboundItem 
 
 
 class OutboundItemInline(admin.TabularInline):

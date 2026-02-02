@@ -17,7 +17,7 @@ from .views import (
     NestedPurchaseOrderViewSet,
     NestedOutboundOrderViewSet,
     ContentTypeView,
-    SecureAttachmentDownloadView,
+    # SecureAttachmentDownloadView moved to sea_saw_attachment app
 )
 
 router = DefaultRouter()
@@ -57,9 +57,5 @@ app_name = "sea-saw-crm"
 urlpatterns = [
     path("", include(router.urls)),
     path("content-types/", ContentTypeView.as_view(), name="content-types"),
-    path(
-        "attachments/<int:attachment_id>/download/",
-        SecureAttachmentDownloadView.as_view(),
-        name="attachment-download",
-    ),
+    # Attachment download endpoint moved to /api/attachments/ (sea_saw_attachment app)
 ]

@@ -98,7 +98,7 @@ class OutboundOrder(BaseModel):
 
     # GenericRelation to unified Attachment model
     attachments = GenericRelation(
-        "Attachment",
+        "sea_saw_attachment.Attachment",
         content_type_field="content_type",
         object_id_field="object_id",
         related_query_name="outbound_order",

@@ -37,6 +37,7 @@ urlpatterns = [
     path("api/auth/dj/", include("dj_rest_auth.urls")),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/sea-saw-crm/", include("sea_saw_crm.urls")),
+    path("api/attachments/", include("sea_saw_attachment.urls")),  # Attachment endpoints
     path("api/auth/", include("sea_saw_auth.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

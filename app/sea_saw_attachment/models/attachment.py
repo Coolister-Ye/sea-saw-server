@@ -16,36 +16,10 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-from ..base import BaseModel
+from sea_saw_base.models import BaseModel
 from .enums import AttachmentType
-from ...validators import validate_file_upload
-
-
-def attachment_file_path(instance, filename):
-    """
-    Generate file upload path based on related entity type
-
-    Format: attachments/{entity_type}/{year}/{month}/{day}/{unique_filename}
-    Example: attachments/order/2024/01/15/abc123_document.pdf
-    """
-    from django.utils import timezone
-    import uuid
-    import os
-
-    # Get file extension
-    ext = os.path.splitext(filename)[1]
-
-    # Generate unique filename
-    unique_filename = f"{uuid.uuid4().hex[:12]}{ext}"
-
-    # Get entity type from content_type
-    entity_type = "unknown"
-    if instance.content_type:
-        entity_type = instance.content_type.model
-
-    # Generate path
-    now = timezone.now()
-    return f"attachments/{entity_type}/{now.year}/{now.month:02d}/{now.day:02d}/{unique_filename}"
+from ..validators import validate_file_upload
+from ..utils import attachment_file_path
 
 
 class Attachment(BaseModel):
@@ -105,7 +79,10 @@ class Attachment(BaseModel):
         upload_to=attachment_file_path,
         validators=[validate_file_upload],
         verbose_name=_("File"),
-        help_text=_("Upload file. Files are organized by entity type and date. Max size: 50MB. Allowed types: PDF, Office documents, images, archives."),
+        help_text=_(
+            "Upload file. Files are organized by entity type and date. "
+            "Max size: 50MB. Allowed types: PDF, Office documents, images, archives."
+        ),
     )
 
     file_name = models.CharField(
