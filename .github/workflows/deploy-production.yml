@@ -217,7 +217,7 @@ jobs:
               fi
             done
 
-            # 根据模式选择部署方式
+            # 根据模式选择部署方式并设置环境变量
             if [ "${BUILD_MODE}" = "registry" ]; then
               # Registry 模式：登录并拉取镜像
               echo "🔐 Logging in to Tencent Container Registry..."
@@ -225,10 +225,10 @@ jobs:
 
               echo "📥 Pulling latest Docker images from registry..."
               export BACKEND_IMAGE=${DOCKER_REGISTRY}/sea-saw/backend:latest
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
+              BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
 
               echo "🚀 Starting services with registry images..."
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
+              BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
             else
               # Local 模式：从本地代码重新构建
               echo "🗑️ Removing old images to force local rebuild..."
@@ -237,27 +237,27 @@ jobs:
 
               echo "🔨 Building services from local code (no cache)..."
               export BACKEND_IMAGE=sea-saw-backend:local
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml build --no-cache
+              BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml build --no-cache
 
               echo "🚀 Starting services with locally built images..."
-              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
+              BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
             fi
 
             # 等待服务就绪
             echo "⏳ Waiting for services to be healthy..."
             sleep 30
 
-            # 运行数据库迁移
+            # 运行数据库迁移（使用已设置的 BACKEND_IMAGE）
             echo "🗄️ Running database migrations..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
+            BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
 
             # 收集静态文件
             echo "📦 Collecting static files..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
+            BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
 
             # 检查服务状态
             echo "🏥 Checking service health..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml ps
+            BACKEND_IMAGE=\${BACKEND_IMAGE} docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml ps
 
             # 清理旧镜像
             echo "🧹 Cleaning up old images..."
