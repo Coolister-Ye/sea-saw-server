@@ -3,7 +3,7 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 
 from sea_saw_attachment.models import Attachment
-from sea_saw_warehouse.models import OutboundOrder, OutboundItem 
+from sea_saw_warehouse.models import OutboundOrder, OutboundItem
 
 
 class OutboundItemInline(admin.TabularInline):

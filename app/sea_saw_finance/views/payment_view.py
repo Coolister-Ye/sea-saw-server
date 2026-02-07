@@ -265,7 +265,10 @@ class NestedPaymentViewSet(
         if not param_type:
             raise ValidationError(
                 {
-                    "related_object": "One of 'order', 'purchase_order', 'production_order', or 'outbound_order' query parameter is required"
+                    "related_object": (
+                        "One of 'order', 'purchase_order', 'production_order', "
+                        "or 'outbound_order' query parameter is required"
+                    )
                 }
             )
 

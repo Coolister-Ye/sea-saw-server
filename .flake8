@@ -1,0 +1,51 @@
+[flake8]
+# flake8 配置文件
+# 适用于 Django 项目，兼容现有代码库
+
+# 最大行长度（适当宽松，便于 Django 项目）
+max-line-length = 120
+
+# 忽略的错误代码
+ignore =
+    # E203: 切片中的空格（与 Black 冲突）
+    E203,
+    # W503: 二元运算符前的换行（与 Black 冲突）
+    W503,
+    # E402: module level import not at top of file (Django 中常见)
+    E402,
+    # F401: 导入但未使用（在 __init__.py 和空文件中常见）
+    F401,
+    # F811: 重复定义（可能是装饰器或重载）
+    F811,
+
+# 排除的目录和文件
+exclude =
+    .git,
+    __pycache__,
+    */migrations/*,
+    */settings.py,
+    venv,
+    env,
+    .venv,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .tox,
+    node_modules,
+    db.sqlite3*,
+
+# 每个文件的最大复杂度（暂时提高，避免阻塞）
+max-complexity = 15
+
+# 显示统计信息
+statistics = True
+count = True
+
+# 每行允许的忽略注释
+# 允许使用 # noqa 注释来忽略特定行的检查
+per-file-ignores =
+    # 测试文件允许未使用的导入
+    */tests.py:F401
+    # __init__.py 文件允许未使用的导入
+    */__init__.py:F401

@@ -4,7 +4,7 @@ from safedelete.admin import SafeDeleteAdmin, highlight_deleted
 from django.utils.translation import gettext_lazy as _
 
 from sea_saw_attachment.models import Attachment
-from ..models import Order, OrderItem 
+from ..models import Order, OrderItem
 
 
 class OrderItemInline(admin.TabularInline):
