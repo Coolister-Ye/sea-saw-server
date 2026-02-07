@@ -20,7 +20,7 @@ app.autodiscover_tasks()
 # Celery Beat 定时任务配置
 app.conf.beat_schedule = {
     'cleanup-expired-downloads': {
-        'task': 'download.tasks.cleanup_expired_downloads',
+        'task': 'sea_saw_download.tasks.cleanup_expired_downloads',
         'schedule': crontab(hour=2, minute=0),  # 每天凌晨2点执行
         'options': {
             'description': '清理过期的下载文件（超过7天）',

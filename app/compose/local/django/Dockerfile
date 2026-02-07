@@ -13,7 +13,8 @@ ENV SHELL_DIR=/usr/src/sh \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         netcat-openbsd \
-        curl && \
+        curl \
+        libmagic1 && \
     rm -rf /var/lib/apt/lists/*
 
 # 安装 pip 依赖

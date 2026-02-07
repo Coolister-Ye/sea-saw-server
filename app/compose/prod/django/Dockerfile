@@ -61,7 +61,8 @@ WORKDIR $APP_HOME
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         netcat-openbsd \
-        curl && \
+        curl \
+        libmagic1 && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy Python wheels and install dependencies

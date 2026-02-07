@@ -36,14 +36,21 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/dj/", include("dj_rest_auth.urls")),
     path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api/base/", include("sea_saw_base.urls")),  # Base/shared endpoints (content-types, fields)
     path("api/sea-saw-crm/", include("sea_saw_crm.urls")),
+    path("api/sales/", include("sea_saw_sales.urls")),  # Sales order endpoints
+    path("api/production/", include("sea_saw_production.urls")),  # Production order endpoints
+    path("api/procurement/", include("sea_saw_procurement.urls")),  # Procurement/Purchase order endpoints
+    path("api/warehouse/", include("sea_saw_warehouse.urls")),  # Warehouse/Outbound order endpoints
+    path("api/finance/", include("sea_saw_finance.urls")),  # Finance and payment endpoints
+    path("api/pipeline/", include("sea_saw_pipeline.urls")),  # Pipeline orchestration endpoints
     path("api/attachments/", include("sea_saw_attachment.urls")),  # Attachment endpoints
     path("api/auth/", include("sea_saw_auth.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    path("api/download/", include("download.urls")),
-    path("api/preference/", include("preference.urls")),
+    path("api/download/", include("sea_saw_download.urls")),
+    path("api/preference/", include("sea_saw_preference.urls")),
     re_path(r"^auth/", include("djoser.urls")),
 ]
 

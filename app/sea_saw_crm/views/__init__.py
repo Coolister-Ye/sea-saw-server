@@ -1,34 +1,7 @@
-from .field_view import FieldListView
-from .company_view import CompanyViewSet
+from .account_view import AccountViewSet
 from .contact_view import ContactViewSet
-from .order_view import OrderViewSet, NestedOrderViewSet
-from .pipeline_view import PipelineViewSet
-from .payment_view import (
-    PaymentViewSet,
-    NestedPaymentViewSet,
-    PaymentRecordViewSet,
-    NestedPaymentRecordViewSet,
-)
-from .production_view import ProductionOrderViewSet, NestedProductionOrderViewSet
-from .purchase_view import NestedPurchaseOrderViewSet
-from .outbound_view import NestedOutboundOrderViewSet
-from .content_type_view import ContentTypeView
-# SecureAttachmentDownloadView moved to sea_saw_attachment app
 
 __all__ = [
-    "FieldListView",
-    "CompanyViewSet",
+    "AccountViewSet",
     "ContactViewSet",
-    "OrderViewSet",
-    "NestedOrderViewSet",
-    "PipelineViewSet",
-    "PaymentViewSet",
-    "NestedPaymentViewSet",
-    "PaymentRecordViewSet",
-    "NestedPaymentRecordViewSet",
-    "ProductionOrderViewSet",
-    "NestedProductionOrderViewSet",
-    "NestedPurchaseOrderViewSet",
-    "NestedOutboundOrderViewSet",
-    "ContentTypeView",
 ]

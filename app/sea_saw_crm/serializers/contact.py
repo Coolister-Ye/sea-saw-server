@@ -1,28 +1,29 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from ..models.contact import Contact
-from ..models.company import Company
-
-from .base import BaseSerializer
-from .company import CompanySerializer
+from sea_saw_base.serializers import BaseSerializer
+from ..models import Contact, Account
+from .account import AccountMinimalSerializer
 
 
 class ContactSerializer(BaseSerializer):
     """
-    Serializer for the Contact model with optimized field order.
-    - Excludes created_by and updated_by fields
-    - company is displayed as nested object but accepts company_id on write
+    Serializer for the Contact model.
     """
 
-    company = CompanySerializer(read_only=True, label=_("Company"))
-    company_id = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(),
-        source="company",
+    account = AccountMinimalSerializer(
+        required=False,
+        allow_null=True,
+        read_only=True,
+        label=_("Account"),
+    )
+
+    account_id = serializers.IntegerField(
         required=False,
         allow_null=True,
         write_only=True,
-        label=_("Company ID"),
+        label=_("Account ID"),
+        help_text=_("ID of the account this contact belongs to."),
     )
 
     class Meta(BaseSerializer.Meta):
@@ -31,12 +32,24 @@ class ContactSerializer(BaseSerializer):
             "id",
             "name",
             "title",
-            "company",
-            "company_id",
             "email",
             "mobile",
             "phone",
+            "account",
+            "account_id",
             "owner",
+            "created_by",
+            "updated_by",
             "created_at",
             "updated_at",
         ]
+
+
+class ContactMinimalSerializer(BaseSerializer):
+    """
+    Minimal Contact serializer for nested display
+    """
+
+    class Meta(BaseSerializer.Meta):
+        model = Contact
+        fields = ["id", "name", "email", "title", "phone", "mobile"]

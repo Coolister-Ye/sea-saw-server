@@ -2,14 +2,13 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .base import BaseModel
-from .company import Company
+from sea_saw_base.models import BaseModel
 
 
 class Contact(BaseModel):
     """
     Represents a contact person with personal and communication details.
-    Supports additional custom attributes via JSON.
+    Now linked to unified Account model instead of Company.
     """
 
     name = models.CharField(
@@ -51,14 +50,14 @@ class Contact(BaseModel):
         help_text=_("Landline phone number of the contact."),
     )
 
-    company = models.ForeignKey(
-        Company,
+    account = models.ForeignKey(
+        "Account",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="contacts",
-        verbose_name=_("Company"),
-        help_text=_("The company associated with this contact."),
+        verbose_name=_("Account"),
+        help_text=_("The account (company) this contact belongs to."),
     )
 
     class Meta:

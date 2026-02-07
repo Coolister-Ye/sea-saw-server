@@ -21,7 +21,7 @@ from django.db.models.functions import (
     LPad,
 )
 
-from ..models.order import Order
+from sea_saw_sales.models import Order
 
 
 class BaseStatsAPIView(APIView):

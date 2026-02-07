@@ -76,10 +76,16 @@ INSTALLED_APPS = [
     # Local apps - ordered by dependency
     "sea_saw_base",  # Base models and utilities (MUST be first)
     "sea_saw_attachment",  # Unified attachment management
-    "download",
-    "sea_saw_auth",
-    "sea_saw_crm",
-    "preference",
+    "sea_saw_sales",  # Sales order management
+    "sea_saw_production",  # Production order management
+    "sea_saw_procurement",  # Procurement/Purchase order management
+    "sea_saw_warehouse",  # Warehouse/Outbound order management
+    "sea_saw_finance",  # Finance and payment management
+    "sea_saw_pipeline",  # Pipeline orchestration
+    "sea_saw_download",  # Download task management
+    "sea_saw_auth",  # Authentication and user management
+    "sea_saw_crm",  # CRM (companies, contacts)
+    "sea_saw_preference",  # User preferences and column visibility
 ]
 
 MIDDLEWARE = [
