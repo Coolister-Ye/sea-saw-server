@@ -204,13 +204,23 @@ jobs:
 
             # 更新代码到最新版本（使用 Git）
             echo "📥 Updating code from Git repository..."
+
+            # 确保工作目录干净（保留 .env 等本地配置）
+            echo "🔄 Preparing for update..."
             git fetch origin main
 
-            # 保存本地修改（如果有）并强制更新到最新版本
-            echo "🔄 Resetting to latest version..."
-            git stash push -m "Auto-stash before deployment" || true
-            git reset --hard origin/main
-            git clean -fd -e ".env" -e "staticfiles" -e "mediafiles"
+            # 如果有本地修改，先保存
+            if ! git diff --quiet || ! git diff --cached --quiet; then
+              echo "💾 Stashing local changes..."
+              git stash push -m "Auto-stash before deployment at \$(date)" || true
+            fi
+
+            # 拉取最新代码（不会影响 .gitignore 中的文件）
+            echo "⬇️ Pulling latest code..."
+            git pull origin main || {
+              echo "❌ Git pull failed. Trying to resolve conflicts..."
+              git reset --hard origin/main
+            }
 
             echo "✅ Code updated to latest version:"
             git log --oneline -1
