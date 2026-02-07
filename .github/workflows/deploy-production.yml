@@ -224,16 +224,19 @@ jobs:
               echo "${TCR_PASSWORD}" | docker login ${DOCKER_REGISTRY} -u "${TCR_USERNAME}" --password-stdin
 
               echo "📥 Pulling latest Docker images from registry..."
+              export BACKEND_IMAGE=${DOCKER_REGISTRY}/sea-saw/backend:latest
               docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
 
               echo "🚀 Starting services with registry images..."
               docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
             else
               # Local 模式：从本地代码重新构建
-              echo "🗑️ Removing old registry images to force local rebuild..."
-              docker rmi ${DOCKER_REGISTRY}/sea-saw/backend:latest || true
+              echo "🗑️ Removing old images to force local rebuild..."
+              docker rmi ${DOCKER_REGISTRY}/sea-saw/backend:latest 2>/dev/null || true
+              docker rmi sea-saw-backend:local 2>/dev/null || true
 
               echo "🔨 Building services from local code (no cache)..."
+              export BACKEND_IMAGE=sea-saw-backend:local
               docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml build --no-cache
 
               echo "🚀 Starting services with locally built images..."

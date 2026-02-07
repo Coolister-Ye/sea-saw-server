@@ -2,7 +2,7 @@ name: sea-saw-server
 
 services:
   web:
-    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    image: ${BACKEND_IMAGE:-hkccr.ccs.tencentyun.com/sea-saw/backend:latest}
     container_name: sea-saw-backend
     build:
       context: ./app
@@ -89,7 +89,7 @@ services:
           memory: 256M
 
   celery_worker:
-    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    image: ${BACKEND_IMAGE:-hkccr.ccs.tencentyun.com/sea-saw/backend:latest}
     container_name: sea-saw-celery-worker
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -121,7 +121,7 @@ services:
           memory: 512M
 
   celery_beat:
-    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    image: ${BACKEND_IMAGE:-hkccr.ccs.tencentyun.com/sea-saw/backend:latest}
     container_name: sea-saw-celery-beat
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -147,7 +147,7 @@ services:
           memory: 256M
 
   flower:
-    image: hkccr.ccs.tencentyun.com/sea-saw/backend:latest
+    image: ${BACKEND_IMAGE:-hkccr.ccs.tencentyun.com/sea-saw/backend:latest}
     container_name: sea-saw-flower
     command: /home/app/sh/start-flower.sh
     env_file:
