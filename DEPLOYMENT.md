@@ -17,12 +17,15 @@ Sea-Saw 后端使用 **Local 模式部署**：在生产服务器上从最新代�
 推送到 `main` 分支会自动触发部署：
 
 1. ✅ 运行测试
-2. 📦 将代码 rsync 到服务器 `/home/sea-saw/sea-saw-server/`
-3. 🔨 在服务器上从本地代码构建 Docker 镜像
-4. 🚀 重启所有服务
-5. 🗄️ 运行数据库迁移
-6. 📦 收集静态文件
-7. 🏥 健康检查
+2. 📦 复制 docker-compose 配置文件到服务器
+3. 📥 在服务器上通过 Git 拉取最新代码
+4. 🔨 从最新代码构建 Docker 镜像
+5. 🚀 重启所有服务
+6. 🗄️ 运行数据库迁移
+7. 📦 收集静态文件
+8. 🏥 健康检查
+
+**注意**：应用代码完全由 Git 管理，CI/CD 不再使用 rsync 复制代码，避免 Git 冲突。
 
 ## 手动部署
 
@@ -103,28 +106,26 @@ docker exec sea-saw-backend grep 'router.register(r"accounts"' /home/app/web/sea
 
 ## 常见问题
 
-### 1. Git pull 冲突
+### 1. Git 状态检查
 
-**问题**：`git pull` 提示本地文件会被覆盖。
+**问题**：服务器上 Git 仓库有未提交的修改。
 
-**原因**：CI/CD 的 rsync 会复制代码到服务器，造成 Git 检测到本地修改。
+**原因**：手动修改了文件，或者之前的部署方式遗留问题。
 
 **解决**：
 ```bash
 cd /home/sea-saw/sea-saw-server
 
-# 备份配置文件
-cp -r .env .env.backup
+# 检查状态
+git status
 
-# 强制重置到远程最新状态
-git fetch origin
-git reset --hard origin/main
-git clean -fd
-
-# 恢复配置文件
-cp -r .env.backup/* .env/
-rm -rf .env.backup
+# 如果有未提交的修改，stash 或重置
+git stash  # 保存修改
+# 或
+git reset --hard origin/main  # 丢弃修改
 ```
+
+**注意**：新的部署方式使用 Git 管理代码，CI/CD 会自动 stash 并重置到最新版本，保护 `.env` 等配置文件。
 
 ### 2. 容器内代码不是最新的
 

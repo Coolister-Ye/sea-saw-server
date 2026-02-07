@@ -141,25 +141,10 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           BUILD_MODE: ${{ env.BUILD_MODE }}
         run: |
-          echo "📦 Copying deployment files to server (mode: ${BUILD_MODE})..."
+          echo "📦 Copying deployment configuration files to server..."
 
-          # 复制应用代码 (仅在 local 模式)
-          if [ "${BUILD_MODE}" = "local" ]; then
-            echo "Copying app directory for local build..."
-            rsync -avz --delete \
-              --exclude='*.pyc' \
-              --exclude='__pycache__' \
-              --exclude='.git' \
-              --exclude='*.sqlite3' \
-              --exclude='staticfiles' \
-              --exclude='mediafiles' \
-              app/ ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/app/
-          else
-            echo "Skipping app directory copy (using registry images)"
-          fi
-
-          # 复制 docker-compose 和配置文件
-          echo "Copying docker-compose and config files..."
+          # 只复制 docker-compose 和配置文件，不复制应用代码
+          # 应用代码通过 Git 管理，在服务器上通过 git pull 更新
           scp docker-compose.prod.yml ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}/
 
           if [ -d "nginx" ]; then
@@ -216,6 +201,19 @@ jobs:
                 echo "✅ Port \$port is free"
               fi
             done
+
+            # 更新代码到最新版本（使用 Git）
+            echo "📥 Updating code from Git repository..."
+            git fetch origin main
+
+            # 保存本地修改（如果有）并强制更新到最新版本
+            echo "🔄 Resetting to latest version..."
+            git stash push -m "Auto-stash before deployment" || true
+            git reset --hard origin/main
+            git clean -fd -e ".env" -e "staticfiles" -e "mediafiles"
+
+            echo "✅ Code updated to latest version:"
+            git log --oneline -1
 
             # Local 模式部署：从本地代码构建
             echo "🗑️ Removing old images to force rebuild..."
