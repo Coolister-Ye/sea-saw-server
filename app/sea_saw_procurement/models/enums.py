@@ -1,3 +1,4 @@
+
 """
 Purchase-related enumerations
 """

@@ -1,3 +1,4 @@
+
 """
 Payment-related enumerations
 """
