@@ -58,7 +58,12 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: test
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production') && github.event.repository.default_branch != '' && (github.event.inputs.build_mode == 'registry' || (github.event_name == 'push' && vars.BUILD_MODE == 'registry'))
+    # Only triggers on workflow_dispatch with registry mode.
+    # To also support registry mode on push events, create a GitHub repo variable
+    # named BUILD_MODE=registry and add: || (github.event_name == 'push' && vars.BUILD_MODE == 'registry')
+    if: >
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
+      && github.event.inputs.build_mode == 'registry'
 
     steps:
       - name: Checkout code
@@ -98,8 +103,13 @@ jobs:
   deploy:
     name: Deploy to Tencent Cloud Server
     runs-on: ubuntu-latest
-    needs: test
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production') && always() && needs.test.result == 'success'
+    needs: [test, build-and-push]
+    # Allow deploy when build-and-push is skipped (local mode) or succeeded (registry mode)
+    if: >
+      always()
+      && needs.test.result == 'success'
+      && (needs.build-and-push.result == 'success' || needs.build-and-push.result == 'skipped')
+      && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
 
     steps:
       - name: Checkout code
@@ -167,6 +177,8 @@ jobs:
           TCR_USERNAME: ${{ secrets.TCR_USERNAME }}
           TCR_PASSWORD: ${{ secrets.TCR_PASSWORD }}
           DOCKER_REGISTRY: ${{ env.DOCKER_REGISTRY }}
+          IMAGE_NAMESPACE: ${{ env.IMAGE_NAMESPACE }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
         run: |
           ssh -o ConnectTimeout=30 ${SERVER_USER}@${SERVER_IP} bash << ENDSSH
             set -e
@@ -185,22 +197,9 @@ jobs:
             echo "🛑 Stopping old services..."
             docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans
 
-            # 清理可能占用端口的孤立容器
-            echo "🧹 Cleaning up containers that might be using critical ports..."
-            docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" | grep -E '6379|5432|8000|5555' | awk '{print \$1}' | grep -v CONTAINER | xargs -r docker rm -f || true
-
-            # 确保关键端口已释放
-            echo "🔍 Verifying critical ports are free..."
-            sleep 3
-            for port in 6379 5432 8000 5555; do
-              if netstat -tuln 2>/dev/null | grep -q ":\$port " || ss -tuln 2>/dev/null | grep -q ":\$port "; then
-                echo "⚠️ Port \$port still in use, attempting to free it..."
-                fuser -k \$port/tcp 2>/dev/null || true
-                sleep 2
-              else
-                echo "✅ Port \$port is free"
-              fi
-            done
+            # 清理可能残留的 sea-saw 孤立容器
+            echo "🧹 Cleaning up orphaned sea-saw containers..."
+            docker ps -a --filter "name=sea-saw-" --format "{{.ID}}" | xargs -r docker rm -f || true
 
             # 更新代码到最新版本（使用 Git）
             echo "📥 Updating code from Git repository..."
@@ -225,27 +224,51 @@ jobs:
             echo "✅ Code updated to latest version:"
             git log --oneline -1
 
-            # Local 模式部署：从本地代码构建
-            echo "🗑️ Removing old images to force rebuild..."
-            docker rmi sea-saw-backend:local 2>/dev/null || true
+            # 根据 BUILD_MODE 分支处理
+            if [ "${BUILD_MODE}" = "registry" ]; then
+              echo "🔑 Logging into Tencent Container Registry..."
+              echo "${TCR_PASSWORD}" | docker login ${DOCKER_REGISTRY} -u "${TCR_USERNAME}" --password-stdin
 
-            echo "🔨 Building services from local code (no cache)..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml build --no-cache
+              # NOTE: registry 模式需要 docker-compose.prod.yml 中 web service 的 image 字段
+              # 支持环境变量替换，例如: image: \${DOCKER_IMAGE:-sea-saw-backend:local}
+              export DOCKER_IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${IMAGE_NAME}:latest
 
-            echo "🚀 Starting services with locally built images..."
+              echo "📥 Pulling images from registry..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml pull
+            else
+              echo "🗑️ Removing old images to force rebuild..."
+              docker rmi sea-saw-backend:local 2>/dev/null || true
+
+              echo "🔨 Building services from local code (no cache)..."
+              docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml build --no-cache
+            fi
+
+            echo "🚀 Starting services..."
             docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml up -d --force-recreate
 
-            # 等待服务就绪
-            echo "⏳ Waiting for services to be healthy..."
-            sleep 30
+            # 等待 web 容器就绪
+            echo "⏳ Waiting for web service to be ready..."
+            for i in \$(seq 1 15); do
+              if docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web echo "ready" 2>/dev/null; then
+                echo "✅ Web service is running"
+                break
+              fi
+              if [ "\$i" -eq 15 ]; then
+                echo "❌ Web service failed to start within 60 seconds"
+                docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml logs web --tail 50
+                exit 1
+              fi
+              echo "  Attempt \$i/15..."
+              sleep 4
+            done
 
             # 运行数据库迁移
             echo "🗄️ Running database migrations..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput < /dev/null
+            timeout 120 docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput < /dev/null
 
             # 收集静态文件
             echo "📦 Collecting static files..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput < /dev/null
+            timeout 120 docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput < /dev/null
 
             # 检查服务状态
             echo "🏥 Checking service health..."
@@ -268,6 +291,7 @@ jobs:
           retry_count=0
 
           # Health check via SSH (port 8000 is only exposed within Docker network)
+          # container_name: sea-saw-backend is explicitly set in docker-compose.prod.yml
           until ssh ${SERVER_USER}@${SERVER_IP} "docker exec sea-saw-backend curl -sf http://localhost:8000/admin/login/" || [ $retry_count -eq $max_retries ]; do
             echo "⏳ Waiting for service to be ready... ($retry_count/$max_retries)"
             retry_count=$((retry_count + 1))
@@ -331,31 +355,16 @@ jobs:
 
             echo "⚠️ Deployment failed, rolling back..."
 
-            # 强制停止并移除所有相关容器（包括使用端口的容器）
-            echo "🛑 Forcefully stopping all containers..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans --volumes || true
+            # 停止容器（不删除数据卷，避免 PostgreSQL 数据丢失）
+            echo "🛑 Stopping all containers..."
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans || true
 
-            # 清理可能占用端口的孤立容器
-            echo "🧹 Cleaning up containers that might be using critical ports..."
-            # 查找并停止所有可能占用关键端口的容器
-            docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" | grep -E '6379|5432|8000|5555' | awk '{print \$1}' | grep -v CONTAINER | xargs -r docker rm -f || true
+            # 清理可能残留的 sea-saw 孤立容器
+            echo "🧹 Cleaning up orphaned sea-saw containers..."
+            docker ps -a --filter "name=sea-saw-" --format "{{.ID}}" | xargs -r docker rm -f || true
 
             # 清理所有已停止的容器
             docker container prune -f || true
-
-            # 确保端口已释放
-            echo "🔍 Verifying ports are free..."
-            sleep 3
-            for port in 6379 5432 8000 5555; do
-              if netstat -tuln 2>/dev/null | grep -q ":\$port " || ss -tuln 2>/dev/null | grep -q ":\$port "; then
-                echo "⚠️ Port \$port still in use. Checking process..."
-                # 尝试找到并终止占用端口的进程
-                fuser -k \$port/tcp 2>/dev/null || true
-                sleep 2
-              else
-                echo "✅ Port \$port is free"
-              fi
-            done
 
             # 恢复最新备份
             echo "🔄 Restoring latest backup..."
@@ -432,7 +441,7 @@ jobs:
               -d "{
                 \"msgtype\": \"markdown\",
                 \"markdown\": {
-                  \"content\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n**状态**: ${{ steps.status.outputs.details }}\n**分支**: ${{ github.ref_name }}\n**提交**: \`${{ github.sha }}\`\n**提交者**: ${{ github.actor }}\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
+                  \"content\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n**状态**: ${{ steps.status.outputs.details }}\n**部署模式**: ${{ env.BUILD_MODE }}\n**分支**: ${{ github.ref_name }}\n**提交**: \`${{ github.sha }}\`\n**提交者**: ${{ github.actor }}\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
                 }
               }"
           else
@@ -451,7 +460,7 @@ jobs:
                 \"msgtype\": \"markdown\",
                 \"markdown\": {
                   \"title\": \"${{ steps.status.outputs.message }}\",
-                  \"text\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n\n**状态**: ${{ steps.status.outputs.details }}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.sha }}\n\n**提交者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
+                  \"text\": \"## ${{ steps.status.outputs.message }}\n\n**项目**: Sea-Saw Backend\n\n**状态**: ${{ steps.status.outputs.details }}\n\n**部署模式**: ${{ env.BUILD_MODE }}\n\n**分支**: ${{ github.ref_name }}\n\n**提交**: ${{ github.sha }}\n\n**提交者**: ${{ github.actor }}\n\n**时间**: $(date '+%Y-%m-%d %H:%M:%S')\n\n[查看详情](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\"
                 }
               }"
           else
