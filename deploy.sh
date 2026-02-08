@@ -144,7 +144,7 @@ backup_db() {
     TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
     BACKUP_FILE="${BACKUP_DIR}/backup_${TIMESTAMP}.sql"
 
-    docker-compose -f docker-compose.prod.yml exec -T db pg_dump -U sea_saw_prod_user sea_saw_prod > $BACKUP_FILE
+    docker-compose -f docker-compose.prod.yml exec -T db pg_dump -U sea_saw_prod_user sea_saw_prod < /dev/null > $BACKUP_FILE
 
     if [ $? -eq 0 ]; then
         print_info "Database backup created: $BACKUP_FILE"

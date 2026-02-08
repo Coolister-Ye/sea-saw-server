@@ -179,7 +179,7 @@ jobs:
 
             # 备份数据库
             echo "💾 Backing up database..."
-            ./deploy.sh backup || echo "⚠️ Backup failed, continuing..."
+            ./deploy.sh backup < /dev/null || echo "⚠️ Backup failed, continuing..."
 
             # 停止旧服务并清理
             echo "🛑 Stopping old services..."
@@ -241,11 +241,11 @@ jobs:
 
             # 运行数据库迁移
             echo "🗄️ Running database migrations..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py migrate --noinput < /dev/null
 
             # 收集静态文件
             echo "📦 Collecting static files..."
-            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput
+            docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml exec -T web python manage.py collectstatic --noinput < /dev/null
 
             # 检查服务状态
             echo "🏥 Checking service health..."
