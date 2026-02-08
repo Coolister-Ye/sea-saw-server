@@ -40,6 +40,7 @@ class OrderViewSet(ModelViewSet):
 
     queryset = Order.objects.all()
     serializer_class = OrderSerializerForOrderView
+    parser_classes = (JSONParser, NestedMultiPartParser, FormParser)
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
     permission_classes = [
         IsAuthenticated,
