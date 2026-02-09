@@ -17,6 +17,12 @@ from sea_saw_attachment.serializers import AttachmentSerializer
 from sea_saw_attachment.mixins import ReusableAttachmentWriteMixin
 from .mixins import PipelineSyncMixin
 from sea_saw_pipeline.models import Pipeline
+from sea_saw_pipeline.models.pipeline import ActiveEntityType
+from sea_saw_pipeline.constants import (
+    ORDER_TO_PIPELINE_STATUS,
+    PIPELINE_STATE_MACHINE_BY_TYPE,
+)
+from sea_saw_pipeline.services.pipeline_state_service import PipelineStateService
 from sea_saw_crm.models import Account, Contact
 from sea_saw_attachment.models import Attachment
 from .order_item import OrderItemSerializerForAdmin
@@ -118,6 +124,49 @@ class OrderSerializerForOrderView(
             "updated_at",
         ]
 
+    def validate_status(self, value):
+        """
+        验证 Order 状态变更是否被 Pipeline 状态机允许。
+        - 无 Pipeline：允许任意变更
+        - 有 Pipeline 且 active_entity ∉ {ORDER, NONE}：拒绝变更
+        - 有 Pipeline 且有映射：检查 Pipeline 状态机是否允许对应转换
+        """
+        if not self.instance or value == self.instance.status:
+            return value
+
+        pipeline = getattr(self.instance, 'pipeline', None)
+        if not pipeline:
+            return value
+
+        # active_entity 守卫
+        if pipeline.active_entity not in (ActiveEntityType.ORDER, ActiveEntityType.NONE):
+            raise serializers.ValidationError(
+                _(
+                    "Pipeline 已进入 %(entity)s 阶段，"
+                    "无法直接修改订单状态。请先在 Pipeline 中回退状态。"
+                )
+                % {"entity": pipeline.get_active_entity_display()}
+            )
+
+        # 检查 Pipeline 状态机是否允许对应转换
+        target = ORDER_TO_PIPELINE_STATUS.get(value)
+        if target and target != pipeline.status:
+            state_machine = PIPELINE_STATE_MACHINE_BY_TYPE.get(pipeline.pipeline_type, {})
+            allowed = state_machine.get(pipeline.status, set())
+            if target not in allowed:
+                raise serializers.ValidationError(
+                    _(
+                        "Pipeline 当前状态 [%(current)s] "
+                        "不允许转换到 [%(target)s]。"
+                    )
+                    % {
+                        "current": pipeline.get_status_display(),
+                        "target": target,
+                    }
+                )
+
+        return value
+
     def create(self, validated_data):
         """Handle related_pipeline assignment."""
         # Note: 'pipeline' is popped because it's a reverse OneToOne relation
@@ -136,7 +185,18 @@ class OrderSerializerForOrderView(
         When order fields are updated, related pipeline fields are automatically synced:
         - contact → pipeline.contact
         - order_date → pipeline.order_date
+
+        Status changes are routed through Pipeline state machine when a Pipeline exists,
+        ensuring bidirectional sync consistency.
         """
+        new_status = validated_data.get('status')
+        old_status = instance.status
+        status_changed = new_status and new_status != old_status
+
+        # Pop status so super().update() only handles non-status fields
+        if status_changed:
+            validated_data.pop('status')
+
         # Note: 'pipeline' is popped because it's a reverse OneToOne relation
         # and cannot be set directly on Order update
         validated_data.pop("pipeline", None)
@@ -146,5 +206,23 @@ class OrderSerializerForOrderView(
 
         # Sync to pipeline if it exists (from PipelineSyncMixin)
         self.sync_to_pipeline(instance)
+
+        # Handle status change
+        if status_changed:
+            pipeline = getattr(instance, 'pipeline', None)
+            target = ORDER_TO_PIPELINE_STATUS.get(new_status) if pipeline else None
+
+            if pipeline and target and target != pipeline.status:
+                # Route through Pipeline state machine (which will set Order status via forward sync)
+                PipelineStateService.transition(
+                    pipeline=pipeline,
+                    target_status=target,
+                    user=self.context['request'].user,
+                )
+                instance.refresh_from_db()
+            else:
+                # No Pipeline / no mapping (completed) / Pipeline already at target status
+                instance.status = new_status
+                instance.save(update_fields=['status', 'updated_at'])
 
         return instance

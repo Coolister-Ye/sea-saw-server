@@ -146,3 +146,14 @@ ACTIVE_ENTITY_TO_ENTITY_TYPES = {
     ActiveEntityType.OUTBOUND: ["outbound"],
     ActiveEntityType.NONE: [],
 }
+
+
+# Order status -> Pipeline target status (reverse mapping)
+# Used for Order → Pipeline reverse sync when Order status is changed directly
+ORDER_TO_PIPELINE_STATUS = {
+    SubEntityStatus.CANCELLED: PipelineStatusType.CANCELLED,
+    SubEntityStatus.DRAFT: PipelineStatusType.DRAFT,
+    SubEntityStatus.ACTIVE: PipelineStatusType.ORDER_CONFIRMED,
+    SubEntityStatus.ISSUE_REPORTED: PipelineStatusType.ISSUE_REPORTED,
+    # completed: no mapping - Order completion ≠ Pipeline completion
+}
