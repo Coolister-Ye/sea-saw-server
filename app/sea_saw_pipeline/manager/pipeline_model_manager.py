@@ -375,7 +375,8 @@ class PipelineModelManager(BaseModelManager):
         *,
         pipeline,
         supplier=None,
-        purchase_order_date=None,
+        contact=None,
+        purchase_date=None,
         user=None,
         copy_items=True,
         force=False,
@@ -387,8 +388,9 @@ class PipelineModelManager(BaseModelManager):
 
         Args:
             pipeline: The parent Pipeline instance
-            supplier: Supplier for the purchase
-            purchase_order_date: Purchase order date
+            supplier: Supplier account for the purchase
+            contact: Contact person for the purchase
+            purchase_date: Purchase date
             user: User creating the purchase order
             copy_items: Whether to copy OrderItems to PurchaseItems
             force: Force creation even if purchase already exists
@@ -421,7 +423,8 @@ class PipelineModelManager(BaseModelManager):
             pipeline=pipeline,
             related_order=order,  # For backward compatibility
             supplier=supplier,
-            purchase_order_date=purchase_order_date or timezone.now().date(),
+            contact=contact,
+            purchase_date=purchase_date or timezone.now().date(),
             # Copy logistics info from order
             etd=order.etd,
             loading_port=order.loading_port,

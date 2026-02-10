@@ -43,20 +43,30 @@ class PurchaseOrder(AbstractOrderBase):
         help_text=_("The business process pipeline this purchase order belongs to."),
     )
 
-    purchase_order_date = models.DateField(
+    purchase_date = models.DateField(
         null=True,
         blank=True,
-        verbose_name=_("Purchase Order Date"),
+        verbose_name=_("Purchase Date"),
     )
 
-    account = models.ForeignKey(
+    supplier = models.ForeignKey(
         "sea_saw_crm.Account",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="purchase_orders",
-        verbose_name=_("Account"),
+        verbose_name=_("Supplier"),
         help_text=_("Supplier account for this purchase order"),
+    )
+
+    contact = models.ForeignKey(
+        "sea_saw_crm.Contact",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="purchase_orders",
+        verbose_name=_("Contact"),
+        help_text=_("Contact person for this purchase order"),
     )
 
     related_order = models.ForeignKey(
@@ -91,7 +101,7 @@ class PurchaseOrder(AbstractOrderBase):
         indexes = [
             models.Index(fields=["purchase_code"]),
             models.Index(fields=["status"]),
-            models.Index(fields=["account"]),
+            models.Index(fields=["supplier"]),
         ]
 
     def __str__(self):

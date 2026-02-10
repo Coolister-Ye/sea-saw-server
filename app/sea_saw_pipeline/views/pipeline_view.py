@@ -314,7 +314,8 @@ class PipelineViewSet(
         Request body:
         {
             "supplier": <supplier_id>,
-            "purchase_order_date": "2024-01-15",
+            "contact": <contact_id>,
+            "purchase_date": "2024-01-15",
             "purchase_items": [...],
             "auto_update_status": true  // Optional: auto-transition pipeline to IN_PURCHASE
         }

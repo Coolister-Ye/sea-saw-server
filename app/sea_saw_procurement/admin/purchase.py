@@ -46,13 +46,14 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
     list_display = [
         "purchase_code",
         "related_order",
-        "account",
+        "supplier",
+        "contact",
         "status",
-        "purchase_order_date",
+        "purchase_date",
         "total_amount",
         "created_at",
     ]
-    list_filter = ["status", "purchase_order_date", "created_at"]
+    list_filter = ["status", "purchase_date", "created_at"]
     search_fields = ["purchase_code", "supplier__name", "related_order__order_code"]
     readonly_fields = ["purchase_code", "total_amount", "created_at", "updated_at"]
     inlines = [PurchaseItemInline, PurchaseAttachmentInline]
@@ -64,9 +65,10 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
                 "fields": (
                     "purchase_code",
                     "related_order",
-                    "account",
+                    "supplier",
+                    "contact",
                     "status",
-                    "purchase_order_date",
+                    "purchase_date",
                 )
             },
         ),

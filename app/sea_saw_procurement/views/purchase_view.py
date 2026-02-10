@@ -52,7 +52,7 @@ class NestedPurchaseOrderViewSet(ReturnRelatedMixin, ModelViewSet):
     search_fields = ["purchase_code", "supplier__name", "comment"]
     ordering_fields = [
         "purchase_code",
-        "purchase_order_date",
+        "purchase_date",
         "status",
         "created_at",
         "updated_at",
