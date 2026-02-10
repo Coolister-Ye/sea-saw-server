@@ -131,8 +131,8 @@ class PipelineStateService:
         if target_status == PipelineStatusType.ORDER_CONFIRMED:
             if not pipeline.order:
                 raise ValidationError({"order": "Pipeline must have an order"})
-            if not pipeline.contact:
-                raise ValidationError({"contact": "Pipeline must have a contact"})
+            if not pipeline.account:
+                raise ValidationError({"account": "Pipeline must have an account"})
 
         elif target_status == PipelineStatusType.PRODUCTION_COMPLETED:
             cls._require_related_orders(pipeline, "production", target_status)
