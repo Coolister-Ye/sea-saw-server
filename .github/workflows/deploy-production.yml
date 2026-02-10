@@ -197,10 +197,6 @@ jobs:
             echo "🛑 Stopping old services..."
             docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans
 
-            # 清理可能残留的 sea-saw 孤立容器
-            echo "🧹 Cleaning up orphaned sea-saw containers..."
-            docker ps -a --filter "name=sea-saw-" --format "{{.ID}}" | xargs -r docker rm -f || true
-
             # 更新代码到最新版本（使用 Git）
             echo "📥 Updating code from Git repository..."
 
@@ -358,10 +354,6 @@ jobs:
             # 停止容器（不删除数据卷，避免 PostgreSQL 数据丢失）
             echo "🛑 Stopping all containers..."
             docker compose -p \${COMPOSE_PROJECT_NAME} -f docker-compose.prod.yml down --remove-orphans || true
-
-            # 清理可能残留的 sea-saw 孤立容器
-            echo "🧹 Cleaning up orphaned sea-saw containers..."
-            docker ps -a --filter "name=sea-saw-" --format "{{.ID}}" | xargs -r docker rm -f || true
 
             # 清理所有已停止的容器
             docker container prune -f || true
