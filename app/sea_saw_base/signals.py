@@ -68,7 +68,7 @@ def sync_production_status_change(sender, instance, created, **kwargs):
         if not instance.pipeline_id:
             return
 
-        from .services.status_sync_service import StatusSyncService
+        from sea_saw_pipeline.services.status_sync_service import StatusSyncService
 
         StatusSyncService.sync_subentity_to_pipeline(
             subentity=instance,
@@ -117,7 +117,7 @@ def sync_purchase_status_change(sender, instance, created, **kwargs):
         if not instance.pipeline_id:
             return
 
-        from .services.status_sync_service import StatusSyncService
+        from sea_saw_pipeline.services.status_sync_service import StatusSyncService
 
         StatusSyncService.sync_subentity_to_pipeline(
             subentity=instance,
@@ -166,7 +166,7 @@ def sync_outbound_status_change(sender, instance, created, **kwargs):
         if not instance.pipeline_id:
             return
 
-        from .services.status_sync_service import StatusSyncService
+        from sea_saw_pipeline.services.status_sync_service import StatusSyncService
 
         StatusSyncService.sync_subentity_to_pipeline(
             subentity=instance,

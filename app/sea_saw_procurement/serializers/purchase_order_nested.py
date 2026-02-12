@@ -1,5 +1,12 @@
+from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
+from drf_writable_nested.mixins import UniqueFieldsMixin
+from sea_saw_attachment.mixins import ReusableAttachmentWriteMixin
+
 from sea_saw_base.serializers import BaseSerializer
 from sea_saw_attachment.serializers import AttachmentSerializer
+from sea_saw_crm.serializers import AccountMinimalSerializer, ContactMinimalSerializer
+from sea_saw_crm.models import Account, Contact
 from .purchase_item import (
     PurchaseItemSerializer,
     PurchaseItemSerializerForAdmin,
@@ -11,9 +18,29 @@ from .purchase_item import (
 from ..models import PurchaseOrder
 from sea_saw_attachment.models import Attachment
 
-from django.utils.translation import gettext_lazy as _
-from drf_writable_nested.mixins import UniqueFieldsMixin
-from sea_saw_attachment.mixins import ReusableAttachmentWriteMixin
+BASE_FIELDS = [
+    "id",
+    "purchase_code",
+    "purchase_date",
+    "supplier",
+    "supplier_id",
+    "contact",
+    "contact_id",
+    "status",
+    "etd",
+    "loading_port",
+    "destination_port",
+    "shipment_term",
+    "inco_terms",
+    "currency",
+    "deposit",
+    "balance",
+    "total_amount",
+    "comment",
+    "owner",
+    "created_at",
+    "updated_at",
+]
 
 
 class PurchaseOrderSerializer(
@@ -22,6 +49,26 @@ class PurchaseOrderSerializer(
     """
     Purchase Order serializer with nested items and attachments.
     """
+
+    supplier = AccountMinimalSerializer(read_only=True, label=_("Supplier"))
+    supplier_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="supplier",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Supplier ID"),
+    )
+
+    contact = ContactMinimalSerializer(read_only=True, label=_("Contact"))
+    contact_id = serializers.PrimaryKeyRelatedField(
+        queryset=Contact.objects.all(),
+        source="contact",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Contact ID"),
+    )
 
     purchase_items = PurchaseItemSerializer(
         many=True, required=False, allow_null=True, label=_("Purchase Items")
@@ -34,30 +81,34 @@ class PurchaseOrderSerializer(
 
     class Meta(BaseSerializer.Meta):
         model = PurchaseOrder
-        fields = [
-            "id",
-            "purchase_code",
-            "purchase_date",
-            "supplier",
-            "contact",
-            "status",
-            "etd",
-            "loading_port",
-            "destination_port",
-            "shipment_term",
-            "inco_terms",
-            "currency",
-            "deposit",
-            "balance",
-            "total_amount",
-            "comment",
+        fields = BASE_FIELDS + [
             "purchase_items",
             "attachments",
-            "owner",
-            "created_at",
-            "updated_at",
         ]
         read_only_fields = ["purchase_code", "total_amount"]
+
+
+NON_FINANCIAL_FIELDS = [
+    "id",
+    "purchase_code",
+    "purchase_date",
+    "supplier",
+    "supplier_id",
+    "contact",
+    "contact_id",
+    "status",
+    "etd",
+    "loading_port",
+    "destination_port",
+    "shipment_term",
+    "inco_terms",
+    "comment",
+    "purchase_items",
+    "attachments",
+    "owner",
+    "created_at",
+    "updated_at",
+]
 
 
 class PurchaseOrderSerializerForAdmin(PurchaseOrderSerializer):
@@ -73,7 +124,7 @@ class PurchaseOrderSerializerForAdmin(PurchaseOrderSerializer):
     )
 
     class Meta(PurchaseOrderSerializer.Meta):
-        fields = PurchaseOrderSerializer.Meta.fields
+        fields = BASE_FIELDS + ["purchase_items", "attachments"]
 
 
 class PurchaseOrderSerializerForSales(PurchaseOrderSerializer):
@@ -86,10 +137,8 @@ class PurchaseOrderSerializerForSales(PurchaseOrderSerializer):
     )
 
     class Meta(PurchaseOrderSerializer.Meta):
-        """设置全部字段为read-only"""
-
-        fields = PurchaseOrderSerializer.Meta.fields
-        read_only_fields = PurchaseOrderSerializer.Meta.fields
+        fields = BASE_FIELDS + ["purchase_items", "attachments"]
+        read_only_fields = fields
 
 
 class PurchaseOrderSerializerForProduction(PurchaseOrderSerializer):
@@ -103,27 +152,7 @@ class PurchaseOrderSerializerForProduction(PurchaseOrderSerializer):
     )
 
     class Meta(PurchaseOrderSerializer.Meta):
-        """设置全部字段为read-only，排除金钱相关字段"""
-
-        fields = [
-            "id",
-            "purchase_code",
-            "purchase_date",
-            "supplier",
-            "contact",
-            "status",
-            "etd",
-            "loading_port",
-            "destination_port",
-            "shipment_term",
-            "inco_terms",
-            "comment",
-            "purchase_items",
-            "attachments",
-            "owner",
-            "created_at",
-            "updated_at",
-        ]
+        fields = NON_FINANCIAL_FIELDS
         read_only_fields = fields
 
 
@@ -138,25 +167,5 @@ class PurchaseOrderSerializerForWarehouse(PurchaseOrderSerializer):
     )
 
     class Meta(PurchaseOrderSerializer.Meta):
-        """设置全部字段为read-only，排除金钱相关字段"""
-
-        fields = [
-            "id",
-            "purchase_code",
-            "purchase_date",
-            "supplier",
-            "contact",
-            "status",
-            "etd",
-            "loading_port",
-            "destination_port",
-            "shipment_term",
-            "inco_terms",
-            "comment",
-            "purchase_items",
-            "attachments",
-            "owner",
-            "created_at",
-            "updated_at",
-        ]
+        fields = NON_FINANCIAL_FIELDS
         read_only_fields = fields
