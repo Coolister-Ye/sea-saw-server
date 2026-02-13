@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-23 20:34+0800\n"
+"POT-Creation-Date: 2026-02-14 00:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,1532 +17,1464 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+#: app/sea_saw_attachment/apps.py:8
+msgid "Sea-Saw Attachments"
+msgstr "Sea-Saw 附件"
 
-#: download/models.py:22
-msgid "Pending"
-msgstr "待处理"
-
-#: download/models.py:23
-msgid "Processing"
-msgstr "处理中"
-
-#: download/models.py:24 sea_saw_crm/models/order/enums.py:19
-#: sea_saw_crm/models/outbound/enums.py:19
-#: sea_saw_crm/models/pipeline/enums.py:26
-#: sea_saw_crm/models/production/enums.py:19
-#: sea_saw_crm/models/purchase/enums.py:19
-msgid "Completed"
-msgstr "完成"
-
-#: download/models.py:25
-msgid "Failed"
-msgstr "失败"
-
-#: preference/models.py:6
-msgid "User"
-msgstr "用户"
-
-#: preference/models.py:7
-msgid "Table name"
-msgstr "表名"
-
-#: preference/models.py:8
-msgid "Column preference"
-msgstr "列偏好"
-
-#: preference/models.py:10 sea_saw_crm/models/base/base_model.py:50
-#: sea_saw_crm/serializers/base.py:46
-msgid "Created At"
-msgstr "创建时间"
-
-#: preference/models.py:10 sea_saw_crm/models/base/base_model.py:51
-msgid "Timestamp when this object was created."
-msgstr "创建此对象的时间戳。"
-
-#: preference/models.py:13 sea_saw_crm/models/base/base_model.py:56
-#: sea_saw_crm/serializers/base.py:52
-msgid "Updated At"
-msgstr "更新时间"
-
-#: preference/models.py:13 sea_saw_crm/models/base/base_model.py:57
-msgid "Timestamp when this object was last updated."
-msgstr "上次更新此对象的时间戳。"
-
-#: sea_saw_auth/models.py:9
-msgid "Admin"
-msgstr "管理员"
-
-#: sea_saw_auth/models.py:10
-msgid "Sales"
-msgstr "销售"
-
-#: sea_saw_auth/models.py:11 sea_saw_crm/models/pipeline/enums.py:52
-msgid "Production"
-msgstr "生产"
-
-#: sea_saw_auth/models.py:12
-msgid "Warehouse"
-msgstr "仓库"
-
-#: sea_saw_auth/models.py:13 sea_saw_crm/admin/order.py:121
-msgid "Finance"
-msgstr "财务"
-
-#: sea_saw_auth/models.py:14
-msgid "Unknown"
-msgstr "未知"
-
-#: sea_saw_crm/admin/attachment.py:47
-msgid "Attachment Info"
-msgstr "附件信息"
-
-#: sea_saw_crm/admin/attachment.py:59
-msgid "Related Entity"
-msgstr "相关实体"
-
-#: sea_saw_crm/admin/attachment.py:68
-msgid "Metadata"
-msgstr "元数据"
-
-#: sea_saw_crm/admin/attachment.py:90
-#: sea_saw_crm/models/attachment/attachment.py:105
-#: sea_saw_crm/models/base/base_attachment.py:17
-#: sea_saw_crm/serializers/shared/base_attachment.py:20
-msgid "File"
-msgstr "文件"
-
-#: sea_saw_crm/admin/attachment.py:104 sea_saw_crm/models/base/base_item.py:51
-msgid "Size"
-msgstr "大小"
-
-#: sea_saw_crm/admin/attachment.py:121
-msgid "Related To"
-msgstr "关联项"
-
-#: sea_saw_crm/admin/contract.py:47
-msgid "Contract Info"
-msgstr "合同信息"
-
-#: sea_saw_crm/admin/contract.py:51
-msgid "System Fields"
-msgstr "系统字段"
-
-#: sea_saw_crm/admin/order.py:110
-msgid "Logistics"
-msgstr "物流"
-
-#: sea_saw_crm/admin/order.py:133
-msgid "System Info"
-msgstr "系统信息"
-
-#: sea_saw_crm/admin/purchase.py:62 sea_saw_crm/admin/supplier.py:46
-msgid "Basic Information"
-msgstr "基本信息"
-
-#: sea_saw_crm/admin/purchase.py:74
-msgid "Logistics Information"
-msgstr "物流信息"
-
-#: sea_saw_crm/admin/purchase.py:86
-msgid "Financial Information"
-msgstr "财务资料"
-
-#: sea_saw_crm/admin/purchase.py:97 sea_saw_crm/admin/supplier.py:102
-msgid "Additional Information"
-msgstr "附加信息"
-
-#: sea_saw_crm/admin/supplier.py:56
-msgid "Contact Information"
-msgstr "联系信息"
-
-#: sea_saw_crm/admin/supplier.py:68
-msgid "Address Information"
-msgstr "地址信息"
-
-#: sea_saw_crm/admin/supplier.py:80
-msgid "Business Information"
-msgstr "商业信息"
-
-#: sea_saw_crm/admin/supplier.py:92
-msgid "Rating & Status"
-msgstr "评级和状态"
-
-#: sea_saw_crm/models/attachment/attachment.py:81
-#: sea_saw_crm/serializers/shared/attachment.py:42
+#: app/sea_saw_attachment/models/attachment.py:56
+#: app/sea_saw_attachment/serializers/attachment.py:50
 msgid "Attachment Type"
 msgstr "附件类型"
 
-#: sea_saw_crm/models/attachment/attachment.py:83
+#: app/sea_saw_attachment/models/attachment.py:58
 msgid "Type of attachment (order, production, purchase, outbound, payment)"
 msgstr "附件类型（订单、生产、采购、出库、付款）"
 
-#: sea_saw_crm/models/attachment/attachment.py:91
-#: sea_saw_crm/models/payment/payment.py:89
+#: app/sea_saw_attachment/models/attachment.py:66
+#: app/sea_saw_finance/models/payment.py:89
 msgid "Related Entity Type"
 msgstr "相关实体类型"
 
-#: sea_saw_crm/models/attachment/attachment.py:93
+#: app/sea_saw_attachment/models/attachment.py:68
 msgid ""
 "Type of entity: Order, ProductionOrder, PurchaseOrder, OutboundOrder, or "
 "Payment"
-msgstr "实体类型：订单、采购单、生产单或出库单"
+msgstr "实体类型（订单、生产、采购、出库、付款）"
 
-#: sea_saw_crm/models/attachment/attachment.py:97
-#: sea_saw_crm/models/payment/payment.py:97
-#: sea_saw_crm/serializers/shared/attachment.py:36
+#: app/sea_saw_attachment/models/attachment.py:72
+#: app/sea_saw_attachment/serializers/attachment.py:46
+#: app/sea_saw_finance/models/payment.py:97
 msgid "Related Entity ID"
 msgstr "相关实体ID"
 
-#: sea_saw_crm/models/attachment/attachment.py:98
-#: sea_saw_crm/models/payment/payment.py:98
+#: app/sea_saw_attachment/models/attachment.py:73
+#: app/sea_saw_finance/models/payment.py:98
 msgid "ID of the related entity"
 msgstr "相关实体的ID"
 
-#: sea_saw_crm/models/attachment/attachment.py:106
-msgid "Upload file. Files are organized by entity type and date."
-msgstr "上传文件。文件按实体类型和日期组织。"
+#: app/sea_saw_attachment/models/attachment.py:81
+#: app/sea_saw_attachment/serializers/attachment.py:38
+#: app/sea_saw_base/models/base_attachment.py:17
+msgid "File"
+msgstr "文件"
 
-#: sea_saw_crm/models/attachment/attachment.py:112
-#: sea_saw_crm/models/base/base_attachment.py:24
+#: app/sea_saw_attachment/models/attachment.py:83
+msgid ""
+"Upload file. Files are organized by entity type and date. Max size: 50MB. "
+"Allowed types: PDF, Office documents, images, archives."
+msgstr ""
+
+#: app/sea_saw_attachment/models/attachment.py:91
+#: app/sea_saw_base/models/base_attachment.py:24
 msgid "File Name"
 msgstr "文件名"
 
-#: sea_saw_crm/models/attachment/attachment.py:113
-#: sea_saw_crm/models/base/base_attachment.py:25
+#: app/sea_saw_attachment/models/attachment.py:92
+#: app/sea_saw_base/models/base_attachment.py:25
 msgid "Original filename for display purposes."
-msgstr "用于显示原始文件名。"
+msgstr "用于显示目的的原始文件名。"
 
-#: sea_saw_crm/models/attachment/attachment.py:119
-#: sea_saw_crm/models/base/base_attachment.py:31
+#: app/sea_saw_attachment/models/attachment.py:98
+#: app/sea_saw_base/models/base_attachment.py:31
 msgid "File Size (bytes)"
 msgstr "文件大小（字节）"
 
-#: sea_saw_crm/models/attachment/attachment.py:126
-#: sea_saw_crm/models/base/base_attachment.py:38
+#: app/sea_saw_attachment/models/attachment.py:105
+#: app/sea_saw_base/models/base_attachment.py:38
+#: app/sea_saw_crm/models/account.py:73
 msgid "Description"
 msgstr "描述"
 
-#: sea_saw_crm/models/attachment/attachment.py:127
-#: sea_saw_crm/models/base/base_attachment.py:39
+#: app/sea_saw_attachment/models/attachment.py:106
+#: app/sea_saw_base/models/base_attachment.py:39
 msgid "Optional description of the file."
 msgstr "文件的可选说明。"
 
-#: sea_saw_crm/models/attachment/attachment.py:131
+#: app/sea_saw_attachment/models/attachment.py:110
 msgid "Attachment"
-msgstr "附件"
+msgstr "附接"
 
-#: sea_saw_crm/models/attachment/attachment.py:132
-#: sea_saw_crm/serializers/order/order_nested.py:113
-#: sea_saw_crm/serializers/order/order_nested.py:149
-#: sea_saw_crm/serializers/order/order_standalone.py:57
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:38
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:74
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:121
-#: sea_saw_crm/serializers/outbound/outbound_order_standalone.py:41
-#: sea_saw_crm/serializers/payment.py:38
-#: sea_saw_crm/serializers/payment/payment_nested.py:27
-#: sea_saw_crm/serializers/payment/payment_standalone.py:27
-#: sea_saw_crm/serializers/production/production_order_nested.py:31
-#: sea_saw_crm/serializers/production/production_order_nested.py:64
-#: sea_saw_crm/serializers/production/production_order_nested.py:96
-#: sea_saw_crm/serializers/production/production_order_standalone.py:34
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:30
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:71
+#: app/sea_saw_attachment/models/attachment.py:111
+#: app/sea_saw_finance/serializers/payment_nested.py:27
+#: app/sea_saw_finance/serializers/payment_standalone.py:27
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:77
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:123
+#: app/sea_saw_production/serializers/production_order_nested.py:32
+#: app/sea_saw_production/serializers/production_order_nested.py:65
+#: app/sea_saw_production/serializers/production_order_nested.py:97
+#: app/sea_saw_production/serializers/production_order_standalone.py:34
+#: app/sea_saw_sales/serializers/order_nested.py:139
+#: app/sea_saw_sales/serializers/order_nested.py:175
+#: app/sea_saw_sales/serializers/order_standalone.py:85
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:38
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:74
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:121
+#: app/sea_saw_warehouse/serializers/outbound_order_standalone.py:41
 msgid "Attachments"
 msgstr "附件"
 
-#: sea_saw_crm/models/attachment/enums.py:15
+#: app/sea_saw_attachment/models/enums.py:15
 msgid "Order Attachment"
 msgstr "订单附件"
 
-#: sea_saw_crm/models/attachment/enums.py:16
+#: app/sea_saw_attachment/models/enums.py:16
 msgid "Production Attachment"
 msgstr "生产附件"
 
-#: sea_saw_crm/models/attachment/enums.py:17
+#: app/sea_saw_attachment/models/enums.py:17
 msgid "Purchase Attachment"
 msgstr "采购附件"
 
-#: sea_saw_crm/models/attachment/enums.py:18
+#: app/sea_saw_attachment/models/enums.py:18
 msgid "Outbound Attachment"
-msgstr "仓储附件"
+msgstr "出库附件"
 
-#: sea_saw_crm/models/attachment/enums.py:19
+#: app/sea_saw_attachment/models/enums.py:19
 msgid "Payment Attachment"
-msgstr "收付款附件"
+msgstr "付款附件"
 
-#: sea_saw_crm/models/base/base_attachment.py:18
-msgid "Upload file. Files are organized by date with unique names."
-msgstr "上传文件。文件按日期组织，并具有唯一的名称。"
+#: app/sea_saw_attachment/serializers/attachment.py:42
+msgid "File URL"
+msgstr "文件URL"
 
-#: sea_saw_crm/models/base/base_item.py:23
-msgid "Product Name"
-msgstr "产品名称"
-
-#: sea_saw_crm/models/base/base_item.py:30
-msgid "Specification"
-msgstr "产品规格"
-
-#: sea_saw_crm/models/base/base_item.py:37
-msgid "Outter Packaging"
-msgstr "外包装"
-
-#: sea_saw_crm/models/base/base_item.py:44
-msgid "Inner Packaging"
-msgstr "内包装"
-
-#: sea_saw_crm/models/base/base_item.py:58
-msgid "Unit"
-msgstr "产品单位"
-
-#: sea_saw_crm/models/base/base_item.py:70
-msgid "Glazing (%)"
-msgstr "裹冰率（%）"
-
-#: sea_saw_crm/models/base/base_item.py:78
-msgid "Gross Weight"
-msgstr "毛重"
-
-#: sea_saw_crm/models/base/base_item.py:86
-msgid "Net Weight"
-msgstr "净重"
-
-#: sea_saw_crm/models/base/base_model.py:24 sea_saw_crm/serializers/base.py:28
+#: app/sea_saw_attachment/serializers/attachment.py:54
+#: app/sea_saw_base/models/base_model.py:29
+#: app/sea_saw_base/serializers/base.py:28
 msgid "Owner"
 msgstr "所有者"
 
-#: sea_saw_crm/models/base/base_model.py:25
-msgid "The user who owns this object."
-msgstr "拥有此对象的用户。"
-
-#: sea_saw_crm/models/base/base_model.py:34 sea_saw_crm/serializers/base.py:34
+#: app/sea_saw_attachment/serializers/attachment.py:60
+#: app/sea_saw_base/models/base_model.py:39
+#: app/sea_saw_base/serializers/base.py:34
 msgid "Created By"
 msgstr "创建人"
 
-#: sea_saw_crm/models/base/base_model.py:35
+#: app/sea_saw_attachment/serializers/attachment.py:63
+#: app/sea_saw_base/models/base_model.py:55
+#: app/sea_saw_base/serializers/base.py:46 app/sea_saw_preference/models.py:10
+msgid "Created At"
+msgstr "创建时间"
+
+#: app/sea_saw_attachment/serializers/attachment.py:66
+#: app/sea_saw_base/models/base_model.py:61
+#: app/sea_saw_base/serializers/base.py:52 app/sea_saw_preference/models.py:13
+msgid "Updated At"
+msgstr "更新时间"
+
+#: app/sea_saw_attachment/validators/file_validators.py:127
+#, python-format
+msgid "File extension \"%(ext)s\" is not allowed for security reasons."
+msgstr "出于安全原因，不允许使用文件扩展名\"%(ext)s\"。"
+
+#: app/sea_saw_attachment/validators/file_validators.py:150
+#, python-format
+msgid "File size %(size).2fMB exceeds maximum allowed size of %(max)dMB."
+msgstr "文件大小%(size).2fMB超过允许的最大大小%(max)dMB。"
+
+#: app/sea_saw_attachment/validators/file_validators.py:213
+#, python-format
+msgid "File type \"%(type)s\" is not allowed. Allowed types: %(allowed)s"
+msgstr "不允许文件类型\"%(type)s\"。允许的类型：%(allowed)s"
+
+#: app/sea_saw_attachment/validators/file_validators.py:223
+#, python-format
+msgid ""
+"File extension \"%(ext)s\" does not match detected file type \"%(type)s\". "
+"Expected extensions: %(expected)s"
+msgstr ""
+
+#: app/sea_saw_auth/models.py:9
+msgid "Admin"
+msgstr "Admin"
+
+#: app/sea_saw_auth/models.py:10
+msgid "Sales"
+msgstr "销售"
+
+#: app/sea_saw_auth/models.py:11
+#: app/sea_saw_pipeline/models/pipeline/enums.py:53
+msgid "Production"
+msgstr "生产"
+
+#: app/sea_saw_auth/models.py:12
+msgid "Warehouse"
+msgstr "仓储"
+
+#: app/sea_saw_auth/models.py:13 app/sea_saw_sales/admin/order.py:125
+msgid "Finance"
+msgstr "财务"
+
+#: app/sea_saw_auth/models.py:14
+msgid "Unknown"
+msgstr "未知"
+
+#: app/sea_saw_base/apps.py:8
+msgid "Sea-Saw Base"
+msgstr "Sea-Saw 底座"
+
+#: app/sea_saw_base/models/base_attachment.py:18
+msgid "Upload file. Files are organized by date with unique names."
+msgstr "上传文件。文件按日期组织，并具有唯一的名称。"
+
+#: app/sea_saw_base/models/base_item.py:29
+msgid "Product Name"
+msgstr "产品名称"
+
+#: app/sea_saw_base/models/base_item.py:36
+msgid "Specification"
+msgstr "产品明细"
+
+#: app/sea_saw_base/models/base_item.py:43
+msgid "Outter Packaging"
+msgstr "外包装"
+
+#: app/sea_saw_base/models/base_item.py:50
+msgid "Inner Packaging"
+msgstr "内包装"
+
+#: app/sea_saw_base/models/base_item.py:57
+msgid "Size"
+msgstr "大小"
+
+#: app/sea_saw_base/models/base_item.py:64
+msgid "Unit"
+msgstr "单元"
+
+#: app/sea_saw_base/models/base_item.py:76
+msgid "Glazing (%)"
+msgstr "裹冰率（%）"
+
+#: app/sea_saw_base/models/base_item.py:84
+msgid "Gross Weight"
+msgstr "毛重"
+
+#: app/sea_saw_base/models/base_item.py:92
+msgid "Net Weight"
+msgstr "净重"
+
+#: app/sea_saw_base/models/base_model.py:30
+msgid "The user who owns this object."
+msgstr "拥有此对象的用户。"
+
+#: app/sea_saw_base/models/base_model.py:40
 msgid "The user who created this object."
 msgstr "创建此对象的用户。"
 
-#: sea_saw_crm/models/base/base_model.py:44 sea_saw_crm/serializers/base.py:40
+#: app/sea_saw_base/models/base_model.py:49
+#: app/sea_saw_base/serializers/base.py:40
 msgid "Updated By"
 msgstr "更新人"
 
-#: sea_saw_crm/models/base/base_model.py:45
+#: app/sea_saw_base/models/base_model.py:50
 msgid "The user who last updated this object."
 msgstr "上次更新此对象的用户。"
 
-#: sea_saw_crm/models/base/base_model.py:62
+#: app/sea_saw_base/models/base_model.py:56 app/sea_saw_preference/models.py:10
+msgid "Timestamp when this object was created."
+msgstr "创建此对象的时间戳。"
+
+#: app/sea_saw_base/models/base_model.py:62 app/sea_saw_preference/models.py:13
+msgid "Timestamp when this object was last updated."
+msgstr "上次更新此对象的时间戳。"
+
+#: app/sea_saw_base/models/base_model.py:67
 msgid "Base Model"
 msgstr "基础模型"
 
-#: sea_saw_crm/models/base/base_model.py:63
+#: app/sea_saw_base/models/base_model.py:68
 msgid "Base Models"
 msgstr "基础模型"
 
-#: sea_saw_crm/models/base/base_order.py:16
+#: app/sea_saw_base/models/base_order.py:24
 msgid "ETD"
 msgstr "ETD"
 
-#: sea_saw_crm/models/base/base_order.py:17
+#: app/sea_saw_base/models/base_order.py:25
 msgid "Estimated time of departure."
-msgstr "预估发货时间"
+msgstr "预计发货时间。"
 
-#: sea_saw_crm/models/base/base_order.py:26
+#: app/sea_saw_base/models/base_order.py:34
 msgid "Loading Port"
-msgstr "出发港"
+msgstr "装运港"
 
-#: sea_saw_crm/models/base/base_order.py:33
-#: sea_saw_crm/models/outbound/outbound_order.py:75
+#: app/sea_saw_base/models/base_order.py:41
+#: app/sea_saw_warehouse/models/outbound_order.py:76
 msgid "Destination Port"
 msgstr "目的港"
 
-#: sea_saw_crm/models/base/base_order.py:41
+#: app/sea_saw_base/models/base_order.py:49
 msgid "Shipment Term"
 msgstr "运输方式"
 
-#: sea_saw_crm/models/base/base_order.py:50
+#: app/sea_saw_base/models/base_order.py:58
 msgid "Inco Terms"
 msgstr "Inco条款"
 
-#: sea_saw_crm/models/base/base_order.py:58 sea_saw_crm/models/base/field.py:18
-#: sea_saw_crm/models/payment/payment.py:116 sea_saw_crm/models/supplier.py:142
+#: app/sea_saw_base/models/base_order.py:66 app/sea_saw_base/models/field.py:18
+#: app/sea_saw_finance/models/payment.py:116
 msgid "Currency"
 msgstr "货币"
 
-#: sea_saw_crm/models/base/base_order.py:66
+#: app/sea_saw_base/models/base_order.py:74
 msgid "Deposit"
-msgstr "预付款"
+msgstr "预付"
 
-#: sea_saw_crm/models/base/base_order.py:74
+#: app/sea_saw_base/models/base_order.py:82
 msgid "Balance"
 msgstr "尾款"
 
-#: sea_saw_crm/models/base/base_order.py:82
+#: app/sea_saw_base/models/base_order.py:90
 msgid "Total Amount"
-msgstr "总金额"
+msgstr "货款总额"
 
-#: sea_saw_crm/models/base/base_order.py:88
-#: sea_saw_crm/models/production/production_order.py:84
+#: app/sea_saw_base/models/base_order.py:96
+#: app/sea_saw_production/models/production_order.py:84
 msgid "Comment"
 msgstr "评论"
 
-#: sea_saw_crm/models/base/enums.py:12
+#: app/sea_saw_base/models/enums.py:12
 msgid "KGS"
 msgstr "公斤"
 
-#: sea_saw_crm/models/base/enums.py:13
+#: app/sea_saw_base/models/enums.py:13
 msgid "LBS"
 msgstr "磅"
 
-#: sea_saw_crm/models/base/enums.py:19
+#: app/sea_saw_base/models/enums.py:19
 msgid "USD"
 msgstr "USD"
 
-#: sea_saw_crm/models/base/enums.py:20
+#: app/sea_saw_base/models/enums.py:20
 msgid "EUR"
 msgstr "EUR"
 
-#: sea_saw_crm/models/base/enums.py:21
+#: app/sea_saw_base/models/enums.py:21
 msgid "GBP"
 msgstr "GBP"
 
-#: sea_saw_crm/models/base/enums.py:22
+#: app/sea_saw_base/models/enums.py:22
 msgid "CNY"
 msgstr "CNY"
 
-#: sea_saw_crm/models/base/enums.py:23
+#: app/sea_saw_base/models/enums.py:23
 msgid "HKD"
 msgstr "HKD"
 
-#: sea_saw_crm/models/base/enums.py:24
+#: app/sea_saw_base/models/enums.py:24
 msgid "JPY"
 msgstr "JPY"
 
-#: sea_saw_crm/models/base/enums.py:30
+#: app/sea_saw_base/models/enums.py:30
 msgid "Sea"
 msgstr "海运"
 
-#: sea_saw_crm/models/base/enums.py:31
+#: app/sea_saw_base/models/enums.py:31
 msgid "Air"
 msgstr "空运"
 
-#: sea_saw_crm/models/base/enums.py:32
+#: app/sea_saw_base/models/enums.py:32
 msgid "Rail"
-msgstr "铁路"
+msgstr "铁路运输"
 
-#: sea_saw_crm/models/base/enums.py:33
+#: app/sea_saw_base/models/enums.py:33
 msgid "Road"
 msgstr "陆运"
 
-#: sea_saw_crm/models/base/enums.py:34
+#: app/sea_saw_base/models/enums.py:34
 msgid "Multimodal"
 msgstr "多式联运"
 
-#: sea_saw_crm/models/base/enums.py:41
+#: app/sea_saw_base/models/enums.py:41
 msgid "EXW - Ex Works"
-msgstr "EXW - 工厂交货（卖方在其场所交货）"
+msgstr "EXW -工厂交货"
 
-#: sea_saw_crm/models/base/enums.py:42
+#: app/sea_saw_base/models/enums.py:42
 msgid "FCA - Free Carrier"
-msgstr "FCA - 货交承运人（卖方交货至指定承运人）"
+msgstr "FCA -货交承运人"
 
-#: sea_saw_crm/models/base/enums.py:43
+#: app/sea_saw_base/models/enums.py:43
 msgid "CPT - Carriage Paid To"
-msgstr "CPT - 运费付至（卖方支付运至指定目的地的运费）"
+msgstr "CPT -运费、保险费付至目的地价"
 
-#: sea_saw_crm/models/base/enums.py:44
+#: app/sea_saw_base/models/enums.py:44
 msgid "CIP - Carriage and Insurance Paid To"
-msgstr "CIP - 运费及保险费付至（卖方支付运费和保险费至目的地）"
+msgstr "CIP -运费和保险费付至"
 
-#: sea_saw_crm/models/base/enums.py:45
+#: app/sea_saw_base/models/enums.py:45
 msgid "DAP - Delivered at Place"
-msgstr "DAP - 交货至指定地点（未卸货，卖方承担运输风险）"
+msgstr "DAP -目的地交货"
 
-#: sea_saw_crm/models/base/enums.py:46
+#: app/sea_saw_base/models/enums.py:46
 msgid "DPU - Delivered at Place Unloaded"
-msgstr "DPU - 交货至指定地点并卸货（卖方承担运输及卸货风险）"
+msgstr "DPU -目的地卸货后交货"
 
-#: sea_saw_crm/models/base/enums.py:47
+#: app/sea_saw_base/models/enums.py:47
 msgid "DDP - Delivered Duty Paid"
-msgstr "DDP - 完税后交货（卖方承担全部费用及风险，包括关税）"
+msgstr "DDP -完税后交货"
 
-#: sea_saw_crm/models/base/enums.py:50
+#: app/sea_saw_base/models/enums.py:50
 msgid "FAS - Free Alongside Ship"
-msgstr "FAS - 装运港船边交货（卖方交货至船边）"
+msgstr "FAS -船边交货"
 
-#: sea_saw_crm/models/base/enums.py:51
+#: app/sea_saw_base/models/enums.py:51
 msgid "FOB - Free on Board"
-msgstr "FOB - 装运港船上交货（卖方承担至船上风险）"
+msgstr "FOB -装运港船上交货"
 
-#: sea_saw_crm/models/base/enums.py:52
+#: app/sea_saw_base/models/enums.py:52
 msgid "CFR - Cost and Freight"
-msgstr "CFR - 成本加运费（卖方支付运费至目的港，但风险在装运港转移）"
+msgstr "CFR -成本加运费"
 
-#: sea_saw_crm/models/base/enums.py:53
+#: app/sea_saw_base/models/enums.py:53
 msgid "CIF - Cost, Insurance and Freight"
-msgstr ""
-"CIF - 成本、保险费加运费（卖方支付运费和保险费至目的港，风险在装运港转移）"
+msgstr "CIF -成本、保险费加运费"
 
-#: sea_saw_crm/models/base/field.py:13
+#: app/sea_saw_base/models/field.py:13
 msgid "Picklist"
-msgstr "选项"
+msgstr "Picklist"
 
-#: sea_saw_crm/models/base/field.py:14
+#: app/sea_saw_base/models/field.py:14
 msgid "Text"
 msgstr "文本"
 
-#: sea_saw_crm/models/base/field.py:15
+#: app/sea_saw_base/models/field.py:15
 msgid "Numerical"
 msgstr "数值"
 
-#: sea_saw_crm/models/base/field.py:16
+#: app/sea_saw_base/models/field.py:16
 msgid "Lookup"
-msgstr "外键"
+msgstr "查找"
 
-#: sea_saw_crm/models/base/field.py:17
+#: app/sea_saw_base/models/field.py:17
 msgid "Date"
 msgstr "日期"
 
-#: sea_saw_crm/models/base/field.py:19 sea_saw_crm/models/contact.py:34
-#: sea_saw_crm/models/supplier.py:70
+#: app/sea_saw_base/models/field.py:19 app/sea_saw_crm/models/contact.py:33
 msgid "Email"
 msgstr "电子邮件"
 
-#: sea_saw_crm/models/base/field.py:20 sea_saw_crm/models/supplier.py:56
+#: app/sea_saw_base/models/field.py:20
 msgid "Phone"
 msgstr "电话"
 
-#: sea_saw_crm/models/base/field.py:21
+#: app/sea_saw_base/models/field.py:21
 msgid "URL"
 msgstr "URL"
 
-#: sea_saw_crm/models/base/field.py:31
+#: app/sea_saw_base/models/field.py:31
 msgid "Field Name"
 msgstr "字段名称"
 
-#: sea_saw_crm/models/base/field.py:32
+#: app/sea_saw_base/models/field.py:32
 msgid "Unique name of the field within the same content type."
 msgstr "同一内容类型中字段的唯一名称。"
 
-#: sea_saw_crm/models/base/field.py:39
+#: app/sea_saw_base/models/field.py:39
 msgid "Field Type"
 msgstr "字段类型"
 
-#: sea_saw_crm/models/base/field.py:40
+#: app/sea_saw_base/models/field.py:40
 msgid "Type of this field, e.g., text, picklist, date."
 msgstr "此字段的类型，例如文本、选择列表、日期。"
 
-#: sea_saw_crm/models/base/field.py:45 sea_saw_crm/models/supplier.py:164
+#: app/sea_saw_base/models/field.py:45
 msgid "Is Active"
-msgstr "是否激活状态"
+msgstr "是否处于活动状态"
 
-#: sea_saw_crm/models/base/field.py:46
+#: app/sea_saw_base/models/field.py:46
 msgid "Whether the field is active."
-msgstr "字段是否处于激活状态。"
+msgstr "字段是否处于活动状态。"
 
-#: sea_saw_crm/models/base/field.py:51
+#: app/sea_saw_base/models/field.py:51
 msgid "Is Mandatory"
-msgstr "是必填项"
+msgstr "是强制性"
 
-#: sea_saw_crm/models/base/field.py:52
+#: app/sea_saw_base/models/field.py:52
 msgid "Whether this field is required."
 msgstr "是否需要此字段。"
 
-#: sea_saw_crm/models/base/field.py:58 sea_saw_crm/serializers/field.py:21
-#: sea_saw_crm/serializers/payment/payment_nested.py:34
-#: sea_saw_crm/serializers/payment/payment_standalone.py:34
+#: app/sea_saw_base/models/field.py:58 app/sea_saw_base/serializers/field.py:19
+#: app/sea_saw_finance/serializers/payment_nested.py:34
+#: app/sea_saw_finance/serializers/payment_standalone.py:34
 msgid "Content Type"
 msgstr "内容类型"
 
-#: sea_saw_crm/models/base/field.py:59
+#: app/sea_saw_base/models/field.py:59
 msgid "The model that this field belongs to."
-msgstr "此字段所属的模型。"
+msgstr "此字段所属的模型"
 
-#: sea_saw_crm/models/base/field.py:65
+#: app/sea_saw_base/models/field.py:65
 msgid "Extra Information"
 msgstr "额外信息"
 
-#: sea_saw_crm/models/base/field.py:66
+#: app/sea_saw_base/models/field.py:66
 msgid "Optional metadata, e.g., picklist choices."
 msgstr "可选的元数据，例如picklist选项。"
 
-#: sea_saw_crm/models/base/field.py:71
+#: app/sea_saw_base/models/field.py:71
 msgid "Field"
 msgstr "字段"
 
-#: sea_saw_crm/models/base/field.py:72
+#: app/sea_saw_base/models/field.py:72
 msgid "Fields"
 msgstr "字段"
 
-#: sea_saw_crm/models/base/field.py:94
+#: app/sea_saw_base/models/field.py:94
 msgid "Picklist fields must define extra_info (e.g., picklist choices)."
 msgstr "Picklist字段必须定义extra_info（例如，picklist选项）。"
 
-#: sea_saw_crm/models/company.py:13
-msgid "Company Name"
-msgstr "公司名称"
-
-#: sea_saw_crm/models/company.py:14
-msgid "The name of the company."
-msgstr "公司名称"
-
-#: sea_saw_crm/models/company.py:20
-msgid "Email Address"
-msgstr "电子邮箱"
-
-#: sea_saw_crm/models/company.py:21
-msgid "Contact email of the company."
-msgstr "公司的联系邮箱。"
-
-#: sea_saw_crm/models/company.py:28 sea_saw_crm/models/contact.py:42
-msgid "Mobile Number"
-msgstr "手机号码"
-
-#: sea_saw_crm/models/company.py:29
-msgid "The mobile phone number of the company."
-msgstr "公司的手机号码。"
-
-#: sea_saw_crm/models/company.py:36 sea_saw_crm/models/contact.py:50
-msgid "Phone Number"
-msgstr "电话号码"
-
-#: sea_saw_crm/models/company.py:37
-msgid "The landline phone number of the company."
-msgstr "公司的固定电话号码。"
-
-#: sea_saw_crm/models/company.py:44 sea_saw_crm/models/supplier.py:84
-msgid "Address"
-msgstr "地址"
-
-#: sea_saw_crm/models/company.py:45
-msgid "The address of the company."
-msgstr "公司的地址。"
-
-#: sea_saw_crm/models/company.py:49 sea_saw_crm/models/contact.py:60
-#: sea_saw_crm/models/supplier.py:39 sea_saw_crm/serializers/contact.py:18
-msgid "Company"
-msgstr "公司"
-
-#: sea_saw_crm/models/company.py:50
-msgid "Companies"
-msgstr "公司"
-
-#: sea_saw_crm/models/company.py:54
-msgid "Unnamed Company"
-msgstr "未命名的公司"
-
-#: sea_saw_crm/models/contact.py:19
-msgid "Name"
-msgstr "名称"
-
-#: sea_saw_crm/models/contact.py:20
-msgid "Full name of the contact."
-msgstr "联系人的全名。"
-
-#: sea_saw_crm/models/contact.py:27
-msgid "Job Title"
-msgstr "职位名称"
-
-#: sea_saw_crm/models/contact.py:28
-msgid "The position or title of the contact."
-msgstr "联系人的职位或头衔。"
-
-#: sea_saw_crm/models/contact.py:35
-msgid "Email address of the contact."
-msgstr "联系人的电子邮件地址。"
-
-#: sea_saw_crm/models/contact.py:43
-msgid "Mobile phone number of the contact."
-msgstr "联系人的移动电话号码。"
-
-#: sea_saw_crm/models/contact.py:51
-msgid "Landline phone number of the contact."
-msgstr "联系人的固定电话号码。"
-
-#: sea_saw_crm/models/contact.py:61
-msgid "The company associated with this contact."
-msgstr "与此联系人关联的公司。"
-
-#: sea_saw_crm/models/contact.py:65 sea_saw_crm/models/contract.py:56
-#: sea_saw_crm/models/order/order.py:46
-#: sea_saw_crm/models/pipeline/pipeline.py:90
-#: sea_saw_crm/serializers/contract.py:29
-#: sea_saw_crm/serializers/order/order_nested.py:39
-#: sea_saw_crm/serializers/order/order_standalone.py:42
-#: sea_saw_crm/serializers/pipeline/pipeline.py:60
-msgid "Contact"
-msgstr "联系人"
-
-#: sea_saw_crm/models/contact.py:66
-msgid "Contacts"
-msgstr "联系人"
-
-#: sea_saw_crm/models/contact.py:71
-msgid "Unnamed Contact"
-msgstr "未命名的联系人"
-
-#: sea_saw_crm/models/contact.py:82
-msgid "At least one contact method is required: email or phone."
-msgstr "至少需要一种联系方式：电子邮件或电话。"
-
-#: sea_saw_crm/models/contract.py:13
-msgid "In Progress"
-msgstr "生产中"
-
-#: sea_saw_crm/models/contract.py:14
-msgid "Finished"
-msgstr "完成"
-
-#: sea_saw_crm/models/contract.py:15 sea_saw_crm/models/order/enums.py:20
-#: sea_saw_crm/models/outbound/enums.py:20
-#: sea_saw_crm/models/pipeline/enums.py:27
-#: sea_saw_crm/models/production/enums.py:20
-#: sea_saw_crm/models/purchase/enums.py:20
-msgid "Cancelled"
-msgstr "取消"
-
-#: sea_saw_crm/models/contract.py:16
-msgid "Delayed"
-msgstr "延迟"
-
-#: sea_saw_crm/models/contract.py:17 sea_saw_crm/models/order/enums.py:21
-#: sea_saw_crm/models/outbound/enums.py:21
-#: sea_saw_crm/models/pipeline/enums.py:28
-#: sea_saw_crm/models/production/enums.py:21
-#: sea_saw_crm/models/purchase/enums.py:21
-msgid "Issue Reported"
-msgstr "报告问题"
-
-#: sea_saw_crm/models/contract.py:33
-msgid "Contract Code"
-msgstr "合约代码"
-
-#: sea_saw_crm/models/contract.py:34
-msgid "Unique identifier for the contract."
-msgstr "合同的唯一标识符。"
-
-#: sea_saw_crm/models/contract.py:41
-msgid "Stage"
-msgstr "阶段"
-
-#: sea_saw_crm/models/contract.py:47
-msgid "Contract Date"
-msgstr "合同日期"
-
-#: sea_saw_crm/models/contract.py:60
-msgid "Contract"
-msgstr "合同"
-
-#: sea_saw_crm/models/contract.py:61
-msgid "Contracts"
-msgstr "合同"
-
-#: sea_saw_crm/models/order/enums.py:17 sea_saw_crm/models/outbound/enums.py:17
-#: sea_saw_crm/models/pipeline/enums.py:12
-#: sea_saw_crm/models/production/enums.py:17
-#: sea_saw_crm/models/purchase/enums.py:17
-msgid "Draft"
-msgstr "草稿"
-
-#: sea_saw_crm/models/order/enums.py:18 sea_saw_crm/models/outbound/enums.py:18
-#: sea_saw_crm/models/production/enums.py:18
-#: sea_saw_crm/models/purchase/enums.py:18
-#, fuzzy
-#| msgid "Is Active"
-msgid "Active"
-msgstr "是否激活状态"
-
-#: sea_saw_crm/models/order/order.py:30
-msgid "Order Code"
-msgstr "订单代码"
-
-#: sea_saw_crm/models/order/order.py:31
-msgid "Unique identifier for this order."
-msgstr "此订单的唯一标识符。"
-
-#: sea_saw_crm/models/order/order.py:37
-#: sea_saw_crm/models/pipeline/pipeline.py:107
-msgid "Order Date"
-msgstr "订单日期"
-
-#: sea_saw_crm/models/order/order.py:53
-msgid "Order Status"
-msgstr "订单状态"
-
-#: sea_saw_crm/models/order/order.py:65
-#: sea_saw_crm/models/order/order_item.py:22
-#: sea_saw_crm/models/pipeline/enums.py:51
-#: sea_saw_crm/serializers/pipeline/pipeline.py:113
-#: sea_saw_crm/serializers/pipeline/pipeline.py:161
-#: sea_saw_crm/serializers/pipeline/pipeline.py:203
-#: sea_saw_crm/serializers/pipeline/pipeline.py:234
-msgid "Order"
-msgstr "订单"
-
-#: sea_saw_crm/models/order/order.py:66
-msgid "Orders"
-msgstr "订单"
-
-#: sea_saw_crm/models/order/order.py:74
-msgid "Unnamed Order"
-msgstr "未命名订单"
-
-#: sea_saw_crm/models/order/order_item.py:29
-#: sea_saw_crm/serializers/outbound/outbound_item.py:35
-#: sea_saw_crm/serializers/production/production_item.py:34
-msgid "Order Quantity"
-msgstr "订货量"
-
-#: sea_saw_crm/models/order/order_item.py:37
-#: sea_saw_crm/models/purchase/purchase_item.py:47
-msgid "Total Gross Weight"
-msgstr "总毛重"
-
-#: sea_saw_crm/models/order/order_item.py:45
-#: sea_saw_crm/models/purchase/purchase_item.py:55
-msgid "Total Net Weight"
-msgstr "总净重"
-
-#: sea_saw_crm/models/order/order_item.py:54
-#: sea_saw_crm/models/purchase/purchase_item.py:64
-msgid "Unit Price"
-msgstr "单价"
-
-#: sea_saw_crm/models/order/order_item.py:62
-#: sea_saw_crm/models/purchase/purchase_item.py:73
-msgid "Total Price"
-msgstr "总价"
-
-#: sea_saw_crm/models/order/order_item.py:66
-#: sea_saw_crm/models/outbound/outbound_item.py:33
-msgid "Order Item"
-msgstr "订单项目"
-
-#: sea_saw_crm/models/order/order_item.py:67
-#: sea_saw_crm/serializers/order/order_nested.py:110
-#: sea_saw_crm/serializers/order/order_nested.py:146
-#: sea_saw_crm/serializers/order/order_nested.py:178
-#: sea_saw_crm/serializers/order/order_nested.py:202
-#: sea_saw_crm/serializers/order/order_standalone.py:53
-msgid "Order Items"
-msgstr "订单项目"
-
-#: sea_saw_crm/models/order/order_item.py:74
-msgid "Unnamed Item"
-msgstr "未命名项目"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:23
-#: sea_saw_crm/models/outbound/outbound_order.py:108
-msgid "Outbound Order"
-msgstr "出库单"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:34
-msgid "The sales order item associated with this outbound item."
-msgstr "与此出站物料关联的销售订单物料。"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:44
-#: sea_saw_crm/models/production/production_item.py:70
-msgid "Production Item"
-msgstr "生产产品"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:45
-msgid "The production item associated with this outbound item."
-msgstr "与此出站物料关联的生产物料。"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:52
-msgid "Outbound Quantity"
-msgstr "出库数量"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:53
-msgid "Outbound quantity (cartons / pieces)."
-msgstr "数量（箱/件）。"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:61
-#: sea_saw_crm/models/production/production_item.py:58
-msgid "Outbound Net Weight"
-msgstr "出库产品净重"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:69
-#: sea_saw_crm/models/production/production_item.py:66
-msgid "Outbound Gross Weight"
-msgstr "出库产品重量"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:73
-msgid "Outbound Item"
-msgstr "出库项"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:74
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:35
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:71
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:88
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:103
-#: sea_saw_crm/serializers/outbound/outbound_order_nested.py:118
-#: sea_saw_crm/serializers/outbound/outbound_order_standalone.py:37
-msgid "Outbound Items"
-msgstr "出库项列表"
-
-#: sea_saw_crm/models/outbound/outbound_item.py:81
-msgid "Unknown Item"
-msgstr "未知物品"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:31
-msgid "Outbound Code"
-msgstr "出库单代码"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:32
-msgid "Unique outbound / shipment code."
-msgstr "唯一的出站/装运代码。"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:40
-#: sea_saw_crm/models/payment/payment.py:79
-#: sea_saw_crm/models/pipeline/pipeline.py:141
-#: sea_saw_crm/models/production/production_order.py:33
-#: sea_saw_crm/models/purchase/purchase_order.py:41
-msgid "Pipeline"
-msgstr "流水线"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:41
-msgid "The business process pipeline this outbound order belongs to."
-msgstr "此出库订单所属的业务流水线。"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:47
-msgid "Outbound Date"
-msgstr "出库日期"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:54
-#: sea_saw_crm/models/production/production_order.py:70
-msgid "Status"
-msgstr "状态"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:61
-msgid "Container No."
-msgstr "容器号/集装箱号"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:68
-msgid "Seal No."
-msgstr "封条编码"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:82
-msgid "Logistics Provider"
-msgstr "物流供应商"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:89
-msgid "Loader"
-msgstr "装运人"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:90
-msgid "Person who loads the goods into the container."
-msgstr "把货物装进集装箱的人。"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:96
-#: sea_saw_crm/models/payment/payment.py:135
-#: sea_saw_crm/models/pipeline/pipeline.py:136
-#: sea_saw_crm/models/production/production_order.py:77
-#: sea_saw_crm/models/supplier.py:178
-msgid "Remark"
-msgstr "备注"
-
-#: sea_saw_crm/models/outbound/outbound_order.py:109
-#: sea_saw_crm/serializers/pipeline/pipeline.py:121
-#: sea_saw_crm/serializers/pipeline/pipeline.py:169
-#: sea_saw_crm/serializers/pipeline/pipeline.py:211
-#: sea_saw_crm/serializers/pipeline/pipeline.py:242
-msgid "Outbound Orders"
-msgstr "出库单"
-
-#: sea_saw_crm/models/payment/enums.py:11
-msgid "Telegraphic Transfer"
-msgstr "电汇"
-
-#: sea_saw_crm/models/payment/enums.py:12
-msgid "Letter of Credit"
-msgstr "信用证"
-
-#: sea_saw_crm/models/payment/enums.py:13
-msgid "PayPal"
-msgstr "PayPal"
-
-#: sea_saw_crm/models/payment/enums.py:14
-msgid "Cash"
-msgstr "现金"
-
-#: sea_saw_crm/models/payment/enums.py:15
-msgid "Bank Transfer"
-msgstr "银行转账"
-
-#: sea_saw_crm/models/payment/enums.py:21
-msgid "Order Payment"
-msgstr "订单支付"
-
-#: sea_saw_crm/models/payment/enums.py:22
-msgid "Purchase Payment"
-msgstr "采购付款"
-
-#: sea_saw_crm/models/payment/enums.py:23
-msgid "Production Payment"
-msgstr "生产付款"
-
-#: sea_saw_crm/models/payment/enums.py:24
-msgid "Outbound Payment"
-msgstr "支付方式"
-
-#: sea_saw_crm/models/payment/payment.py:62
-msgid "Payment Code"
-msgstr "付款代码"
-
-#: sea_saw_crm/models/payment/payment.py:63
-msgid "Auto-generated unique payment code"
-msgstr "自动生成的唯一付款代码"
-
-#: sea_saw_crm/models/payment/payment.py:70
-#: sea_saw_crm/serializers/payment/payment_standalone.py:42
-msgid "Payment Type"
-msgstr "支付类型"
-
-#: sea_saw_crm/models/payment/payment.py:71
-msgid "Type of payment (order, purchase, production, outbound)"
-msgstr "付款类型（订单、采购、生产、出库）"
-
-#: sea_saw_crm/models/payment/payment.py:80
-msgid "The business pipeline this payment belongs to"
-msgstr "此付款所属的业务流水线"
-
-#: sea_saw_crm/models/payment/payment.py:91
-msgid "Type of entity: Order, PurchaseOrder, ProductionOrder, or OutboundOrder"
-msgstr "实体类型：Order、PurchaseOrder、ProductionOrder或OutboundOrder"
-
-#: sea_saw_crm/models/payment/payment.py:103
-msgid "Payment Date"
-msgstr "付款日期"
-
-#: sea_saw_crm/models/payment/payment.py:104
-msgid "Date when the payment was made"
-msgstr "付款日期"
-
-#: sea_saw_crm/models/payment/payment.py:109
-msgid "Amount"
-msgstr "支付金额"
-
-#: sea_saw_crm/models/payment/payment.py:110
-msgid "Payment amount"
-msgstr "支付金额"
-
-#: sea_saw_crm/models/payment/payment.py:117
-msgid "Currency code (e.g., USD, CNY)"
-msgstr "货币代码（如美元、CNY）"
-
-#: sea_saw_crm/models/payment/payment.py:122
-msgid "Payment Method"
-msgstr "支付方式"
-
-#: sea_saw_crm/models/payment/payment.py:123
-msgid "Method used for payment"
-msgstr "付款方式"
-
-#: sea_saw_crm/models/payment/payment.py:129
-msgid "Bank Reference"
-msgstr "银行流水号"
-
-#: sea_saw_crm/models/payment/payment.py:130
-msgid "Bank transaction reference number"
-msgstr "银行交易参考编号"
-
-#: sea_saw_crm/models/payment/payment.py:136
-msgid "Additional notes about the payment"
-msgstr "关于付款的附加说明"
-
-#: sea_saw_crm/models/payment/payment.py:148
-msgid "Payment"
-msgstr "支付"
-
-#: sea_saw_crm/models/payment/payment.py:149
-msgid "Payments"
-msgstr "支付"
-
-#: sea_saw_crm/models/pipeline/enums.py:13
-msgid "Order Confirmed"
-msgstr "订单确认"
-
-#: sea_saw_crm/models/pipeline/enums.py:14
-msgid "In Purchase"
-msgstr "采购中"
-
-#: sea_saw_crm/models/pipeline/enums.py:15
-msgid "Purchase Completed"
-msgstr "采购完成"
-
-#: sea_saw_crm/models/pipeline/enums.py:16
-msgid "In Production"
-msgstr "生产中"
-
-#: sea_saw_crm/models/pipeline/enums.py:17
-msgid "Production Completed"
-msgstr "生产完成"
-
-#: sea_saw_crm/models/pipeline/enums.py:19
-msgid "In Purchase and Production"
-msgstr "生产中"
-
-#: sea_saw_crm/models/pipeline/enums.py:22
-msgid "Purchase and Production Completed"
-msgstr "生产完成"
-
-#: sea_saw_crm/models/pipeline/enums.py:24
-msgid "In Outbound"
-msgstr "出库中"
-
-#: sea_saw_crm/models/pipeline/enums.py:25
-msgid "Outbound Completed"
-msgstr "出库完成"
-
-#: sea_saw_crm/models/pipeline/enums.py:34
-msgid "Production Flow"
-msgstr "生产流水线"
-
-#: sea_saw_crm/models/pipeline/enums.py:37
-msgid "Purchase Flow"
-msgstr "采购流水线"
-
-#: sea_saw_crm/models/pipeline/enums.py:40
-msgid "Hybrid Flow"
-msgstr "混合流水线"
-
-#: sea_saw_crm/models/pipeline/enums.py:50
-msgid "None"
-msgstr ""
-
-#: sea_saw_crm/models/pipeline/enums.py:53
-msgid "Purchase"
-msgstr "采购中"
-
-#: sea_saw_crm/models/pipeline/enums.py:54
-msgid "Production and Purchase"
-msgstr "生产订单"
-
-#: sea_saw_crm/models/pipeline/enums.py:55
-msgid "Outbound"
-msgstr "出库中"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:45
-msgid "Pipeline Code"
-msgstr "流水线代码"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:46
-msgid "Unique identifier for this business process pipeline"
-msgstr "此业务流程的唯一标识符"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:53
-msgid "Pipeline Type"
-msgstr "流水线类型"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:54
-msgid "Type of business process flow"
-msgstr "业务流程类型"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:61
-msgid "Pipeline Status"
-msgstr "流程状态"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:62
-msgid "Current status of the business process"
-msgstr "业务流程的当前状态"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:69
-#: sea_saw_crm/serializers/order/order_nested.py:51
-#: sea_saw_crm/serializers/order/order_standalone.py:70
-msgid "Active Entity"
-msgstr "相关实体"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:70
-msgid "Currently active sub-entity type in this pipeline"
-msgstr ""
-
-#: sea_saw_crm/models/pipeline/pipeline.py:79
-msgid "Sales Order"
-msgstr "销售订单"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:80
-msgid "The main sales order for this pipeline"
-msgstr "该管道的主要销售订单"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:91
-msgid "Customer contact for this pipeline"
-msgstr "此管道的客户联系人"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:108
-msgid "Date when the order was created"
-msgstr "订单创建日期"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:114
-msgid "Confirmed At"
-msgstr "订单确认时间"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:115
-msgid "When the order was confirmed"
-msgstr "订单确认时间"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:121
-msgid "Completed At"
-msgstr "流程完成时间"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:122
-msgid "When the entire pipeline was completed"
-msgstr "流程完成时间"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:128
-msgid "Cancelled At"
-msgstr "流程取消时间"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:129
-msgid "When the pipeline was cancelled"
-msgstr "流程取消时间"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:137
-msgid "Additional notes for this pipeline"
-msgstr "此管道的附加说明"
-
-#: sea_saw_crm/models/pipeline/pipeline.py:142
-msgid "Pipelines"
-msgstr "流水线"
-
-#: sea_saw_crm/models/production/production_item.py:23
-#: sea_saw_crm/models/production/production_order.py:97
-msgid "Production Order"
-msgstr "生产订单"
-
-#: sea_saw_crm/models/production/production_item.py:32
-#: sea_saw_crm/models/purchase/purchase_item.py:31
-msgid "Related Order Item"
-msgstr "相关订单项目"
-
-#: sea_saw_crm/models/production/production_item.py:33
-msgid "The sales order item linked to this production item."
-msgstr "链接到此生产物料的销售订单物料。"
-
-#: sea_saw_crm/models/production/production_item.py:42
-msgid "Planned Quantity"
-msgstr "计划数量"
-
-#: sea_saw_crm/models/production/production_item.py:49
-msgid "Produced Quantity"
-msgstr "实际生产数量"
-
-#: sea_saw_crm/models/production/production_item.py:50
-msgid "Total actual produced quantity."
-msgstr "实际生产的总数量。"
-
-#: sea_saw_crm/models/production/production_item.py:71
-#: sea_saw_crm/serializers/production/production_order_nested.py:28
-#: sea_saw_crm/serializers/production/production_order_nested.py:61
-#: sea_saw_crm/serializers/production/production_order_nested.py:77
-#: sea_saw_crm/serializers/production/production_order_nested.py:93
-#: sea_saw_crm/serializers/production/production_order_nested.py:109
-#: sea_saw_crm/serializers/production/production_order_standalone.py:30
-msgid "Production Items"
-msgstr "生产项目"
-
-#: sea_saw_crm/models/production/production_order.py:24
-msgid "Production Code"
-msgstr "生产代码"
-
-#: sea_saw_crm/models/production/production_order.py:25
-msgid "Unique code for the production order."
-msgstr "生产订单的唯一代码。"
-
-#: sea_saw_crm/models/production/production_order.py:34
-msgid "The business process pipeline this production order belongs to."
-msgstr "此生产订单所属的业务流程管道。"
-
-#: sea_saw_crm/models/production/production_order.py:44
-#: sea_saw_crm/models/purchase/purchase_order.py:67
-msgid "Related Order (Legacy)"
-msgstr "关联订单（Legacy）"
-
-#: sea_saw_crm/models/production/production_order.py:45
-#: sea_saw_crm/models/purchase/purchase_order.py:68
-msgid "Sales order (legacy field, use pipeline.order instead)."
-msgstr "销售订单（旧字段，请改用pipeline.order）。"
-
-#: sea_saw_crm/models/production/production_order.py:51
-msgid "Planned Date"
-msgstr "计划日期"
-
-#: sea_saw_crm/models/production/production_order.py:57
-msgid "Start Date"
-msgstr "开始日期"
-
-#: sea_saw_crm/models/production/production_order.py:63
-msgid "End Date"
-msgstr "结束日期"
-
-#: sea_saw_crm/models/production/production_order.py:71
-msgid "Production status."
-msgstr "生产状态。"
-
-#: sea_saw_crm/models/production/production_order.py:78
-#: sea_saw_crm/models/production/production_order.py:85
-msgid "Additional notes for this production order."
-msgstr "本生产订单的附加说明。"
-
-#: sea_saw_crm/models/production/production_order.py:98
-#: sea_saw_crm/serializers/pipeline/pipeline.py:115
-#: sea_saw_crm/serializers/pipeline/pipeline.py:163
-#: sea_saw_crm/serializers/pipeline/pipeline.py:205
-#: sea_saw_crm/serializers/pipeline/pipeline.py:236
-msgid "Production Orders"
-msgstr "生产订单"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:22
-#: sea_saw_crm/models/purchase/purchase_order.py:87
-msgid "Purchase Order"
-msgstr "采购订单"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:32
-msgid "The order item this purchase is for."
-msgstr "此采购的订单项。"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:39
-msgid "Purchase Quantity"
-msgstr "采购数量"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:65
-msgid "Purchase price per unit."
-msgstr "单位购买价格。"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:74
-msgid "Total price for this item."
-msgstr "此项目的总价。"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:78
-msgid "Purchase Item"
-msgstr "购买项目"
-
-#: sea_saw_crm/models/purchase/purchase_item.py:79
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:27
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:68
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:84
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:101
-#: sea_saw_crm/serializers/purchase/purchase_order_nested.py:135
-msgid "Purchase Items"
-msgstr "购买物品"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:32
-msgid "Purchase Code"
-msgstr "采购代码"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:33
-msgid "Unique identifier for this purchase order."
-msgstr "此采购订单的唯一标识符。"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:42
-msgid "The business process pipeline this purchase order belongs to."
-msgstr "此采购订单所属的业务流程管道。"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:48
-msgid "Purchase Order Date"
-msgstr "采购订单日期"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:57
-#: sea_saw_crm/models/supplier.py:182
-msgid "Supplier"
-msgstr "供货商"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:75
-msgid "Purchase Order Status"
-msgstr "采购订单状态"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:88
-#: sea_saw_crm/serializers/pipeline/pipeline.py:118
-#: sea_saw_crm/serializers/pipeline/pipeline.py:166
-#: sea_saw_crm/serializers/pipeline/pipeline.py:208
-#: sea_saw_crm/serializers/pipeline/pipeline.py:239
-msgid "Purchase Orders"
-msgstr "采购订单"
-
-#: sea_saw_crm/models/purchase/purchase_order.py:96
-msgid "Unnamed Purchase Order"
-msgstr "未命名的采购订单"
-
-#: sea_saw_crm/models/supplier.py:23
-msgid "Supplier Code"
-msgstr "供应商代码"
-
-#: sea_saw_crm/models/supplier.py:24
-msgid "Unique identifier for this supplier."
-msgstr "此供应商的唯一标识符。"
-
-#: sea_saw_crm/models/supplier.py:29
-msgid "Supplier Name"
-msgstr "供应商名称"
-
-#: sea_saw_crm/models/supplier.py:30
-msgid "Name of the supplier."
-msgstr "供应商的名称。"
-
-#: sea_saw_crm/models/supplier.py:40
-msgid "The company associated with this supplier."
-msgstr "与此供应商关联的公司。"
-
-#: sea_saw_crm/models/supplier.py:48
-msgid "Contact Person"
-msgstr "联系人"
-
-#: sea_saw_crm/models/supplier.py:49
-msgid "Main contact person at supplier."
-msgstr "供应商的主要联系人。"
-
-#: sea_saw_crm/models/supplier.py:63
-msgid "Mobile"
-msgstr "电话号码"
-
-#: sea_saw_crm/models/supplier.py:77
-msgid "Fax"
-msgstr "传真"
-
-#: sea_saw_crm/models/supplier.py:91
-msgid "Country"
-msgstr "国家"
-
-#: sea_saw_crm/models/supplier.py:98
-msgid "State/Province"
-msgstr "州/省"
-
-#: sea_saw_crm/models/supplier.py:105
-msgid "City"
-msgstr "城市"
-
-#: sea_saw_crm/models/supplier.py:112
-msgid "Postal Code"
-msgstr "邮政编码"
-
-#: sea_saw_crm/models/supplier.py:120
-msgid "Tax ID"
-msgstr "税务ID"
-
-#: sea_saw_crm/models/supplier.py:121
-msgid "Tax identification number."
-msgstr "纳税识别号。"
-
-#: sea_saw_crm/models/supplier.py:127
-msgid "Website"
-msgstr "网站"
-
-#: sea_saw_crm/models/supplier.py:135
-msgid "Payment Terms"
-msgstr "付款条件"
-
-#: sea_saw_crm/models/supplier.py:136
-msgid "Standard payment terms for this supplier."
-msgstr "此供应商的标准付款条件。"
-
-#: sea_saw_crm/models/supplier.py:143
-msgid "Preferred currency for transactions."
-msgstr "交易的首选货币。"
-
-#: sea_saw_crm/models/supplier.py:151
-msgid "Credit Limit"
-msgstr "信用额度"
-
-#: sea_saw_crm/models/supplier.py:158
-msgid "Rating"
-msgstr "评级"
-
-#: sea_saw_crm/models/supplier.py:159
-msgid "Supplier rating (1-5 stars)."
-msgstr "供应商评级（1-5星）。"
-
-#: sea_saw_crm/models/supplier.py:165
-msgid "Whether this supplier is currently active."
-msgstr "此供应商当前是否有效。"
-
-#: sea_saw_crm/models/supplier.py:170
-msgid "Is Approved"
-msgstr "被批准"
-
-#: sea_saw_crm/models/supplier.py:171
-msgid "Whether this supplier has been approved."
-msgstr "该供应商是否已被批准。"
-
-#: sea_saw_crm/models/supplier.py:183
-msgid "Suppliers"
-msgstr "供应商"
-
-#: sea_saw_crm/models/supplier.py:192
-msgid "Unnamed Supplier"
-msgstr "未命名的供应商"
-
-#: sea_saw_crm/serializers/contact.py:25
-msgid "Company ID"
-msgstr "公司ID"
-
-#: sea_saw_crm/serializers/contract.py:37
-#: sea_saw_crm/serializers/order/order_nested.py:46
-#: sea_saw_crm/serializers/order/order_standalone.py:49
-#: sea_saw_crm/serializers/pipeline/pipeline.py:67
-msgid "Contact ID"
-msgstr "联系人ID"
-
-#: sea_saw_crm/serializers/field.py:22
+#: app/sea_saw_base/serializers/field.py:20
 msgid "The model associated with this field."
 msgstr "与此字段关联的模型。"
 
-#: sea_saw_crm/serializers/order/order_nested.py:52
-#: sea_saw_crm/serializers/order/order_standalone.py:71
-msgid "Currently active sub-entity type from the related Pipeline"
-msgstr ""
+#: app/sea_saw_crm/models/account.py:19
+msgid "Account Name"
+msgstr "帐户名"
 
-#: sea_saw_crm/serializers/order/order_standalone.py:65
-msgid "Related Pipeline"
-msgstr "相关流水线"
+#: app/sea_saw_crm/models/account.py:20
+msgid "The name of the account (company/organization)."
+msgstr "帐户（公司/组织）的名称。"
 
-#: sea_saw_crm/serializers/outbound/outbound_order_standalone.py:49
-msgid "Related Pipeline (Order)"
-msgstr "相关流水线"
+#: app/sea_saw_crm/models/account.py:26
+msgid "Email Address"
+msgstr "电子邮件地址"
 
-#: sea_saw_crm/serializers/payment.py:61
-#: sea_saw_crm/serializers/payment/payment_nested.py:67
-#: sea_saw_crm/serializers/payment/payment_standalone.py:70
-msgid "Amount must be greater than 0"
-msgstr "金额必须大于0"
+#: app/sea_saw_crm/models/account.py:27
+msgid "Contact email of the account."
+msgstr "帐户的联系电子邮件。"
 
-#: sea_saw_crm/serializers/payment.py:72
-msgid "Order cannot be modified once payment is created"
-msgstr "付款创建后，订单无法修改"
+#: app/sea_saw_crm/models/account.py:34 app/sea_saw_crm/models/contact.py:41
+msgid "Mobile Number"
+msgstr "手机号码"
 
-#: sea_saw_crm/serializers/payment/payment_nested.py:38
-#: sea_saw_crm/serializers/payment/payment_standalone.py:38
+#: app/sea_saw_crm/models/account.py:35
+msgid "The mobile phone number of the account."
+msgstr "帐户的移动电话号码。"
+
+#: app/sea_saw_crm/models/account.py:42 app/sea_saw_crm/models/contact.py:49
+msgid "Phone Number"
+msgstr "电话号码"
+
+#: app/sea_saw_crm/models/account.py:43
+msgid "The landline phone number of the account."
+msgstr "帐户的固定电话号码。"
+
+#: app/sea_saw_crm/models/account.py:50
+msgid "Address"
+msgstr "地址"
+
+#: app/sea_saw_crm/models/account.py:51
+msgid "The address of the account."
+msgstr "帐户的地址。"
+
+#: app/sea_saw_crm/models/account.py:58
+msgid "Website"
+msgstr "网站"
+
+#: app/sea_saw_crm/models/account.py:59
+msgid "The website URL of the account."
+msgstr "帐户的网站URL。"
+
+#: app/sea_saw_crm/models/account.py:66
+msgid "Industry"
+msgstr "行业"
+
+#: app/sea_saw_crm/models/account.py:67
+msgid "The industry sector of the account."
+msgstr "帐户的行业部门。"
+
+#: app/sea_saw_crm/models/account.py:74
+msgid "Additional notes or description about the account."
+msgstr "有关帐户的其他注释或说明。"
+
+#: app/sea_saw_crm/models/account.py:78 app/sea_saw_crm/models/contact.py:59
+#: app/sea_saw_crm/serializers/contact.py:18
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:89
+#: app/sea_saw_sales/models/order.py:47
+#: app/sea_saw_sales/serializers/order_nested.py:60
+msgid "Account"
+msgstr "账户"
+
+#: app/sea_saw_crm/models/account.py:79
+msgid "Accounts"
+msgstr "账户"
+
+#: app/sea_saw_crm/models/account.py:83
+msgid "Unnamed Account"
+msgstr "未命名帐户"
+
+#: app/sea_saw_crm/models/contact.py:18
+msgid "Name"
+msgstr "名称"
+
+#: app/sea_saw_crm/models/contact.py:19
+msgid "Full name of the contact."
+msgstr "联系人的全名。"
+
+#: app/sea_saw_crm/models/contact.py:26
+msgid "Job Title"
+msgstr "职位名称"
+
+#: app/sea_saw_crm/models/contact.py:27
+msgid "The position or title of the contact."
+msgstr "联系人的职位或头衔。"
+
+#: app/sea_saw_crm/models/contact.py:34
+msgid "Email address of the contact."
+msgstr "联系人的电子邮件地址。"
+
+#: app/sea_saw_crm/models/contact.py:42
+msgid "Mobile phone number of the contact."
+msgstr "联系人的移动电话号码。"
+
+#: app/sea_saw_crm/models/contact.py:50
+msgid "Landline phone number of the contact."
+msgstr "联系人的固定电话号码。"
+
+#: app/sea_saw_crm/models/contact.py:60
+msgid "The account (company) this contact belongs to."
+msgstr "该联系人所属的帐户（公司）。"
+
+#: app/sea_saw_crm/models/contact.py:64
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:100
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:97
+#: app/sea_saw_procurement/models/purchase_order.py:68
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:63
+#: app/sea_saw_sales/models/order.py:57
+#: app/sea_saw_sales/serializers/order_nested.py:70
+#: app/sea_saw_sales/serializers/order_standalone.py:70
+msgid "Contact"
+msgstr "联系人"
+
+#: app/sea_saw_crm/models/contact.py:65
+msgid "Contacts"
+msgstr "联系人"
+
+#: app/sea_saw_crm/models/contact.py:70
+msgid "Unnamed Contact"
+msgstr "未命名的联系人"
+
+#: app/sea_saw_crm/models/contact.py:81
+msgid "At least one contact method is required: email or phone."
+msgstr "至少需要一种联系方式：电子邮件或电话。"
+
+#: app/sea_saw_crm/serializers/contact.py:25
+#: app/sea_saw_sales/serializers/order_nested.py:67
+msgid "Account ID"
+msgstr "帐户ID"
+
+#: app/sea_saw_crm/serializers/contact.py:26
+msgid "ID of the account this contact belongs to."
+msgstr "此联系人所属的帐户ID。"
+
+#: app/sea_saw_download/models.py:22
+msgid "Pending"
+msgstr "暂停中"
+
+#: app/sea_saw_download/models.py:23
+msgid "Processing"
+msgstr "处理中"
+
+#: app/sea_saw_download/models.py:24
+#: app/sea_saw_pipeline/models/pipeline/enums.py:27
+#: app/sea_saw_procurement/models/enums.py:20
+#: app/sea_saw_production/models/enums.py:20
+#: app/sea_saw_sales/models/enums.py:20
+#: app/sea_saw_warehouse/models/enums.py:19
+msgid "Completed"
+msgstr "完成"
+
+#: app/sea_saw_download/models.py:25
+msgid "Failed"
+msgstr "失败"
+
+#: app/sea_saw_finance/models/enums.py:12
+msgid "Telegraphic Transfer"
+msgstr "TT-电汇"
+
+#: app/sea_saw_finance/models/enums.py:13
+msgid "Letter of Credit"
+msgstr "LC-信用证"
+
+#: app/sea_saw_finance/models/enums.py:14
+msgid "PayPal"
+msgstr "PayPal"
+
+#: app/sea_saw_finance/models/enums.py:15
+msgid "Cash"
+msgstr "现金"
+
+#: app/sea_saw_finance/models/enums.py:16
+msgid "Bank Transfer"
+msgstr "银行转账"
+
+#: app/sea_saw_finance/models/enums.py:22
+msgid "Order Payment"
+msgstr "订单支付"
+
+#: app/sea_saw_finance/models/enums.py:23
+msgid "Purchase Payment"
+msgstr "采购付款"
+
+#: app/sea_saw_finance/models/enums.py:24
+msgid "Production Payment"
+msgstr "生产付款"
+
+#: app/sea_saw_finance/models/enums.py:25
+msgid "Outbound Payment"
+msgstr "支付方式"
+
+#: app/sea_saw_finance/models/payment.py:62
+msgid "Payment Code"
+msgstr "付款码"
+
+#: app/sea_saw_finance/models/payment.py:63
+msgid "Auto-generated unique payment code"
+msgstr "自动生成的唯一付款代码"
+
+#: app/sea_saw_finance/models/payment.py:70
+#: app/sea_saw_finance/serializers/payment_standalone.py:42
+msgid "Payment Type"
+msgstr "支付类型"
+
+#: app/sea_saw_finance/models/payment.py:71
+msgid "Type of payment (order, purchase, production, outbound)"
+msgstr "付款类型（订单、采购、生产、出库）"
+
+#: app/sea_saw_finance/models/payment.py:79
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:151
+#: app/sea_saw_procurement/models/purchase_order.py:42
+#: app/sea_saw_production/models/production_order.py:33
+#: app/sea_saw_warehouse/models/outbound_order.py:41
+msgid "Pipeline"
+msgstr "流水线"
+
+#: app/sea_saw_finance/models/payment.py:80
+msgid "The business pipeline this payment belongs to"
+msgstr "此付款所属的业务流水线"
+
+#: app/sea_saw_finance/models/payment.py:91
+msgid "Type of entity: Order, PurchaseOrder, ProductionOrder, or OutboundOrder"
+msgstr "实体类型：Order、PurchaseOrder、ProductionOrder或OutboundOrder"
+
+#: app/sea_saw_finance/models/payment.py:103
+msgid "Payment Date"
+msgstr "付款日期"
+
+#: app/sea_saw_finance/models/payment.py:104
+msgid "Date when the payment was made"
+msgstr "付款日期"
+
+#: app/sea_saw_finance/models/payment.py:109
+msgid "Amount"
+msgstr "支付金额"
+
+#: app/sea_saw_finance/models/payment.py:110
+msgid "Payment amount"
+msgstr "支付金额"
+
+#: app/sea_saw_finance/models/payment.py:117
+msgid "Currency code (e.g., USD, CNY)"
+msgstr "货币代码（如美元、CNY）"
+
+#: app/sea_saw_finance/models/payment.py:122
+msgid "Payment Method"
+msgstr "支付方式"
+
+#: app/sea_saw_finance/models/payment.py:123
+msgid "Method used for payment"
+msgstr "付款方式"
+
+#: app/sea_saw_finance/models/payment.py:129
+msgid "Bank Reference"
+msgstr "银行资信"
+
+#: app/sea_saw_finance/models/payment.py:130
+msgid "Bank transaction reference number"
+msgstr "银行交易参考编号"
+
+#: app/sea_saw_finance/models/payment.py:135
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:146
+#: app/sea_saw_production/models/production_order.py:77
+#: app/sea_saw_warehouse/models/outbound_order.py:97
+msgid "Remark"
+msgstr "备注"
+
+#: app/sea_saw_finance/models/payment.py:136
+msgid "Additional notes about the payment"
+msgstr "关于付款的附加说明"
+
+#: app/sea_saw_finance/models/payment.py:148
+msgid "Payment"
+msgstr "支付"
+
+#: app/sea_saw_finance/models/payment.py:149
+msgid "Payments"
+msgstr "支付"
+
+#: app/sea_saw_finance/serializers/payment_nested.py:38
+#: app/sea_saw_finance/serializers/payment_standalone.py:38
 msgid "Object ID"
 msgstr "对象ID"
 
-#: sea_saw_crm/serializers/payment/payment_nested.py:81
-#: sea_saw_crm/serializers/payment/payment_standalone.py:81
+#: app/sea_saw_finance/serializers/payment_nested.py:67
+#: app/sea_saw_finance/serializers/payment_standalone.py:70
+msgid "Amount must be greater than 0"
+msgstr "金额必须大于0"
+
+#: app/sea_saw_finance/serializers/payment_nested.py:81
+#: app/sea_saw_finance/serializers/payment_standalone.py:81
 msgid "Related object type cannot be modified once payment is created"
 msgstr "付款创建后不能修改相关对象类型"
 
-#: sea_saw_crm/serializers/payment/payment_nested.py:89
-#: sea_saw_crm/serializers/payment/payment_standalone.py:89
+#: app/sea_saw_finance/serializers/payment_nested.py:89
+#: app/sea_saw_finance/serializers/payment_standalone.py:89
 msgid "Related object cannot be modified once payment is created"
 msgstr "付款创建后不能修改相关对象"
 
-#: sea_saw_crm/serializers/payment/payment_nested.py:100
-#: sea_saw_crm/serializers/payment/payment_standalone.py:98
+#: app/sea_saw_finance/serializers/payment_nested.py:100
+#: app/sea_saw_finance/serializers/payment_standalone.py:98
 msgid "object_id is required when content_type is provided"
 msgstr "提供content_type时，需要object_id"
 
-#: sea_saw_crm/serializers/payment/payment_nested.py:108
-#: sea_saw_crm/serializers/payment/payment_standalone.py:102
+#: app/sea_saw_finance/serializers/payment_nested.py:108
+#: app/sea_saw_finance/serializers/payment_standalone.py:102
 msgid "content_type is required when object_id is provided"
 msgstr "提供object_id时，需要content_type"
 
-#: sea_saw_crm/serializers/pipeline/pipeline.py:126
-#: sea_saw_crm/serializers/pipeline/pipeline.py:174
+#: app/sea_saw_pipeline/models/pipeline/enums.py:13
+#: app/sea_saw_procurement/models/enums.py:18
+#: app/sea_saw_production/models/enums.py:18
+#: app/sea_saw_sales/models/enums.py:18
+#: app/sea_saw_warehouse/models/enums.py:17
+msgid "Draft"
+msgstr "草稿"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:14
+msgid "Order Confirmed"
+msgstr "订单确认"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:15
+msgid "In Purchase"
+msgstr "采购中"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:16
+msgid "Purchase Completed"
+msgstr "采购完成"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:17
+msgid "In Production"
+msgstr "生产中"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:18
+msgid "Production Completed"
+msgstr "生产完成"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:20
+msgid "In Purchase and Production"
+msgstr "采购/生产中"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:23
+msgid "Purchase and Production Completed"
+msgstr "采购/生产完成"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:25
+msgid "In Outbound"
+msgstr "出库中"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:26
+msgid "Outbound Completed"
+msgstr "出库完成"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:28
+#: app/sea_saw_procurement/models/enums.py:21
+#: app/sea_saw_production/models/enums.py:21
+#: app/sea_saw_sales/models/enums.py:21
+#: app/sea_saw_warehouse/models/enums.py:20
+msgid "Cancelled"
+msgstr "取消"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:29
+#: app/sea_saw_procurement/models/enums.py:22
+#: app/sea_saw_production/models/enums.py:22
+#: app/sea_saw_sales/models/enums.py:22
+#: app/sea_saw_warehouse/models/enums.py:21
+msgid "Issue Reported"
+msgstr "报告问题"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:35
+msgid "Production Flow"
+msgstr "生产流水线"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:38
+msgid "Purchase Flow"
+msgstr "采购流水线"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:41
+msgid "Hybrid Flow"
+msgstr "混合流水线"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:51
+msgid "None"
+msgstr "None"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:52
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:139
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:188
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:231
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:262
+#: app/sea_saw_sales/models/order.py:77
+#: app/sea_saw_sales/models/order_item.py:22
+msgid "Order"
+msgstr "销售单"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:54
+msgid "Purchase"
+msgstr "采购单"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:55
+msgid "Production and Purchase"
+msgstr "生产/采购单"
+
+#: app/sea_saw_pipeline/models/pipeline/enums.py:56
+msgid "Outbound"
+msgstr "出库单"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:44
+msgid "Pipeline Code"
+msgstr "流水线代码"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:45
+msgid "Unique identifier for this business process pipeline"
+msgstr "此业务流程流水线的唯一标识符"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:52
+msgid "Pipeline Type"
+msgstr "流水线类型"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:53
+msgid "Type of business process flow"
+msgstr "业务流程类型"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:60
+msgid "Pipeline Status"
+msgstr "流水线状态"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:61
+msgid "Current status of the business process"
+msgstr "业务流程的当前状态"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:68
+#: app/sea_saw_sales/serializers/order_nested.py:82
+msgid "Active Entity"
+msgstr "活动实体"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:69
+msgid "Currently active sub-entity type in this pipeline"
+msgstr "此流水线中当前活动的子实体类型"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:78
+msgid "Sales Order"
+msgstr "销售订单"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:79
+msgid "The main sales order for this pipeline"
+msgstr "该流水线的主要销售订单"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:90
+msgid "Customer account for this pipeline"
+msgstr "此流水线的客户帐户"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:101
+msgid "Contact person for this pipeline"
+msgstr "此流水线的联系人"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:117
+#: app/sea_saw_sales/models/order.py:38
+msgid "Order Date"
+msgstr "订单日期"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:118
+msgid "Date when the order was created"
+msgstr "订单创建日期"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:124
+msgid "Confirmed At"
+msgstr "订单确认时间"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:125
+msgid "When the order was confirmed"
+msgstr "订单被确认的时间"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:131
+msgid "Completed At"
+msgstr "完成时间"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:132
+msgid "When the entire pipeline was completed"
+msgstr "整个流水线完工后的时候"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:138
+msgid "Cancelled At"
+msgstr "取消"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:139
+msgid "When the pipeline was cancelled"
+msgstr "当流水线被取消时"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:147
+msgid "Additional notes for this pipeline"
+msgstr "此流水线的附加说明"
+
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:152
+msgid "Pipelines"
+msgstr "流水线"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:88
+#: app/sea_saw_sales/serializers/order_standalone.py:60
+msgid "Company"
+msgstr "公司"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:95
+#: app/sea_saw_sales/serializers/order_standalone.py:67
+msgid "Company ID"
+msgstr "公司ID"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:104
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:70
+#: app/sea_saw_sales/serializers/order_nested.py:77
+#: app/sea_saw_sales/serializers/order_standalone.py:77
+msgid "Contact ID"
+msgstr "联系人ID"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:141
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:190
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:233
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:264
+#: app/sea_saw_production/models/production_order.py:98
+msgid "Production Orders"
+msgstr "生产订单"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:144
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:193
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:236
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:267
+#: app/sea_saw_procurement/models/purchase_order.py:99
+msgid "Purchase Orders"
+msgstr "采购订单"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:147
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:196
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:239
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:270
+#: app/sea_saw_warehouse/models/outbound_order.py:110
+msgid "Outbound Orders"
+msgstr "出库单"
+
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:152
+#: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:201
 msgid "Payment Records"
 msgstr "付款记录"
 
-#: sea_saw_crm/serializers/production/production_order_standalone.py:41
+#: app/sea_saw_preference/models.py:6
+msgid "User"
+msgstr "用户"
+
+#: app/sea_saw_preference/models.py:7
+msgid "Table name"
+msgstr "表名"
+
+#: app/sea_saw_preference/models.py:8
+msgid "Column preference"
+msgstr "列偏好"
+
+#: app/sea_saw_procurement/admin/purchase.py:63
+msgid "Basic Information"
+msgstr "基本信息"
+
+#: app/sea_saw_procurement/admin/purchase.py:76
+msgid "Logistics Information"
+msgstr "物流信息"
+
+#: app/sea_saw_procurement/admin/purchase.py:88
+msgid "Financial Information"
+msgstr "财务资料"
+
+#: app/sea_saw_procurement/admin/purchase.py:99
+msgid "Additional Information"
+msgstr "附加信息"
+
+#: app/sea_saw_procurement/apps.py:8
+msgid "Sea-Saw Procurement"
+msgstr "Sea-Saw 采购"
+
+#: app/sea_saw_procurement/models/enums.py:19
+#: app/sea_saw_production/models/enums.py:19
+#: app/sea_saw_sales/models/enums.py:19
+#: app/sea_saw_warehouse/models/enums.py:18
+msgid "Active"
+msgstr "进行中"
+
+#: app/sea_saw_procurement/models/purchase_item.py:22
+#: app/sea_saw_procurement/models/purchase_order.py:98
+msgid "Purchase Order"
+msgstr "采购订单"
+
+#: app/sea_saw_procurement/models/purchase_item.py:31
+#: app/sea_saw_production/models/production_item.py:32
+msgid "Related Order Item"
+msgstr "相关订单项目"
+
+#: app/sea_saw_procurement/models/purchase_item.py:32
+msgid "The order item this purchase is for."
+msgstr "此采购的订单项"
+
+#: app/sea_saw_procurement/models/purchase_item.py:39
+msgid "Purchase Quantity"
+msgstr "采购数量"
+
+#: app/sea_saw_procurement/models/purchase_item.py:47
+#: app/sea_saw_sales/models/order_item.py:37
+msgid "Total Gross Weight"
+msgstr "总毛重"
+
+#: app/sea_saw_procurement/models/purchase_item.py:55
+#: app/sea_saw_sales/models/order_item.py:45
+msgid "Total Net Weight"
+msgstr "总净重"
+
+#: app/sea_saw_procurement/models/purchase_item.py:64
+#: app/sea_saw_sales/models/order_item.py:54
+msgid "Unit Price"
+msgstr "单价"
+
+#: app/sea_saw_procurement/models/purchase_item.py:65
+msgid "Purchase price per unit."
+msgstr "单位购买价格"
+
+#: app/sea_saw_procurement/models/purchase_item.py:73
+#: app/sea_saw_sales/models/order_item.py:62
+msgid "Total Price"
+msgstr "总价"
+
+#: app/sea_saw_procurement/models/purchase_item.py:74
+msgid "Total price for this item."
+msgstr "此项目的总价"
+
+#: app/sea_saw_procurement/models/purchase_item.py:78
+msgid "Purchase Item"
+msgstr "采购项目"
+
+#: app/sea_saw_procurement/models/purchase_item.py:79
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:74
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:120
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:136
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:151
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:166
+msgid "Purchase Items"
+msgstr "采购物品"
+
+#: app/sea_saw_procurement/models/purchase_order.py:33
+msgid "Purchase Code"
+msgstr "采购代码"
+
+#: app/sea_saw_procurement/models/purchase_order.py:34
+msgid "Unique identifier for this purchase order."
+msgstr "此采购订单的唯一标识符。"
+
+#: app/sea_saw_procurement/models/purchase_order.py:43
+msgid "The business process pipeline this purchase order belongs to."
+msgstr "此采购订单所属的业务流程流水线。"
+
+#: app/sea_saw_procurement/models/purchase_order.py:49
+msgid "Purchase Date"
+msgstr "采购日期"
+
+#: app/sea_saw_procurement/models/purchase_order.py:58
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:53
+msgid "Supplier"
+msgstr "供应商"
+
+#: app/sea_saw_procurement/models/purchase_order.py:59
+msgid "Supplier account for this purchase order"
+msgstr "此采购订单的供应商帐户"
+
+#: app/sea_saw_procurement/models/purchase_order.py:69
+msgid "Contact person for this purchase order"
+msgstr "此采购订单的联系人"
+
+#: app/sea_saw_procurement/models/purchase_order.py:78
+#: app/sea_saw_production/models/production_order.py:44
+msgid "Related Order (Legacy)"
+msgstr "遗产（Legacy）"
+
+#: app/sea_saw_procurement/models/purchase_order.py:79
+#: app/sea_saw_production/models/production_order.py:45
+msgid "Sales order (legacy field, use pipeline.order instead)."
+msgstr "销售订单（旧字段，请改用pipeline.order）。"
+
+#: app/sea_saw_procurement/models/purchase_order.py:86
+msgid "Purchase Order Status"
+msgstr "采购订单状态"
+
+#: app/sea_saw_procurement/models/purchase_order.py:108
+msgid "Unnamed Purchase Order"
+msgstr "未命名的采购订单"
+
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:60
+msgid "Supplier ID"
+msgstr "供应商ID"
+
+#: app/sea_saw_production/apps.py:8
+msgid "Sea-Saw Production"
+msgstr "Sea-Saw 生产"
+
+#: app/sea_saw_production/models/production_item.py:23
+#: app/sea_saw_production/models/production_order.py:97
+msgid "Production Order"
+msgstr "生产订单"
+
+#: app/sea_saw_production/models/production_item.py:33
+msgid "The sales order item linked to this production item."
+msgstr "链接到此生产物料的销售订单物料。"
+
+#: app/sea_saw_production/models/production_item.py:42
+msgid "Planned Quantity"
+msgstr "计划生产数量"
+
+#: app/sea_saw_production/models/production_item.py:49
+msgid "Produced Quantity"
+msgstr "实际生产数量"
+
+#: app/sea_saw_production/models/production_item.py:50
+msgid "Total actual produced quantity."
+msgstr "实际生产的总数量。"
+
+#: app/sea_saw_production/models/production_item.py:58
+#: app/sea_saw_warehouse/models/outbound_item.py:61
+msgid "Outbound Net Weight"
+msgstr "出库总净重"
+
+#: app/sea_saw_production/models/production_item.py:66
+#: app/sea_saw_warehouse/models/outbound_item.py:69
+msgid "Outbound Gross Weight"
+msgstr "出库总毛量"
+
+#: app/sea_saw_production/models/production_item.py:70
+#: app/sea_saw_warehouse/models/outbound_item.py:44
+msgid "Production Item"
+msgstr "生产项目"
+
+#: app/sea_saw_production/models/production_item.py:71
+#: app/sea_saw_production/serializers/production_order_nested.py:29
+#: app/sea_saw_production/serializers/production_order_nested.py:62
+#: app/sea_saw_production/serializers/production_order_nested.py:78
+#: app/sea_saw_production/serializers/production_order_nested.py:94
+#: app/sea_saw_production/serializers/production_order_nested.py:110
+#: app/sea_saw_production/serializers/production_order_standalone.py:30
+msgid "Production Items"
+msgstr "生产项目"
+
+#: app/sea_saw_production/models/production_order.py:24
+msgid "Production Code"
+msgstr "生产代码"
+
+#: app/sea_saw_production/models/production_order.py:25
+msgid "Unique code for the production order."
+msgstr "生产订单的唯一代码。"
+
+#: app/sea_saw_production/models/production_order.py:34
+msgid "The business process pipeline this production order belongs to."
+msgstr "此生产订单所属的业务流程流水线。"
+
+#: app/sea_saw_production/models/production_order.py:51
+msgid "Planned Date"
+msgstr "生产计划日期"
+
+#: app/sea_saw_production/models/production_order.py:57
+msgid "Start Date"
+msgstr "生产开始日期"
+
+#: app/sea_saw_production/models/production_order.py:63
+msgid "End Date"
+msgstr "生产结束日期"
+
+#: app/sea_saw_production/models/production_order.py:70
+#: app/sea_saw_warehouse/models/outbound_order.py:55
+msgid "Status"
+msgstr "状态"
+
+#: app/sea_saw_production/models/production_order.py:71
+msgid "Production status."
+msgstr "生产状态。"
+
+#: app/sea_saw_production/models/production_order.py:78
+#: app/sea_saw_production/models/production_order.py:85
+msgid "Additional notes for this production order."
+msgstr "本生产订单的附加说明。"
+
+#: app/sea_saw_production/serializers/production_item.py:34
+#: app/sea_saw_sales/models/order_item.py:29
+#: app/sea_saw_warehouse/serializers/outbound_item.py:35
+msgid "Order Quantity"
+msgstr "订货量"
+
+#: app/sea_saw_production/serializers/production_order_standalone.py:41
 msgid "Related Order"
 msgstr "相关订单"
 
-#: sea_saw_crm/serializers/shared/base_attachment.py:22
-msgid "File URL"
-msgstr "文件URL"
+#: app/sea_saw_sales/admin/order.py:114
+msgid "Logistics"
+msgstr "物流"
+
+#: app/sea_saw_sales/admin/order.py:137
+msgid "System Info"
+msgstr "系统信息"
+
+#: app/sea_saw_sales/apps.py:8
+msgid "Sea-Saw Sales"
+msgstr "Sea-Saw 销售"
+
+#: app/sea_saw_sales/models/order.py:31
+msgid "Order Code"
+msgstr "订单代码"
+
+#: app/sea_saw_sales/models/order.py:32
+msgid "Unique identifier for this order."
+msgstr "此订单的唯一标识符。"
+
+#: app/sea_saw_sales/models/order.py:48
+msgid "Customer account for this order"
+msgstr "此订单的客户帐户"
+
+#: app/sea_saw_sales/models/order.py:58
+msgid "Contact person for this order"
+msgstr "此订单的联系人"
+
+#: app/sea_saw_sales/models/order.py:65
+msgid "Order Status"
+msgstr "订单状态"
+
+#: app/sea_saw_sales/models/order.py:78
+msgid "Orders"
+msgstr "订单"
+
+#: app/sea_saw_sales/models/order.py:87
+msgid "Unnamed Order"
+msgstr "未命名订单"
+
+#: app/sea_saw_sales/models/order_item.py:66
+#: app/sea_saw_warehouse/models/outbound_item.py:33
+msgid "Order Item"
+msgstr "订单项目"
+
+#: app/sea_saw_sales/models/order_item.py:67
+#: app/sea_saw_sales/serializers/order_nested.py:136
+#: app/sea_saw_sales/serializers/order_nested.py:172
+#: app/sea_saw_sales/serializers/order_nested.py:204
+#: app/sea_saw_sales/serializers/order_nested.py:228
+#: app/sea_saw_sales/serializers/order_standalone.py:81
+msgid "Order Items"
+msgstr "订单项目"
+
+#: app/sea_saw_sales/models/order_item.py:74
+msgid "Unnamed Item"
+msgstr "未命名项目"
+
+#: app/sea_saw_sales/serializers/order_nested.py:83
+msgid "Currently active sub-entity type from the related Pipeline"
+msgstr "相关流水线中当前活动的子实体类型"
+
+#: app/sea_saw_sales/serializers/order_standalone.py:93
+msgid "Related Pipeline"
+msgstr "相关流水线"
+
+#: app/sea_saw_sales/serializers/order_standalone.py:145
+#, python-format
+msgid ""
+"Pipeline 已进入 %(entity)s 阶段，无法直接修改订单状态。请先在 Pipeline 中回退"
+"状态。"
+msgstr ""
+
+#: app/sea_saw_sales/serializers/order_standalone.py:159
+#, python-format
+msgid "Pipeline 当前状态 [%(current)s] 不允许转换到 [%(target)s]。"
+msgstr "管道当前状态 [%(current)s] 不允许转换为[%(target)s]。"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:23
+#: app/sea_saw_warehouse/models/outbound_order.py:109
+msgid "Outbound Order"
+msgstr "出库单"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:34
+msgid "The sales order item associated with this outbound item."
+msgstr "与此出站物料关联的销售订单物料。"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:45
+msgid "The production item associated with this outbound item."
+msgstr "与此出站物料关联的生产物料。"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:52
+msgid "Outbound Quantity"
+msgstr "出库数量"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:53
+msgid "Outbound quantity (cartons / pieces)."
+msgstr "数量（箱/件）。"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:73
+msgid "Outbound Item"
+msgstr "出库项目"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:74
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:35
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:71
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:88
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:103
+#: app/sea_saw_warehouse/serializers/outbound_order_nested.py:118
+#: app/sea_saw_warehouse/serializers/outbound_order_standalone.py:37
+msgid "Outbound Items"
+msgstr "出库项目"
+
+#: app/sea_saw_warehouse/models/outbound_item.py:81
+msgid "Unknown Item"
+msgstr "未知物品"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:32
+msgid "Outbound Code"
+msgstr "出库代码"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:33
+msgid "Unique outbound / shipment code."
+msgstr "唯一的出库/运输代码。"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:42
+msgid "The business process pipeline this outbound order belongs to."
+msgstr "此出站订单所属的业务流程流水线。"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:48
+msgid "Outbound Date"
+msgstr "出库日期"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:62
+msgid "Container No."
+msgstr "集装箱号"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:69
+msgid "Seal No."
+msgstr "封条号"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:83
+msgid "Logistics Provider"
+msgstr "物流供应商"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:90
+msgid "Loader"
+msgstr "装运人"
+
+#: app/sea_saw_warehouse/models/outbound_order.py:91
+msgid "Person who loads the goods into the container."
+msgstr "把货物装进集装箱的人。"
+
+#: app/sea_saw_warehouse/serializers/outbound_order_standalone.py:49
+msgid "Related Pipeline (Order)"
+msgstr "相关（订单）"
