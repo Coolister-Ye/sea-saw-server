@@ -40,6 +40,9 @@ class PaymentStandaloneSerializer(
 
     # Read-only display fields
     payment_type = serializers.ReadOnlyField(label=_("Payment Type"))
+    related_order_code = serializers.SerializerMethodField(
+        label=_("Related Order Code"),
+    )
 
     attachment_model = Attachment
 
@@ -50,6 +53,7 @@ class PaymentStandaloneSerializer(
             "payment_code",
             "content_type",
             "object_id",
+            "related_order_code",
             "payment_type",
             "payment_date",
             "amount",
@@ -63,6 +67,17 @@ class PaymentStandaloneSerializer(
             "updated_at",
         ]
         read_only_fields = ["payment_code", "payment_type"]
+
+    def get_related_order_code(self, obj):
+        """Get the code of the related order/purchase order/production order/outbound order."""
+        related = obj.related_object
+        if related is None:
+            return None
+        for attr in ("order_code", "purchase_code", "production_code", "outbound_code"):
+            code = getattr(related, attr, None)
+            if code is not None:
+                return code
+        return None
 
     def validate_amount(self, value):
         """Validate that amount is greater than 0"""
@@ -137,6 +152,7 @@ class PaymentStandaloneSerializerForProduction(PaymentStandaloneSerializer):
             "payment_code",
             "content_type",
             "object_id",
+            "related_order_code",
             "payment_type",
             "payment_date",
             "currency",
@@ -162,6 +178,7 @@ class PaymentStandaloneSerializerForWarehouse(PaymentStandaloneSerializer):
             "payment_code",
             "content_type",
             "object_id",
+            "related_order_code",
             "payment_type",
             "payment_date",
             "currency",

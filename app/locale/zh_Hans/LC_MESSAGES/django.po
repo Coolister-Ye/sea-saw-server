@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-14 00:14+0800\n"
+"POT-Creation-Date: 2026-02-15 22:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
 #: app/sea_saw_attachment/apps.py:8
 msgid "Sea-Saw Attachments"
 msgstr "Sea-Saw 附件"
@@ -816,28 +817,33 @@ msgstr "支付"
 msgid "Object ID"
 msgstr "对象ID"
 
-#: app/sea_saw_finance/serializers/payment_nested.py:67
-#: app/sea_saw_finance/serializers/payment_standalone.py:70
+#: app/sea_saw_finance/serializers/payment_nested.py:42
+#: app/sea_saw_finance/serializers/payment_standalone.py:44
+msgid "Related Order Code"
+msgstr "相关实体单号"
+
+#: app/sea_saw_finance/serializers/payment_nested.py:83
+#: app/sea_saw_finance/serializers/payment_standalone.py:85
 msgid "Amount must be greater than 0"
 msgstr "金额必须大于0"
 
-#: app/sea_saw_finance/serializers/payment_nested.py:81
-#: app/sea_saw_finance/serializers/payment_standalone.py:81
+#: app/sea_saw_finance/serializers/payment_nested.py:97
+#: app/sea_saw_finance/serializers/payment_standalone.py:96
 msgid "Related object type cannot be modified once payment is created"
 msgstr "付款创建后不能修改相关对象类型"
 
-#: app/sea_saw_finance/serializers/payment_nested.py:89
-#: app/sea_saw_finance/serializers/payment_standalone.py:89
+#: app/sea_saw_finance/serializers/payment_nested.py:105
+#: app/sea_saw_finance/serializers/payment_standalone.py:104
 msgid "Related object cannot be modified once payment is created"
 msgstr "付款创建后不能修改相关对象"
 
-#: app/sea_saw_finance/serializers/payment_nested.py:100
-#: app/sea_saw_finance/serializers/payment_standalone.py:98
+#: app/sea_saw_finance/serializers/payment_nested.py:116
+#: app/sea_saw_finance/serializers/payment_standalone.py:113
 msgid "object_id is required when content_type is provided"
 msgstr "提供content_type时，需要object_id"
 
-#: app/sea_saw_finance/serializers/payment_nested.py:108
-#: app/sea_saw_finance/serializers/payment_standalone.py:102
+#: app/sea_saw_finance/serializers/payment_nested.py:124
+#: app/sea_saw_finance/serializers/payment_standalone.py:117
 msgid "content_type is required when object_id is provided"
 msgstr "提供object_id时，需要content_type"
 
