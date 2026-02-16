@@ -55,17 +55,6 @@ class ProductionItemSerializer(BaseSerializer):
             "produced_gross_weight",
             "produced_net_weight",
         ]
-        read_only_fields = [
-            "product_name",
-            "specification",
-            "outter_packaging",
-            "inner_packaging",
-            "size",
-            "unit",
-            "glazing",
-            "gross_weight",
-            "net_weight",
-        ]
 
 
 # =====================================================

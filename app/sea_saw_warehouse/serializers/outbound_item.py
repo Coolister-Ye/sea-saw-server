@@ -55,17 +55,6 @@ class OutboundItemSerializer(BaseSerializer):
             "outbound_gross_weight",
             "outbound_net_weight",
         ]
-        read_only_fields = [
-            "product_name",
-            "specification",
-            "outter_packaging",
-            "inner_packaging",
-            "size",
-            "unit",
-            "glazing",
-            "gross_weight",
-            "net_weight",
-        ]
 
 
 # =====================================================
