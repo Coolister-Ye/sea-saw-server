@@ -85,7 +85,7 @@ class PurchaseOrderSerializer(
             "purchase_items",
             "attachments",
         ]
-        read_only_fields = ["purchase_code", "total_amount"]
+        read_only_fields = ["total_amount"]
 
 
 NON_FINANCIAL_FIELDS = [
