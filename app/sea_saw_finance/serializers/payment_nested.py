@@ -27,14 +27,11 @@ class PaymentNestedSerializer(
         many=True, required=False, label=_("Attachments")
     )
 
-    # Write-only fields for creating/updating
     content_type = serializers.PrimaryKeyRelatedField(
         queryset=ContentType.objects.all(),
-        write_only=True,
         label=_("Content Type"),
     )
     object_id = serializers.IntegerField(
-        write_only=True,
         label=_("Object ID"),
     )
 
