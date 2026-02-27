@@ -21,6 +21,7 @@ from sea_saw_pipeline.serializers.pipeline import (
     PipelineSerializerForSales,
 )
 from ..permissions import OrderAdminPermission, OrderSalePermission
+from ..filters import OrderFilter
 from sea_saw_base.metadata import BaseMetadata
 from sea_saw_base.mixins import ReturnRelatedMixin
 
@@ -42,6 +43,7 @@ class OrderViewSet(ModelViewSet):
     serializer_class = OrderSerializerForOrderView
     parser_classes = (JSONParser, NestedMultiPartParser, FormParser)
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    filterset_class = OrderFilter
     permission_classes = [
         IsAuthenticated,
         OrderAdminPermission | OrderSalePermission,

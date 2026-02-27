@@ -2,6 +2,7 @@ from django_filters import Filter
 from django_filters.fields import DateRangeWidget, RangeField
 from django.utils.dateparse import parse_date
 from datetime import datetime, time
+from django_filters import rest_framework as filters
 
 
 class DateTimeAwareFilter(Filter):
@@ -67,3 +68,105 @@ class DateTimeAwareFilter(Filter):
                 return qs
 
         return qs
+
+
+class BaseFilter(filters.FilterSet):
+    """
+    Base filter with dynamic filter generation support.
+    Subclasses define `filter_fields` dict to specify which fields and
+    lookup expressions to expose as query parameters.
+    """
+
+    filter_mapper = {
+        filters.CharFilter: [
+            "iexact",
+            "icontains",
+            "istartswith",
+            "iendswith",
+            "isnull",
+            "iexact_ex",
+            "icontains_ex",
+            "isnull_ex",
+        ],
+        filters.NumberFilter: [
+            "iexact",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "isnull",
+            "range",
+            "iexact_ex",
+            "isnull_ex",
+        ],
+        filters.DateFilter: [
+            "iexact",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "isnull",
+            "range",
+            "iexact_ex",
+            "isnull_ex",
+        ],
+        DateTimeAwareFilter: [
+            "iexact",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "isnull",
+            "range",
+            "iexact_ex",
+            "isnull_ex",
+        ],
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        filter_fields = getattr(self, "filter_fields", {})
+
+        for field, options in filter_fields.items():
+            filter_type = options.get("filter_type", filters.CharFilter)
+            lookup_exprs = options.get("lookup_expr", ["exact"])
+
+            if "__all__" in lookup_exprs:
+                lookup_exprs = self.filter_mapper.get(filter_type, [])
+
+            for expr in lookup_exprs:
+                is_exclude = expr.endswith("_ex")
+                actual_expr = expr.replace("_ex", "")
+
+                filter_name = f"{field}__{expr}"
+
+                if actual_expr == "range":
+                    if (
+                        filter_type == filters.DateFilter
+                        or filter_type == DateTimeAwareFilter
+                    ):
+                        self.filters[filter_name] = filters.DateFromToRangeFilter(
+                            field_name=field, lookup_expr=actual_expr
+                        )
+                    else:
+                        self.filters[filter_name] = filters.NumericRangeFilter(
+                            field_name=f"{field}__pk", lookup_expr=actual_expr
+                        )
+                elif actual_expr == "isnull" or actual_expr == "isnull_ex":
+                    self.filters[filter_name] = filters.BooleanFilter(
+                        field_name=field, lookup_expr=actual_expr, exclude=is_exclude
+                    )
+                elif filter_type == filters.BaseInFilter:
+                    self.filters[filter_name] = filters.BaseInFilter(
+                        field_name=field, lookup_expr=actual_expr
+                    )
+                else:
+                    self.filters[filter_name] = filter_type(
+                        field_name=field,
+                        lookup_expr=actual_expr,
+                        exclude=is_exclude,
+                    )
+
+    class Meta:
+        abstract = True

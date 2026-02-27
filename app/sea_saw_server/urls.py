@@ -51,6 +51,7 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api/download/", include("sea_saw_download.urls")),
     path("api/preference/", include("sea_saw_preference.urls")),
+    path("api/dashboard/", include("sea_saw_dashboard.urls")),  # Dashboard report endpoints
     re_path(r"^auth/", include("djoser.urls")),
 ]
 

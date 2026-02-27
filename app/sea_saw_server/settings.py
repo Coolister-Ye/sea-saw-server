@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "sea_saw_auth",  # Authentication and user management
     "sea_saw_crm",  # CRM (companies, contacts)
     "sea_saw_preference",  # User preferences and column visibility
+    "sea_saw_dashboard",  # Dashboard and report aggregation
 ]
 
 MIDDLEWARE = [
