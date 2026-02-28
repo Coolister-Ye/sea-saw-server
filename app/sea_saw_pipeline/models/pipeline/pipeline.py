@@ -139,6 +139,63 @@ class Pipeline(BaseModel):
         help_text=_("When the pipeline was cancelled"),
     )
 
+    # Stage-level timestamps — set automatically on each status transition
+    in_purchase_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("In Purchase At"),
+        help_text=_("When purchase stage started"),
+    )
+
+    purchase_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Purchase Completed At"),
+        help_text=_("When purchase was completed"),
+    )
+
+    in_production_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("In Production At"),
+        help_text=_("When production stage started"),
+    )
+
+    production_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Production Completed At"),
+        help_text=_("When production was completed"),
+    )
+
+    in_purchase_and_production_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("In Purchase And Production At"),
+        help_text=_("When combined purchase+production stage started"),
+    )
+
+    purchase_and_production_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Purchase And Production Completed At"),
+        help_text=_("When combined purchase+production was completed"),
+    )
+
+    in_outbound_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("In Outbound At"),
+        help_text=_("When outbound process started"),
+    )
+
+    outbound_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Outbound Completed At"),
+        help_text=_("When outbound was completed"),
+    )
+
     # Additional Info
     remark = models.TextField(
         null=True,

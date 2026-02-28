@@ -186,9 +186,17 @@ class PipelineStateService:
         if "*" not in allowed and target_status not in allowed:
             raise ValidationError({"permission": "Permission denied for this transition"})
 
-    # Status to timestamp field mapping
+    # Status to timestamp field mapping — each forward transition records its own timestamp
     _STATUS_TIMESTAMP_FIELDS = {
         PipelineStatusType.ORDER_CONFIRMED: "confirmed_at",
+        PipelineStatusType.IN_PURCHASE: "in_purchase_at",
+        PipelineStatusType.PURCHASE_COMPLETED: "purchase_completed_at",
+        PipelineStatusType.IN_PRODUCTION: "in_production_at",
+        PipelineStatusType.PRODUCTION_COMPLETED: "production_completed_at",
+        PipelineStatusType.IN_PURCHASE_AND_PRODUCTION: "in_purchase_and_production_at",
+        PipelineStatusType.PURCHASE_AND_PRODUCTION_COMPLETED: "purchase_and_production_completed_at",
+        PipelineStatusType.IN_OUTBOUND: "in_outbound_at",
+        PipelineStatusType.OUTBOUND_COMPLETED: "outbound_completed_at",
         PipelineStatusType.COMPLETED: "completed_at",
         PipelineStatusType.CANCELLED: "cancelled_at",
     }
@@ -280,6 +288,14 @@ class PipelineStateService:
                 "updated_at",
                 "updated_by",
                 "confirmed_at",
+                "in_purchase_at",
+                "purchase_completed_at",
+                "in_production_at",
+                "production_completed_at",
+                "in_purchase_and_production_at",
+                "purchase_and_production_completed_at",
+                "in_outbound_at",
+                "outbound_completed_at",
                 "completed_at",
                 "cancelled_at",
             ]
