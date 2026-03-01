@@ -309,7 +309,6 @@ class PipelineStateService:
 
         StatusSyncService.sync_pipeline_to_subentities(
             pipeline=pipeline,
-            old_status=current_status,
             new_status=target_status,
             user=user,
         )

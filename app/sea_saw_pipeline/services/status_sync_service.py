@@ -135,7 +135,7 @@ class StatusSyncService:
 
     @classmethod
     @transaction.atomic
-    def sync_pipeline_to_subentities(cls, pipeline, _old_status, new_status, user=None):
+    def sync_pipeline_to_subentities(cls, pipeline, new_status, user=None):
         """
         Forward sync: When Pipeline status changes, update sub-entity statuses.
 
