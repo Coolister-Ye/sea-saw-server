@@ -143,5 +143,3 @@ ACTIVE_ENTITY_TO_ENTITY_TYPES = {
     ActiveEntityType.OUTBOUND: ["outbound"],
     ActiveEntityType.NONE: [],
 }
-
-

@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print()
     for i in range(3):
         path = payment_attachment_path(None, filename)
-        print(f"第 {i+1} 次上传: {path}")
+        print(f"第 {i + 1} 次上传: {path}")
     print()
 
     # 测试不同类型的文件
