@@ -10,7 +10,7 @@ from sea_saw_sales.models import Order
 from sea_saw_sales.models.enums import OrderStatusType
 
 
-ACTIVE_STATUSES = [OrderStatusType.ACTIVE, OrderStatusType.COMPLETED]
+ACTIVE_STATUSES = [OrderStatusType.CONFIRMED]
 
 # Pipeline 状态到中文标签映射
 PIPELINE_STATUS_LABELS = {

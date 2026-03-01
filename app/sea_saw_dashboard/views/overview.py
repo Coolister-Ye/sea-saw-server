@@ -34,7 +34,7 @@ class OverviewStatsView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    ACTIVE_STATUSES = [OrderStatusType.ACTIVE, OrderStatusType.COMPLETED]
+    ACTIVE_STATUSES = [OrderStatusType.CONFIRMED]
 
     def _get_order_queryset(self, user_groups):
         user = self.request.user

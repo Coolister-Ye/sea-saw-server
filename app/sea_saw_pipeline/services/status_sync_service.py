@@ -1,10 +1,17 @@
 """
-Status Sync Service - Bidirectional synchronization between Pipeline and sub-entities
+Status Sync Service - Pipeline → sub-entity status synchronization
 
 Handles:
 - Forward sync: Pipeline status change -> Update sub-entity statuses
 - Reverse sync: Sub-entity status change -> Update Pipeline status
 - Issue reporting propagation based on active_entity
+
+Order Status Design:
+  Order.status is an independent sales document lifecycle (draft/confirmed/cancelled).
+  The pipeline touches Order.status ONLY at two nodes:
+    - ORDER_CONFIRMED → order.status = 'confirmed'
+    - CANCELLED       → order.status = 'cancelled'
+  All other pipeline transitions leave Order.status unchanged.
 """
 
 from django.db import transaction
@@ -24,10 +31,13 @@ from ..constants import (
 
 class StatusSyncService:
     """
-    Bidirectional status synchronization service between Pipeline and sub-entities.
+    Status synchronization service between Pipeline and sub-entities.
 
     Forward sync: When Pipeline status changes, update corresponding sub-entities.
     Reverse sync: When sub-entity status changes, potentially update Pipeline.
+
+    Order.status is managed independently — only confirmed/cancelled transitions
+    are triggered by Pipeline events.
     """
 
     @classmethod
@@ -40,7 +50,7 @@ class StatusSyncService:
             entity_type: Type string ("production", "purchase", "outbound")
 
         Returns:
-            QuerySet or None for "order" type
+            QuerySet or None
         """
         queryset_map = {
             "production": pipeline.production_orders,
@@ -53,28 +63,45 @@ class StatusSyncService:
         return None
 
     @classmethod
-    def _update_order_status(
-        cls, pipeline, target_status, user=None, status_filter=None
-    ):
+    def _confirm_order(cls, pipeline, user=None):
         """
-        Update order status with optional status filter.
+        Confirm the order when pipeline reaches ORDER_CONFIRMED.
+
+        Only transitions draft → confirmed. Idempotent: if already confirmed,
+        does nothing. Does not override cancelled orders.
 
         Args:
             pipeline: Pipeline instance
-            target_status: Target status value
             user: User performing the action
-            status_filter: Optional status to filter by (for selective updates)
         """
         if not pipeline.order:
             return
-
         order = pipeline.order
-        if status_filter is not None and order.status != status_filter:
+        if order.status != "draft":
             return
-        if status_filter is None and order.status in TERMINAL_STATUSES:
-            return
+        order.status = "confirmed"
+        order.updated_at = timezone.now()
+        if user:
+            order.updated_by = user
+        order.save(update_fields=["status", "updated_at", "updated_by"])
 
-        order.status = target_status
+    @classmethod
+    def _cancel_order(cls, pipeline, user=None):
+        """
+        Cancel the order when pipeline is cancelled.
+
+        Idempotent: if already cancelled, does nothing.
+
+        Args:
+            pipeline: Pipeline instance
+            user: User performing the action
+        """
+        if not pipeline.order:
+            return
+        order = pipeline.order
+        if order.status == "cancelled":
+            return
+        order.status = "cancelled"
         order.updated_at = timezone.now()
         if user:
             order.updated_by = user
@@ -86,6 +113,8 @@ class StatusSyncService:
     ):
         """
         Bulk update sub-entities of a specific type.
+
+        Uses QuerySet.update() to bypass Django signals (prevents loops).
 
         Args:
             pipeline: Pipeline instance
@@ -106,9 +135,12 @@ class StatusSyncService:
 
     @classmethod
     @transaction.atomic
-    def sync_pipeline_to_subentities(cls, pipeline, old_status, new_status, user=None):
+    def sync_pipeline_to_subentities(cls, pipeline, _old_status, new_status, user=None):
         """
         Forward sync: When Pipeline status changes, update sub-entity statuses.
+
+        Order.status is only touched for ORDER_CONFIRMED and CANCELLED transitions.
+        All other pipeline transitions only affect production/purchase/outbound.
 
         Args:
             pipeline: Pipeline instance
@@ -124,42 +156,28 @@ class StatusSyncService:
 
         # Handle issue_reported specially
         if new_status == PipelineStatusType.ISSUE_REPORTED:
-            cls._propagate_issue_to_active_entity(pipeline, user)
+            cls._propagate_issue_to_active_entity(pipeline)
             return
 
-        # Get status mapping for the new pipeline status
+        # Handle the two nodes where Pipeline affects Order.status
+        if new_status == PipelineStatusType.ORDER_CONFIRMED:
+            cls._confirm_order(pipeline, user)
+        elif new_status == PipelineStatusType.CANCELLED:
+            cls._cancel_order(pipeline, user)
+
+        # Apply status updates to production/purchase/outbound sub-entities
         status_mapping = PIPELINE_TO_SUBENTITY_STATUS.get(new_status, {})
-
-        # Apply status updates to each entity type
         for entity_type, target_status in status_mapping.items():
-            cls._update_subentity_status(pipeline, entity_type, target_status, user)
-
-    @classmethod
-    def _update_subentity_status(cls, pipeline, entity_type, target_status, user=None):
-        """
-        Update all sub-entities of a specific type to target status.
-
-        Uses bulk update to avoid triggering Django signals (prevents loops).
-        Skips entities in terminal states (cancelled, issue_reported).
-
-        Args:
-            pipeline: Pipeline instance
-            entity_type: Type string ("order", "production", "purchase", "outbound")
-            target_status: Target status value
-            user: User performing the action
-        """
-        if entity_type == "order":
-            cls._update_order_status(pipeline, target_status, user)
-        else:
             cls._bulk_update_subentities(pipeline, entity_type, target_status)
 
     @classmethod
-    def _propagate_issue_to_active_entity(cls, pipeline, user=None):
+    def _propagate_issue_to_active_entity(cls, pipeline):
         """
         When Pipeline goes to issue_reported, mark the active entity type's
         sub-entities as issue_reported.
 
         Only affects sub-entities currently in 'active' status.
+        Order.status is NOT updated — issue is visible via pipeline.status.
 
         Args:
             pipeline: Pipeline instance
@@ -170,24 +188,19 @@ class StatusSyncService:
 
         for entity_type in entity_types:
             if entity_type == "order":
-                cls._update_order_status(
-                    pipeline,
-                    SubEntityStatus.ISSUE_REPORTED,
-                    user,
-                    status_filter=SubEntityStatus.ACTIVE,
-                )
-            else:
-                cls._bulk_update_subentities(
-                    pipeline,
-                    entity_type,
-                    SubEntityStatus.ISSUE_REPORTED,
-                    status_filter=SubEntityStatus.ACTIVE,
-                )
+                # Order.status is independent — issue is visible via pipeline.status
+                continue
+            cls._bulk_update_subentities(
+                pipeline,
+                entity_type,
+                SubEntityStatus.ISSUE_REPORTED,
+                status_filter=SubEntityStatus.ACTIVE,
+            )
 
     @classmethod
     @transaction.atomic
     def sync_subentity_to_pipeline(
-        cls, subentity, entity_type, old_status, new_status, user=None
+        cls, subentity, entity_type, _old_status, new_status, user=None
     ):
         """
         Reverse sync: When sub-entity status changes, potentially update Pipeline.
@@ -318,6 +331,8 @@ class StatusSyncService:
         1. Restore issue_reported sub-entities to 'active' status
         2. Transition pipeline back to the resume status
 
+        Order.status is NOT touched during issue resolution.
+
         Args:
             pipeline: Pipeline with issue_reported status
             resume_status: Status to transition back to
@@ -340,19 +355,14 @@ class StatusSyncService:
         # Restore issue_reported sub-entities to active status
         for entity_type in entity_types:
             if entity_type == "order":
-                cls._update_order_status(
-                    pipeline,
-                    SubEntityStatus.ACTIVE,
-                    user,
-                    status_filter=SubEntityStatus.ISSUE_REPORTED,
-                )
-            else:
-                cls._bulk_update_subentities(
-                    pipeline,
-                    entity_type,
-                    SubEntityStatus.ACTIVE,
-                    status_filter=SubEntityStatus.ISSUE_REPORTED,
-                )
+                # Order.status is independent — skip
+                continue
+            cls._bulk_update_subentities(
+                pipeline,
+                entity_type,
+                SubEntityStatus.ACTIVE,
+                status_filter=SubEntityStatus.ISSUE_REPORTED,
+            )
 
         # Transition pipeline back to resume status
         PipelineStateService.transition(

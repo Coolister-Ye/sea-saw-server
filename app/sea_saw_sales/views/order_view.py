@@ -103,6 +103,12 @@ class OrderViewSet(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # If order was cancelled (e.g. previous pipeline was cancelled), reset to draft
+        # so it can enter a new pipeline confirmation flow
+        if order.status == "cancelled":
+            order.status = "draft"
+            order.save(update_fields=["status", "updated_at"])
+
         # Get pipeline_type from request data (default to production_flow)
         pipeline_type = request.data.get("pipeline_type", "production_flow")
 

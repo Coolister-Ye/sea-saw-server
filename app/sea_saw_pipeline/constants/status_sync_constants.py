@@ -1,9 +1,15 @@
 """
-Status Sync Constants - Configuration for bidirectional status synchronization
+Status Sync Constants - Configuration for Pipeline → sub-entity status synchronization
 
 Defines mappings between Pipeline status and sub-entity statuses for:
 - Forward sync: Pipeline status change → Update sub-entity statuses
 - Reverse sync: Sub-entity status change → Update Pipeline status
+
+Note: Order.status is NOT included in PIPELINE_TO_SUBENTITY_STATUS.
+Order status is managed independently:
+  - ORDER_CONFIRMED → order.status = 'confirmed'  (via StatusSyncService._confirm_order)
+  - CANCELLED       → order.status = 'cancelled'  (via StatusSyncService._cancel_order)
+  - All other Pipeline transitions leave Order.status unchanged.
 """
 
 from ..models.pipeline import PipelineStatusType, ActiveEntityType
@@ -43,59 +49,50 @@ PIPELINE_TO_ACTIVE_ENTITY = {
 # Defines what status each sub-entity type should have for each pipeline status
 PIPELINE_TO_SUBENTITY_STATUS = {
     PipelineStatusType.DRAFT: {
-        "order": SubEntityStatus.DRAFT,
         "production": SubEntityStatus.DRAFT,
         "purchase": SubEntityStatus.DRAFT,
         "outbound": SubEntityStatus.DRAFT,
     },
     PipelineStatusType.ORDER_CONFIRMED: {
-        "order": SubEntityStatus.ACTIVE,
+        # Order handled separately via StatusSyncService._confirm_order()
     },
     PipelineStatusType.IN_PRODUCTION: {
-        "order": SubEntityStatus.ACTIVE,
         "production": SubEntityStatus.ACTIVE,
     },
     PipelineStatusType.PRODUCTION_COMPLETED: {
-        "order": SubEntityStatus.ACTIVE,
         "production": SubEntityStatus.COMPLETED,
     },
     PipelineStatusType.IN_PURCHASE: {
-        "order": SubEntityStatus.ACTIVE,
         "purchase": SubEntityStatus.ACTIVE,
     },
     PipelineStatusType.PURCHASE_COMPLETED: {
-        "order": SubEntityStatus.ACTIVE,
         "purchase": SubEntityStatus.COMPLETED,
     },
     PipelineStatusType.IN_PURCHASE_AND_PRODUCTION: {
-        "order": SubEntityStatus.ACTIVE,
         "production": SubEntityStatus.ACTIVE,
         "purchase": SubEntityStatus.ACTIVE,
     },
     PipelineStatusType.PURCHASE_AND_PRODUCTION_COMPLETED: {
-        "order": SubEntityStatus.ACTIVE,
         "production": SubEntityStatus.COMPLETED,
         "purchase": SubEntityStatus.COMPLETED,
     },
     PipelineStatusType.IN_OUTBOUND: {
-        "order": SubEntityStatus.ACTIVE,
         "outbound": SubEntityStatus.ACTIVE,
     },
     PipelineStatusType.OUTBOUND_COMPLETED: {
-        "order": SubEntityStatus.ACTIVE,
         "outbound": SubEntityStatus.COMPLETED,
     },
     PipelineStatusType.COMPLETED: {
-        "order": SubEntityStatus.COMPLETED,
         "production": SubEntityStatus.COMPLETED,
         "purchase": SubEntityStatus.COMPLETED,
         "outbound": SubEntityStatus.COMPLETED,
+        # Order stays 'confirmed' — pipeline completion does not change order status
     },
     PipelineStatusType.CANCELLED: {
-        "order": SubEntityStatus.CANCELLED,
         "production": SubEntityStatus.CANCELLED,
         "purchase": SubEntityStatus.CANCELLED,
         "outbound": SubEntityStatus.CANCELLED,
+        # Order handled separately via StatusSyncService._cancel_order()
     },
     # issue_reported is handled specially - only the active_entity type gets marked
     PipelineStatusType.ISSUE_REPORTED: {},
@@ -148,12 +145,3 @@ ACTIVE_ENTITY_TO_ENTITY_TYPES = {
 }
 
 
-# Order status -> Pipeline target status (reverse mapping)
-# Used for Order → Pipeline reverse sync when Order status is changed directly
-ORDER_TO_PIPELINE_STATUS = {
-    SubEntityStatus.CANCELLED: PipelineStatusType.CANCELLED,
-    SubEntityStatus.DRAFT: PipelineStatusType.DRAFT,
-    SubEntityStatus.ACTIVE: PipelineStatusType.ORDER_CONFIRMED,
-    SubEntityStatus.ISSUE_REPORTED: PipelineStatusType.ISSUE_REPORTED,
-    # completed: no mapping - Order completion ≠ Pipeline completion
-}
