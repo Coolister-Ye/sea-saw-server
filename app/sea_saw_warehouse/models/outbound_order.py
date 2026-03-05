@@ -48,6 +48,13 @@ class OutboundOrder(BaseModel):
         verbose_name=_("Outbound Date"),
     )
 
+    eta = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("ETA"),
+        help_text=_("Estimated time of arrival."),
+    )
+
     status = models.CharField(
         max_length=30,
         choices=OutboundStatus.choices,

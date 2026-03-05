@@ -1,30 +1,25 @@
 """
 Status Sync Service - Pipeline → sub-entity status synchronization
 
-Handles:
-- Forward sync: Pipeline status change -> Update sub-entity statuses
-- Reverse sync: Sub-entity status change -> Update Pipeline status
-- Issue reporting propagation based on active_entity
+Cascade rules (explicit, user-triggered only):
+- CANCELLED: Cascade cancel to all sub-entities and order
+- ISSUE_REPORTED: Mark currently active sub-entities as issue_reported (exception flow)
+- ORDER_CONFIRMED: Confirm the sales order
+- All other Pipeline transitions leave sub-entity statuses unchanged
 
-Order Status Design:
-  Order.status is an independent sales document lifecycle (draft/confirmed/cancelled).
-  The pipeline touches Order.status ONLY at two nodes:
-    - ORDER_CONFIRMED → order.status = 'confirmed'
-    - CANCELLED       → order.status = 'cancelled'
-  All other pipeline transitions leave Order.status unchanged.
+Sub-entities manage their own status independently. Pipeline transitions are
+validated against sub-entity completion state before being allowed.
 """
 
 from django.db import transaction
 from django.utils import timezone
 
-from ..models.pipeline import PipelineStatusType, ActiveEntityType
+from ..models.pipeline import PipelineStatusType
 from ..constants import (
     SubEntityStatus,
     PIPELINE_TO_ACTIVE_ENTITY,
     PIPELINE_TO_SUBENTITY_STATUS,
-    SUBENTITY_COMPLETION_TRIGGERS,
     TERMINAL_STATUSES,
-    ENTITY_TYPE_TO_ACTIVE_ENTITY,
     ACTIVE_ENTITY_TO_ENTITY_TYPES,
 )
 
@@ -33,11 +28,9 @@ class StatusSyncService:
     """
     Status synchronization service between Pipeline and sub-entities.
 
-    Forward sync: When Pipeline status changes, update corresponding sub-entities.
-    Reverse sync: When sub-entity status changes, potentially update Pipeline.
-
-    Order.status is managed independently — only confirmed/cancelled transitions
-    are triggered by Pipeline events.
+    Cascade-only: Pipeline status changes only propagate to sub-entities in
+    exceptional cases (cancel, issue_reported). All other transitions leave
+    sub-entity statuses untouched — sub-entities manage their own lifecycle.
     """
 
     @classmethod
@@ -137,14 +130,16 @@ class StatusSyncService:
     @transaction.atomic
     def sync_pipeline_to_subentities(cls, pipeline, new_status, user=None):
         """
-        Forward sync: When Pipeline status changes, update sub-entity statuses.
+        Cascade pipeline status change to sub-entities (limited to exceptions only).
 
-        Order.status is only touched for ORDER_CONFIRMED and CANCELLED transitions.
-        All other pipeline transitions only affect production/purchase/outbound.
+        Cascades:
+        - ORDER_CONFIRMED: Confirms the sales order
+        - CANCELLED: Cancels the sales order + all sub-entities
+        - ISSUE_REPORTED: Marks currently active sub-entities as issue_reported
+        - All other statuses: no sub-entity changes (sub-entities are independent)
 
         Args:
             pipeline: Pipeline instance
-            old_status: Previous pipeline status
             new_status: New pipeline status
             user: User performing the action
         """
@@ -196,131 +191,6 @@ class StatusSyncService:
                 SubEntityStatus.ISSUE_REPORTED,
                 status_filter=SubEntityStatus.ACTIVE,
             )
-
-    @classmethod
-    @transaction.atomic
-    def sync_subentity_to_pipeline(
-        cls, subentity, entity_type, _old_status, new_status, user=None
-    ):
-        """
-        Reverse sync: When sub-entity status changes, potentially update Pipeline.
-
-        Handles:
-        - Auto-advance pipeline when all sub-entities complete
-        - Propagate issue_reported to pipeline
-
-        Args:
-            subentity: The sub-entity instance (ProductionOrder, PurchaseOrder, etc.)
-            entity_type: Type string ("production", "purchase", "outbound")
-            old_status: Previous status
-            new_status: New status
-            user: User performing the action
-        """
-        pipeline = subentity.pipeline
-
-        if new_status == SubEntityStatus.COMPLETED:
-            cls._check_and_advance_pipeline(pipeline, entity_type, user)
-        elif new_status == SubEntityStatus.ISSUE_REPORTED:
-            cls._propagate_issue_to_pipeline(pipeline, entity_type, user)
-
-    @classmethod
-    def _check_and_advance_pipeline(cls, pipeline, entity_type, user=None):
-        """
-        Check if all sub-entities of a type are completed and auto-advance pipeline.
-
-        Only advances if:
-        - Pipeline is in the expected "in progress" status for this entity type
-        - ALL sub-entities of this type are completed
-
-        Args:
-            pipeline: Pipeline instance
-            entity_type: Type string ("production", "purchase", "outbound")
-            user: User performing the action
-        """
-        trigger_config = SUBENTITY_COMPLETION_TRIGGERS.get(entity_type)
-        if not trigger_config:
-            return
-
-        expected_current = trigger_config["current_status"]
-        target_status = trigger_config["target_status"]
-
-        # Only auto-advance if pipeline is in the expected current status
-        if pipeline.status != expected_current:
-            return
-
-        # Check if ALL sub-entities of this type are completed
-        if cls._all_subentities_completed(pipeline, entity_type):
-            cls._try_pipeline_transition(pipeline, target_status, user)
-
-    @classmethod
-    def _all_subentities_completed(cls, pipeline, entity_type):
-        """
-        Check if all sub-entities of a type are completed.
-
-        Returns True only if:
-        - At least one sub-entity of this type exists
-        - All non-deleted sub-entities have status 'completed'
-
-        Args:
-            pipeline: Pipeline instance
-            entity_type: Type string
-
-        Returns:
-            bool: True if all sub-entities are completed
-        """
-        queryset = cls._get_subentity_queryset(pipeline, entity_type)
-        if queryset is None:
-            return False
-
-        return (
-            queryset.exists()
-            and not queryset.exclude(status=SubEntityStatus.COMPLETED).exists()
-        )
-
-    @classmethod
-    def _propagate_issue_to_pipeline(cls, pipeline, entity_type, user=None):
-        """
-        When sub-entity reports issue, update pipeline status and active_entity.
-
-        Args:
-            pipeline: Pipeline instance
-            entity_type: Type string identifying which entity has the issue
-            user: User performing the action
-        """
-        # Update active_entity to reflect which entity has the issue
-        active_entity_value = ENTITY_TYPE_TO_ACTIVE_ENTITY.get(
-            entity_type, ActiveEntityType.NONE
-        )
-
-        pipeline.active_entity = active_entity_value
-        pipeline.save(update_fields=["active_entity", "updated_at"])
-
-        # Transition pipeline to issue_reported if valid
-        cls._try_pipeline_transition(pipeline, PipelineStatusType.ISSUE_REPORTED, user)
-
-    @classmethod
-    def _try_pipeline_transition(cls, pipeline, target_status, user=None):
-        """
-        Attempt to transition pipeline to target status.
-
-        Silently fails if transition is not valid - manual transition will be needed.
-
-        Args:
-            pipeline: Pipeline instance
-            target_status: Target pipeline status
-            user: User performing the action
-        """
-        from .pipeline_state_service import PipelineStateService
-
-        try:
-            PipelineStateService.transition(
-                pipeline=pipeline,
-                target_status=target_status,
-                user=user,
-            )
-        except Exception:
-            # Transition may fail due to validation - that's ok
-            pass
 
     @classmethod
     @transaction.atomic

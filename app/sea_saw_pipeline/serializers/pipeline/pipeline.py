@@ -135,12 +135,15 @@ class BasePipelineSerializer(BaseSerializer):
         return PipelineStateService.get_allowed_actions(obj, request.user)
 
 
+from .financial_summary_mixin import FinancialSummaryMixin, FINANCIAL_SUMMARY_FIELDS
+
+
 # =====================================================
 # Admin Role Serializer
 # =====================================================
 
 
-class PipelineSerializerForAdmin(UniqueFieldsMixin, BasePipelineSerializer):
+class PipelineSerializerForAdmin(FinancialSummaryMixin, UniqueFieldsMixin, BasePipelineSerializer):
     """
     Pipeline serializer for Admin role - Full access to all fields and sub-entities
     """
@@ -162,7 +165,7 @@ class PipelineSerializerForAdmin(UniqueFieldsMixin, BasePipelineSerializer):
     )
 
     class Meta(BasePipelineSerializer.Meta):
-        fields = BASE_FIELDS + [
+        fields = BASE_FIELDS + FINANCIAL_SUMMARY_FIELDS + [
             "production_orders",
             "purchase_orders",
             "outbound_orders",
@@ -190,6 +193,8 @@ class PipelineSerializerForAdmin(UniqueFieldsMixin, BasePipelineSerializer):
             "total_amount",
             "paid_amount",
         ]
+        # Note: FINANCIAL_SUMMARY_FIELDS are SerializerMethodFields — always read-only,
+        # cannot be listed in read_only_fields (which only accepts model field names).
 
 
 # =====================================================
@@ -197,7 +202,7 @@ class PipelineSerializerForAdmin(UniqueFieldsMixin, BasePipelineSerializer):
 # =====================================================
 
 
-class PipelineSerializerForSales(UniqueFieldsMixin, BasePipelineSerializer):
+class PipelineSerializerForSales(FinancialSummaryMixin, UniqueFieldsMixin, BasePipelineSerializer):
     """
     Pipeline serializer for Sales role - Focus on order and payment info
     """
@@ -219,7 +224,7 @@ class PipelineSerializerForSales(UniqueFieldsMixin, BasePipelineSerializer):
     )
 
     class Meta(BasePipelineSerializer.Meta):
-        fields = BASE_FIELDS + [
+        fields = BASE_FIELDS + FINANCIAL_SUMMARY_FIELDS + [
             "production_orders",
             "purchase_orders",
             "outbound_orders",
@@ -233,6 +238,8 @@ class PipelineSerializerForSales(UniqueFieldsMixin, BasePipelineSerializer):
             "purchase_orders",
             "outbound_orders",
         ]
+        # Note: FINANCIAL_SUMMARY_FIELDS are SerializerMethodFields — always read-only,
+        # cannot be listed in read_only_fields (which only accepts model field names).
 
 
 # =====================================================

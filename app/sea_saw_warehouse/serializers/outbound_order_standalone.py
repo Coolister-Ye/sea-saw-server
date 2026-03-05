@@ -5,6 +5,8 @@ Outbound Order Serializers - Standalone version for direct OutboundOrder access
 显示关联的 Pipeline (Order) 信息
 """
 
+from decimal import Decimal
+from rest_framework import serializers
 from sea_saw_base.serializers import BaseSerializer
 from sea_saw_attachment.serializers import AttachmentSerializer
 from .outbound_item import OutboundItemSerializer
@@ -49,12 +51,47 @@ class OutboundOrderSerializerForOutboundView(UniqueFieldsMixin, BaseSerializer):
         label=_("Related Pipeline (Order)"),
     )
 
+    order_outbound_amount = serializers.SerializerMethodField(
+        label=_("Order Outbound Amount"),
+    )
+    purchase_outbound_amount = serializers.SerializerMethodField(
+        label=_("Purchase Outbound Amount"),
+    )
+
+    def get_order_outbound_amount(self, obj):
+        """订单出库金额：order_item.unit_price × outbound_gross_weight 的合计"""
+        total = Decimal("0")
+        for item in obj.outbound_items.all():
+            if item.outbound_gross_weight is None:
+                continue
+            order_item = item.order_item
+            if order_item is None or order_item.unit_price is None:
+                continue
+            total += order_item.unit_price * item.outbound_gross_weight
+        return total
+
+    def get_purchase_outbound_amount(self, obj):
+        """采购出库金额：purchase_item.unit_price × outbound_gross_weight 的合计"""
+        total = Decimal("0")
+        for item in obj.outbound_items.all():
+            if item.outbound_gross_weight is None:
+                continue
+            order_item = item.order_item
+            if order_item is None:
+                continue
+            purchase_item = order_item.purchase_items.first()
+            if purchase_item is None or purchase_item.unit_price is None:
+                continue
+            total += purchase_item.unit_price * item.outbound_gross_weight
+        return total
+
     class Meta(BaseSerializer.Meta):
         model = OutboundOrder
         fields = [
             "id",
             "outbound_code",
             "outbound_date",
+            "eta",
             "status",
             "container_no",
             "seal_no",
@@ -62,6 +99,8 @@ class OutboundOrderSerializerForOutboundView(UniqueFieldsMixin, BaseSerializer):
             "logistics_provider",
             "loader",
             "remark",
+            "order_outbound_amount",
+            "purchase_outbound_amount",
             "outbound_items",
             "attachments",
             "related_pipeline",

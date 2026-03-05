@@ -88,9 +88,12 @@ class PipelineStateService:
         return {}
 
     @classmethod
-    def _require_related_orders(cls, pipeline, order_type: str, target_status: str):
+    def _require_all_completed(cls, pipeline, order_type: str, target_status: str):
         """
-        Validate that pipeline has at least one related order of the given type.
+        Validate that all sub-entities of the given type are completed.
+
+        Checks both existence (at least one must exist) and that every
+        non-deleted sub-entity has status 'completed'.
 
         Args:
             pipeline: The pipeline instance
@@ -98,8 +101,10 @@ class PipelineStateService:
             target_status: Target status (for error message)
 
         Raises:
-            ValidationError: If no related orders exist
+            ValidationError: If no orders exist or any order is not completed
         """
+        from ..constants import SubEntityStatus
+
         type_to_relation = {
             "production": "production_orders",
             "purchase": "purchase_orders",
@@ -109,16 +114,24 @@ class PipelineStateService:
         if not relation_name:
             return
 
-        relation = getattr(pipeline, relation_name)
-        if not relation.filter(deleted__isnull=True).exists():
+        qs = getattr(pipeline, relation_name).filter(deleted__isnull=True)
+        if not qs.exists():
             raise ValidationError(
                 {order_type: f"Must create {order_type} order before {target_status}"}
+            )
+        if qs.exclude(status=SubEntityStatus.COMPLETED).exists():
+            raise ValidationError(
+                {order_type: f"All {order_type} orders must be completed before {target_status}"}
             )
 
     @classmethod
     def _validate_transition(cls, pipeline, target_status: str, _user=None):
         """
         Validate transition prerequisites.
+
+        For completion transitions, all relevant sub-entities must already be
+        completed (user manages sub-entity status independently; pipeline only
+        advances when ready).
 
         Args:
             pipeline: The pipeline instance
@@ -135,17 +148,17 @@ class PipelineStateService:
                 raise ValidationError({"account": "Pipeline must have an account"})
 
         elif target_status == PipelineStatusType.PRODUCTION_COMPLETED:
-            cls._require_related_orders(pipeline, "production", target_status)
+            cls._require_all_completed(pipeline, "production", target_status)
 
         elif target_status == PipelineStatusType.PURCHASE_COMPLETED:
-            cls._require_related_orders(pipeline, "purchase", target_status)
+            cls._require_all_completed(pipeline, "purchase", target_status)
 
         elif target_status == PipelineStatusType.OUTBOUND_COMPLETED:
-            cls._require_related_orders(pipeline, "outbound", target_status)
+            cls._require_all_completed(pipeline, "outbound", target_status)
 
         elif target_status == PipelineStatusType.PURCHASE_AND_PRODUCTION_COMPLETED:
-            cls._require_related_orders(pipeline, "purchase", target_status)
-            cls._require_related_orders(pipeline, "production", target_status)
+            cls._require_all_completed(pipeline, "purchase", target_status)
+            cls._require_all_completed(pipeline, "production", target_status)
 
         elif target_status == PipelineStatusType.COMPLETED:
             cls._validate_all_outbound_completed(pipeline)
