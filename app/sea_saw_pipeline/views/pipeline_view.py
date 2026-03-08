@@ -5,6 +5,7 @@ from rest_framework import status
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.parsers import FormParser, JSONParser
 from sea_saw_base.parsers import NestedMultiPartParser
@@ -222,9 +223,9 @@ class PipelineViewSet(
                     {"detail": f"Failed to transition to {target_status}"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        except ValidationError as e:
+        except (ValidationError, DjangoValidationError) as e:
             return Response(
-                {"detail": str(e)},
+                {"detail": e.message_dict if hasattr(e, "message_dict") else str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

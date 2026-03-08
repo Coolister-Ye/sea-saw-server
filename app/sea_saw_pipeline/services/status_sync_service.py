@@ -193,6 +193,19 @@ class StatusSyncService:
             )
 
     @classmethod
+    def sync_subentity_to_pipeline(
+        cls, subentity, entity_type, old_status, new_status, user=None
+    ):
+        """
+        Reverse sync: Called when a sub-entity status changes.
+
+        Currently a no-op — sub-entities manage their own lifecycle independently.
+        Pipeline transitions are user-triggered and validated against sub-entity
+        completion state. There is no automatic pipeline advancement from sub-entity changes.
+        """
+        pass
+
+    @classmethod
     @transaction.atomic
     def resolve_issue(cls, pipeline, resume_status, user=None):
         """
