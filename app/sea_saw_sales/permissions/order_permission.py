@@ -8,6 +8,18 @@ Order 权限类
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
+def _is_order_editable(obj):
+    """
+    Order 可编辑条件：
+    - Order 自身状态为 draft，或
+    - 关联的 Pipeline 状态为 draft（pipeline 回退后仍可重新编辑 order）
+    """
+    if getattr(obj, "status", None) == "draft":
+        return True
+    pipeline = getattr(obj, "pipeline", None)
+    return getattr(pipeline, "status", None) == "draft"
+
+
 class OrderAdminPermission(BasePermission):
     """
     Order Admin 权限
@@ -19,8 +31,9 @@ class OrderAdminPermission(BasePermission):
         return getattr(request.user.role, "role_type", None) == "ADMIN"
 
     def has_object_permission(self, request, view, obj):
-        # 只有DRAFT 状态的 Order 可以被修改
-        return getattr(obj, "status", None) == "draft"
+        if request.method in SAFE_METHODS:
+            return True
+        return _is_order_editable(obj)
 
 
 class OrderSalePermission(BasePermission):
@@ -29,7 +42,7 @@ class OrderSalePermission(BasePermission):
 
     Sale 角色基于 owner 的 Order 权限：
     - 读取权限：可以查看自己或下属创建的订单
-    - 修改权限：只能修改自己创建的且状态为 DRAFT 的订单
+    - 修改权限：只能修改自己创建的且 order/pipeline 状态为 DRAFT 的订单
     """
 
     def has_permission(self, request, view):
@@ -46,5 +59,5 @@ class OrderSalePermission(BasePermission):
             get_parents = getattr(owner, "get_all_parent_users", None)
             return callable(get_parents) and user in get_parents()
         else:
-            # update/delete 权限：仅 owner 且状态为 DRAFT
-            return owner == user and getattr(obj, "status", None) == "draft"
+            # update/delete 权限：仅 owner 且 order/pipeline 状态为 DRAFT
+            return owner == user and _is_order_editable(obj)
