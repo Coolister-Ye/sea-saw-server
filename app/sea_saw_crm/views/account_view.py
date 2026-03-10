@@ -1,3 +1,5 @@
+from django_filters import rest_framework as filters
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from sea_saw_base.metadata import BaseMetadata
 
@@ -21,6 +23,7 @@ class AccountViewSet(ModelViewSet):
     permission_classes = [AccountPermission]
     metadata_class = BaseMetadata
 
+    filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
     search_fields = ["^account_name"]
 
     def get_queryset(self):

@@ -13,7 +13,7 @@ class AccountMinimalSerializer(BaseSerializer):
 
     class Meta(BaseSerializer.Meta):
         model = Account
-        fields = ["id", "account_name", "address", "roles"]
+        fields = ["id", "account_name", "address", "phone", "email", "roles"]
 
     def get_roles(self, obj) -> list:
         """Return computed roles based on business relationships."""
@@ -37,17 +37,14 @@ class AccountSerializer(BaseSerializer):
     roles = serializers.SerializerMethodField(read_only=True)
     # Use nested serializer directly instead of SerializerMethodField
     # This allows OPTIONS to return detailed field metadata for frontend rendering
-    contacts = ContactMinimalSerializer(
-        many=True,
-        read_only=True
-    )
+    contacts = ContactMinimalSerializer(many=True, read_only=True)
     contact_ids = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Contact.objects.all(),
-        source='contacts',
+        source="contacts",
         write_only=True,
         required=False,
-        help_text="List of contact IDs to associate with this account"
+        help_text="List of contact IDs to associate with this account",
     )
 
     class Meta(BaseSerializer.Meta):

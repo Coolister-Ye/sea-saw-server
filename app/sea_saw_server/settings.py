@@ -237,7 +237,7 @@ REST_FRAMEWORK = {
 
 # Proxy Pagination Settings
 PROXY_PAGINATION_PARAM = "pager"
-PROXY_PAGINATION_DEFAULT = "rest_framework.pagination.PageNumberPagination"
+PROXY_PAGINATION_DEFAULT = "sea_saw_base.pagination.CustomPageNumberPagination"
 PROXY_PAGINATION_MAPPING = {
     "cursor": "rest_framework.pagination.CursorPagination",
     "limit_offset": "rest_framework.pagination.LimitOffsetPagination",
