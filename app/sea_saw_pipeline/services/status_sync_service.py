@@ -2,9 +2,8 @@
 Status Sync Service - Pipeline → sub-entity status synchronization
 
 Cascade rules (explicit, user-triggered only):
-- CANCELLED: Cascade cancel to all sub-entities and order
-- ISSUE_REPORTED: Mark currently active sub-entities as issue_reported (exception flow)
 - ORDER_CONFIRMED: Confirm the sales order
+- CANCELLED: Cancel the sales order only (sub-entities are unaffected)
 - All other Pipeline transitions leave sub-entity statuses unchanged
 
 Sub-entities manage their own status independently. Pipeline transitions are
@@ -28,9 +27,9 @@ class StatusSyncService:
     """
     Status synchronization service between Pipeline and sub-entities.
 
-    Cascade-only: Pipeline status changes only propagate to sub-entities in
-    exceptional cases (cancel, issue_reported). All other transitions leave
-    sub-entity statuses untouched — sub-entities manage their own lifecycle.
+    Cascade-only: Pipeline status changes only propagate to sub-entities on
+    cancel. All other transitions (including issue_reported) leave sub-entity
+    statuses untouched — sub-entities manage their own lifecycle.
     """
 
     @classmethod
@@ -134,9 +133,8 @@ class StatusSyncService:
 
         Cascades:
         - ORDER_CONFIRMED: Confirms the sales order
-        - CANCELLED: Cancels the sales order + all sub-entities
-        - ISSUE_REPORTED: Marks currently active sub-entities as issue_reported
-        - All other statuses: no sub-entity changes (sub-entities are independent)
+        - CANCELLED: Cancels the sales order only (sub-entities unaffected)
+        - All other statuses: no sub-entity changes
 
         Args:
             pipeline: Pipeline instance
@@ -149,11 +147,6 @@ class StatusSyncService:
             pipeline.active_entity = active_entity_value
             pipeline.save(update_fields=["active_entity", "updated_at"])
 
-        # Handle issue_reported specially
-        if new_status == PipelineStatusType.ISSUE_REPORTED:
-            cls._propagate_issue_to_active_entity(pipeline)
-            return
-
         # Handle the two nodes where Pipeline affects Order.status
         if new_status == PipelineStatusType.ORDER_CONFIRMED:
             cls._confirm_order(pipeline, user)
@@ -164,33 +157,6 @@ class StatusSyncService:
         status_mapping = PIPELINE_TO_SUBENTITY_STATUS.get(new_status, {})
         for entity_type, target_status in status_mapping.items():
             cls._bulk_update_subentities(pipeline, entity_type, target_status)
-
-    @classmethod
-    def _propagate_issue_to_active_entity(cls, pipeline):
-        """
-        When Pipeline goes to issue_reported, mark the active entity type's
-        sub-entities as issue_reported.
-
-        Only affects sub-entities currently in 'active' status.
-        Order.status is NOT updated — issue is visible via pipeline.status.
-
-        Args:
-            pipeline: Pipeline instance
-            user: User performing the action
-        """
-        active_entity = pipeline.active_entity
-        entity_types = ACTIVE_ENTITY_TO_ENTITY_TYPES.get(active_entity, [])
-
-        for entity_type in entity_types:
-            if entity_type == "order":
-                # Order.status is independent — issue is visible via pipeline.status
-                continue
-            cls._bulk_update_subentities(
-                pipeline,
-                entity_type,
-                SubEntityStatus.ISSUE_REPORTED,
-                status_filter=SubEntityStatus.ACTIVE,
-            )
 
     @classmethod
     def sync_subentity_to_pipeline(

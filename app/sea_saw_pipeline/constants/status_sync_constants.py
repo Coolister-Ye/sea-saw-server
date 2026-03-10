@@ -2,9 +2,7 @@
 Status Sync Constants - Configuration for Pipeline → sub-entity status synchronization
 
 Cascade rules (Pipeline → sub-entities):
-- CANCELLED: Cascade to all sub-entities (cancel all active/draft sub-orders)
-- ISSUE_REPORTED: Mark currently active sub-entities as issue_reported (exception flow)
-- All other transitions: Sub-entities manage their own status independently
+- All transitions: Sub-entities manage their own status independently (no cascade)
 
 Order.status is managed independently:
   - ORDER_CONFIRMED → order.status = 'confirmed'  (via StatusSyncService._confirm_order)
@@ -47,15 +45,9 @@ PIPELINE_TO_ACTIVE_ENTITY = {
 
 # Pipeline status -> sub-entity status cascade mapping
 # Only CANCELLED cascades to sub-entities; all other transitions leave sub-entities alone.
-# (ISSUE_REPORTED is handled separately in StatusSyncService._propagate_issue_to_active_entity)
-PIPELINE_TO_SUBENTITY_STATUS = {
-    PipelineStatusType.CANCELLED: {
-        "production": SubEntityStatus.CANCELLED,
-        "purchase": SubEntityStatus.CANCELLED,
-        "outbound": SubEntityStatus.CANCELLED,
-        # Order handled separately via StatusSyncService._cancel_order()
-    },
-}
+PIPELINE_TO_SUBENTITY_STATUS = {}
+# Order.status on CANCELLED is handled separately via StatusSyncService._cancel_order()
+# Sub-entities (production/purchase/outbound) are NOT cancelled when pipeline is cancelled
 
 
 # Terminal statuses that should not be overwritten by sync operations

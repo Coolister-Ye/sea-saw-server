@@ -13,7 +13,9 @@ from ..constants import (
     PIPELINE_STATE_MACHINE_BY_TYPE,
     PIPELINE_ROLE_ALLOWED_TARGET_STATES,
     PIPELINE_STATUS_PRIORITY,
+    SubEntityStatus,
 )
+from .status_sync_service import StatusSyncService
 
 # Rollback threshold priorities
 _PRIORITY_BEFORE_PRODUCTION = 1  # draft, order_confirmed
@@ -25,6 +27,14 @@ class PipelineStateService:
     Pipeline state machine service.
     Manages status transitions based on pipeline_type and role_type.
     """
+
+    _TYPE_TO_RELATION = {
+        "production": "production_orders",
+        "purchase": "purchase_orders",
+        "outbound": "outbound_orders",
+    }
+
+    _CLOSED_STATUSES = {SubEntityStatus.COMPLETED, SubEntityStatus.CANCELLED}
 
     @classmethod
     def _get_status_priority(cls, status: str) -> int:
@@ -51,14 +61,8 @@ class PipelineStateService:
             dict: Deletion counts for each order type
         """
         result = {}
-        type_to_relation = {
-            "production": "production_orders",
-            "purchase": "purchase_orders",
-            "outbound": "outbound_orders",
-        }
-
         for order_type in order_types:
-            relation_name = type_to_relation.get(order_type)
+            relation_name = cls._TYPE_TO_RELATION.get(order_type)
             if relation_name:
                 relation = getattr(pipeline, relation_name)
                 deleted = relation.filter(deleted__isnull=True).delete()
@@ -88,12 +92,15 @@ class PipelineStateService:
         return {}
 
     @classmethod
-    def _require_all_completed(cls, pipeline, order_type: str, target_status: str):
+    def _require_all_closed(cls, pipeline, order_type: str, target_status: str):
         """
-        Validate that all sub-entities of the given type are completed.
+        Validate that all sub-entities of the given type are in a closed state.
+
+        "Closed" means completed or cancelled — both are terminal states that
+        should not block pipeline advancement.
 
         Checks both existence (at least one must exist) and that every
-        non-deleted sub-entity has status 'completed'.
+        non-deleted sub-entity has a closed status.
 
         Args:
             pipeline: The pipeline instance
@@ -101,16 +108,9 @@ class PipelineStateService:
             target_status: Target status (for error message)
 
         Raises:
-            ValidationError: If no orders exist or any order is not completed
+            ValidationError: If no orders exist or any order is still open
         """
-        from ..constants import SubEntityStatus
-
-        type_to_relation = {
-            "production": "production_orders",
-            "purchase": "purchase_orders",
-            "outbound": "outbound_orders",
-        }
-        relation_name = type_to_relation.get(order_type)
+        relation_name = cls._TYPE_TO_RELATION.get(order_type)
         if not relation_name:
             return
 
@@ -119,9 +119,11 @@ class PipelineStateService:
             raise ValidationError(
                 {order_type: f"Must create {order_type} order before {target_status}"}
             )
-        if qs.exclude(status=SubEntityStatus.COMPLETED).exists():
+        if qs.exclude(status__in=cls._CLOSED_STATUSES).exists():
             raise ValidationError(
-                {order_type: f"All {order_type} orders must be completed before {target_status}"}
+                {
+                    order_type: f"All {order_type} orders must be completed or cancelled before {target_status}"
+                }
             )
 
     @classmethod
@@ -148,35 +150,25 @@ class PipelineStateService:
                 raise ValidationError({"account": "Pipeline must have an account"})
 
         elif target_status == PipelineStatusType.PRODUCTION_COMPLETED:
-            cls._require_all_completed(pipeline, "production", target_status)
+            cls._require_all_closed(pipeline, "production", target_status)
 
         elif target_status == PipelineStatusType.PURCHASE_COMPLETED:
-            cls._require_all_completed(pipeline, "purchase", target_status)
+            cls._require_all_closed(pipeline, "purchase", target_status)
 
         elif target_status == PipelineStatusType.OUTBOUND_COMPLETED:
-            cls._require_all_completed(pipeline, "outbound", target_status)
+            cls._require_all_closed(pipeline, "outbound", target_status)
 
         elif target_status == PipelineStatusType.PURCHASE_AND_PRODUCTION_COMPLETED:
-            cls._require_all_completed(pipeline, "purchase", target_status)
-            cls._require_all_completed(pipeline, "production", target_status)
+            cls._require_all_closed(pipeline, "purchase", target_status)
+            cls._require_all_closed(pipeline, "production", target_status)
 
         elif target_status == PipelineStatusType.COMPLETED:
-            cls._validate_all_outbound_completed(pipeline)
+            cls._require_all_closed(pipeline, "outbound", target_status)
 
     @classmethod
-    def _validate_all_outbound_completed(cls, pipeline):
-        """Validate all outbound orders are completed."""
-        from sea_saw_warehouse.models import OutboundStatus
-
-        has_incomplete = (
-            pipeline.outbound_orders.filter(deleted__isnull=True)
-            .exclude(status=OutboundStatus.COMPLETED)
-            .exists()
-        )
-        if has_incomplete:
-            raise ValidationError(
-                {"outbound": "All outbound orders must be completed first"}
-            )
+    def _get_user_role(cls, user) -> str | None:
+        """Extract role_type from user object."""
+        return getattr(getattr(user, "role", None), "role_type", None)
 
     @classmethod
     def _validate_role_permission(cls, pipeline, target_status: str, user):
@@ -191,13 +183,15 @@ class PipelineStateService:
         Raises:
             ValidationError: If user lacks permission
         """
-        role = getattr(getattr(user, "role", None), "role_type", None)
+        role = cls._get_user_role(user)
         if not role:
             raise ValidationError({"role": "User role required"})
 
         allowed = PIPELINE_ROLE_ALLOWED_TARGET_STATES.get(role, set())
         if "*" not in allowed and target_status not in allowed:
-            raise ValidationError({"permission": "Permission denied for this transition"})
+            raise ValidationError(
+                {"permission": "Permission denied for this transition"}
+            )
 
     # Status to timestamp field mapping — each forward transition records its own timestamp
     _STATUS_TIMESTAMP_FIELDS = {
@@ -238,7 +232,11 @@ class PipelineStateService:
 
     @classmethod
     def _validate_state_transition(
-        cls, state_machine: dict, current_status: str, target_status: str, pipeline_type: str
+        cls,
+        state_machine: dict,
+        current_status: str,
+        target_status: str,
+        pipeline_type: str,
     ):
         """
         Validate the state transition is allowed by the state machine.
@@ -295,31 +293,16 @@ class PipelineStateService:
         if user:
             pipeline.updated_by = user
 
-        pipeline.save(
-            update_fields=[
-                "status",
-                "updated_at",
-                "updated_by",
-                "confirmed_at",
-                "in_purchase_at",
-                "purchase_completed_at",
-                "in_production_at",
-                "production_completed_at",
-                "in_purchase_and_production_at",
-                "purchase_and_production_completed_at",
-                "in_outbound_at",
-                "outbound_completed_at",
-                "completed_at",
-                "cancelled_at",
-            ]
-        )
+        update_fields = ["status", "updated_at", "updated_by"]
+        timestamp_field = cls._STATUS_TIMESTAMP_FIELDS.get(target_status)
+        if timestamp_field:
+            update_fields.append(timestamp_field)
+        pipeline.save(update_fields=update_fields)
 
         # Attach cleanup result for caller reference
         pipeline._cleanup_result = cleanup_result
 
         # Sync sub-entity statuses
-        from .status_sync_service import StatusSyncService
-
         StatusSyncService.sync_pipeline_to_subentities(
             pipeline=pipeline,
             new_status=target_status,
@@ -327,11 +310,6 @@ class PipelineStateService:
         )
 
         return pipeline
-
-    @classmethod
-    def _get_user_role(cls, user) -> str | None:
-        """Extract role_type from user object."""
-        return getattr(getattr(user, "role", None), "role_type", None)
 
     @classmethod
     def get_allowed_actions(cls, pipeline, user) -> list[str]:
