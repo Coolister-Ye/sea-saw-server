@@ -1,3 +1,5 @@
+from django_filters import rest_framework as filters
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_access_policy import AccessViewSetMixin
 from sea_saw_base.metadata import BaseMetadata
@@ -15,6 +17,7 @@ class ContactViewSet(ModelViewSet, AccessViewSetMixin):
     permission_classes = [ContactPermission]
     metadata_class = BaseMetadata
 
+    filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
     search_fields = ["^name"]
 
     def get_queryset(self):
