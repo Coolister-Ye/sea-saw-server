@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.parsers import FormParser, JSONParser
 from rest_framework import status
+from django.http import FileResponse
 from sea_saw_base.parsers import NestedMultiPartParser
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -76,6 +77,21 @@ class OrderViewSet(ModelViewSet):
         The synchronization is handled by the serializer's update() method.
         """
         serializer.save()
+
+    @action(detail=True, methods=["get"], url_path="export-pi")
+    def export_pi(self, request, pk=None):
+        """Generate and download a Proforma Invoice XLSX for this order."""
+        from sea_saw_sales.pi import generate_pi_xlsx
+
+        order = self.get_object()
+        buf = generate_pi_xlsx(order)
+        filename = f"PI-{order.order_code}.xlsx"
+        return FileResponse(
+            buf,
+            as_attachment=True,
+            filename=filename,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
 
     @action(detail=True, methods=["post"])
     def create_pipeline(self, request, pk=None):

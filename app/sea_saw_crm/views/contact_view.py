@@ -7,6 +7,7 @@ from sea_saw_base.metadata import BaseMetadata
 from ..models import Contact
 from ..serializers import ContactSerializer
 from ..permissions import ContactPermission
+from ..filters import ContactFilter
 
 
 class ContactViewSet(ModelViewSet, AccessViewSetMixin):
@@ -18,6 +19,7 @@ class ContactViewSet(ModelViewSet, AccessViewSetMixin):
     metadata_class = BaseMetadata
 
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    filterset_class = ContactFilter
     search_fields = ["^name"]
 
     def get_queryset(self):

@@ -360,6 +360,19 @@ if not DEBUG:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
+# =============================================================================
+# PROFORMA INVOICE (PI) SETTINGS
+# =============================================================================
+# Override via environment variables in .env/.prod
+
+PI_SELLER_NAME = os.environ.get("PI_SELLER_NAME", "")
+PI_SELLER_ADDRESS = os.environ.get("PI_SELLER_ADDRESS", "")
+PI_SHIPPER_NAME = os.environ.get("PI_SHIPPER_NAME", "")
+PI_SHIPPER_ADDRESS = os.environ.get("PI_SHIPPER_ADDRESS", "")
+# Use "|" as line separator, e.g. "Beneficiary: ...|Bank: CITIBANK|Account No: 123"
+PI_BANK_DETAILS = os.environ.get("PI_BANK_DETAILS", "")
+
 # Logging configuration
 LOGGING = {
     "version": 1,

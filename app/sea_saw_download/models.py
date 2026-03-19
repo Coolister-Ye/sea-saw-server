@@ -25,9 +25,9 @@ class DownloadTask(SafeDeleteModel):
         FAILED = 'failed', _('Failed')
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="download_tasks")
-    task_id = models.CharField(max_length=255, unique=True, blank=True)
+    task_id = models.CharField(max_length=36, unique=True, default=uuid.uuid4, editable=False)
     file_name = models.CharField(max_length=255)
-    file_path = models.CharField(max_length=1024)  # Path where the file is saved
+    file_path = models.CharField(max_length=1024)
     status = models.CharField(
         max_length=50,
         choices=Status.choices,
@@ -36,28 +36,16 @@ class DownloadTask(SafeDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     error_message = models.TextField(null=True, blank=True)
-    download_url = models.URLField(null=True, blank=True)  # Add this field for the download URL
-    expires_at = models.DateTimeField(null=True, blank=True)  # 文件过期时间（7天后自动删除）
-    total_records = models.IntegerField(null=True, blank=True)  # 总记录数
-    processed_records = models.IntegerField(default=0)  # 已处理记录数
-
-    def save(self, *args, **kwargs):
-        """重写 save 方法，自动生成 task_id"""
-        if not self.task_id:
-            self.task_id = self._generate_task_id()
-        super().save(*args, **kwargs)
-
-    @staticmethod
-    def _generate_task_id():
-        """生成唯一的 task_id"""
-        return str(uuid.uuid4())
+    download_url = models.URLField(max_length=1024, null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    total_records = models.IntegerField(null=True, blank=True)
+    processed_records = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Download task {self.task_id} for {self.file_name}"
 
     @property
     def progress_percentage(self):
-        """计算处理进度百分比"""
         if self.total_records and self.total_records > 0:
             return int((self.processed_records / self.total_records) * 100)
         return 0

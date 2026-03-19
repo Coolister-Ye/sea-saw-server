@@ -27,6 +27,7 @@ from sea_saw_pipeline.permissions import (
 )
 
 from ..constants import PipelineStatus, PipelineTypeAccess
+from ..filters import PipelineFilter
 from sea_saw_base.metadata import BaseMetadata
 from sea_saw_base.mixins import MultipartNestedDataMixin
 
@@ -80,7 +81,7 @@ class PipelineViewSet(
 
     # Search and filtering configuration
     search_fields = ["pipeline_code", "remark", "order__order_code", "contact__name"]
-    filterset_fields = ["status", "pipeline_type", "order_date", "contact"]
+    filterset_class = PipelineFilter
     ordering_fields = [
         "pipeline_code",
         "status",

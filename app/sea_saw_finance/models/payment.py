@@ -156,8 +156,8 @@ class Payment(BaseModel):
         ]
 
     def save(self, *args, **kwargs):
-        # Auto-set payment_type if not set
-        if not self.payment_type and self.content_type:
+        # Always derive payment_type from content_type when available
+        if self.content_type:
             model_name = self.content_type.model
             if model_name == "order":
                 self.payment_type = PaymentType.ORDER_PAYMENT
@@ -168,7 +168,6 @@ class Payment(BaseModel):
             elif model_name == "outboundorder":
                 self.payment_type = PaymentType.OUTBOUND_PAYMENT
             else:
-                # Default to order payment if unknown
                 self.payment_type = PaymentType.ORDER_PAYMENT
 
         # Generate payment code if not set

@@ -105,6 +105,16 @@ class BaseMetadata(SimpleMetadata):
             for field_name, f in filterset.filters.items():
                 base = self.get_base_field_name(field_name)
                 filters_info[base]["operations"].append(f.lookup_expr)
+                # Include choices from ChoiceFilter
+                field = getattr(f, "field", None)
+                if field and hasattr(field, "choices"):
+                    choices = [
+                        {"value": str(v), "label": str(l)}
+                        for v, l in field.choices
+                        if v != ""
+                    ]
+                    if choices:
+                        filters_info[base]["choices"] = choices
 
         return dict(filters_info)
 

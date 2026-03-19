@@ -10,6 +10,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
 
 from ..models import ProductionOrder
+from ..filters import ProductionOrderFilter
 from sea_saw_pipeline.models.pipeline import Pipeline
 from ..serializers import (
     ProductionOrderSerializerForProductionView,
@@ -38,6 +39,7 @@ class ProductionOrderViewSet(ModelViewSet):
     queryset = ProductionOrder.objects.all()
     serializer_class = ProductionOrderSerializerForProductionView
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    filterset_class = ProductionOrderFilter
     permission_classes = [
         IsAuthenticated,
         IsAdmin | IsProduction,

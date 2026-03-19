@@ -6,6 +6,7 @@ from sea_saw_base.metadata import BaseMetadata
 from ..models import Account
 from ..serializers import AccountSerializer
 from ..permissions import AccountPermission
+from ..filters import AccountFilter
 
 
 class AccountViewSet(ModelViewSet):
@@ -24,6 +25,7 @@ class AccountViewSet(ModelViewSet):
     metadata_class = BaseMetadata
 
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    filterset_class = AccountFilter
     search_fields = ["^account_name"]
 
     def get_queryset(self):
