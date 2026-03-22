@@ -23,11 +23,12 @@ class AccountMinimalSerializer(BaseSerializer):
 # Import ContactMinimalSerializer after AccountMinimalSerializer is defined
 # This avoids circular import issues
 from .contact import ContactMinimalSerializer
+from .bank_account import BankAccountMinimalSerializer
 
 
 class AccountSerializer(BaseSerializer):
     """
-    Account serializer with computed roles field and nested contacts.
+    Account serializer with computed roles field and nested contacts/bank_accounts.
     Roles are derived from business relationships:
     - CUSTOMER: Has sales orders
     - SUPPLIER: Has purchase orders
@@ -35,8 +36,6 @@ class AccountSerializer(BaseSerializer):
     """
 
     roles = serializers.SerializerMethodField(read_only=True)
-    # Use nested serializer directly instead of SerializerMethodField
-    # This allows OPTIONS to return detailed field metadata for frontend rendering
     contacts = ContactMinimalSerializer(many=True, read_only=True)
     contact_ids = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -46,6 +45,7 @@ class AccountSerializer(BaseSerializer):
         required=False,
         help_text="List of contact IDs to associate with this account",
     )
+    bank_accounts = BankAccountMinimalSerializer(many=True, read_only=True)
 
     class Meta(BaseSerializer.Meta):
         model = Account
@@ -59,6 +59,7 @@ class AccountSerializer(BaseSerializer):
             "roles",
             "contacts",
             "contact_ids",
+            "bank_accounts",
             "account_name",
             "email",
             "mobile",

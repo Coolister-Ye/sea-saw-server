@@ -4,9 +4,8 @@ from .order_nested import (
     OrderSerializerForSales,
     OrderSerializerForWarehouse,
 )
-from .order_standalone import (
-    OrderSerializerForOrderView,
-)
+from .order_view import OrderSerializerForOrderView
+from .order_download import OrderSerializerForDownload
 from .order_item import (
     OrderItemSerializer,
     OrderItemSerializerForAdmin,
@@ -21,6 +20,7 @@ __all__ = [
     "OrderSerializerForSales",
     "OrderSerializerForWarehouse",
     "OrderSerializerForOrderView",
+    "OrderSerializerForDownload",
     "OrderItemSerializer",
     "OrderItemSerializerForAdmin",
     "OrderItemSerializerForSales",

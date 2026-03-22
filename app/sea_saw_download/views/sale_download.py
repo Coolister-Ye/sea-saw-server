@@ -10,7 +10,7 @@ class DownloadTaskView(DownloadView):
     download_obj_mapping = {
         "orders": {
             "model": "sea_saw_sales.Order",
-            "serializer": "sea_saw_sales.OrderSerializerForOrderView",
+            "serializer": "sea_saw_sales.OrderSerializerForDownload",
         },
     }
 

@@ -14,6 +14,7 @@ class DownloadTaskSerializer(serializers.ModelSerializer):
             "user",
             "task_id",
             "file_name",
+            "file_path",
             "download_url",
             "status",
             "created_at",

@@ -14,6 +14,27 @@ def _format_payment_terms(order) -> str:
     return ", ".join(parts) if parts else ""
 
 
+def _format_bank_details(bank_account) -> str:
+    """Build a pipe-separated bank details string from a BankAccount instance."""
+    if bank_account is None:
+        return getattr(settings, "PI_BANK_DETAILS", "")
+
+    parts = []
+    if bank_account.account_holder:
+        parts.append(f"Account Holder: {bank_account.account_holder}")
+    if bank_account.bank_name:
+        parts.append(f"Bank Name: {bank_account.bank_name}")
+    if bank_account.account_number:
+        parts.append(f"Account No: {bank_account.account_number}")
+    if bank_account.swift_code:
+        parts.append(f"SWIFT/BIC: {bank_account.swift_code}")
+    if bank_account.branch:
+        parts.append(f"Branch: {bank_account.branch}")
+    if bank_account.bank_address:
+        parts.append(f"Bank Address: {bank_account.bank_address}")
+    return " | ".join(parts)
+
+
 def order_to_pi_data(order) -> tuple:
     """
     Map an Order instance to (header dict, products list) for the PI generator.
@@ -42,7 +63,7 @@ def order_to_pi_data(order) -> tuple:
         "Incoterms": order.inco_terms or "",
         "Currency": order.currency or "USD",
         "Payment Terms": _format_payment_terms(order),
-        "Bank Details": getattr(settings, "PI_BANK_DETAILS", ""),
+        "Bank Details": _format_bank_details(order.bank_account),
         "Additional Info": order.comment or "",
     }
 

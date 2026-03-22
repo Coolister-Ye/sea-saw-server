@@ -23,6 +23,7 @@ class OrderFilter(BaseFilter):
     # Exact-match filters for FK IDs sent by the frontend selector (account_id=2, contact_id=3)
     account_id = filters.NumberFilter(field_name="account", lookup_expr="exact")
     contact_id = filters.NumberFilter(field_name="contact", lookup_expr="exact")
+    bank_account_id = filters.NumberFilter(field_name="bank_account", lookup_expr="exact")
 
     filter_fields = {
         # Order basic fields
@@ -45,6 +46,10 @@ class OrderFilter(BaseFilter):
             "lookup_expr": ["in", "isnull"],
         },
         "contact": {
+            "filter_type": filters.BaseInFilter,
+            "lookup_expr": ["in", "isnull"],
+        },
+        "bank_account": {
             "filter_type": filters.BaseInFilter,
             "lookup_expr": ["in", "isnull"],
         },

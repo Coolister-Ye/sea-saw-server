@@ -93,6 +93,31 @@ class OrderViewSet(ModelViewSet):
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
 
+    @action(detail=False, methods=["post"], url_path="export-pi-bulk")
+    def export_pi_bulk(self, request):
+        """Generate a single XLSX with one sheet per order for the given IDs."""
+        from sea_saw_sales.pi import generate_pi_bulk_xlsx
+
+        ids = request.data.get("ids", [])
+        if not ids:
+            raise ValidationError({"ids": "This field is required."})
+
+        orders = self.get_queryset().filter(pk__in=ids)
+        if not orders.exists():
+            raise ValidationError({"ids": "No matching orders found."})
+
+        buf = generate_pi_bulk_xlsx(orders)
+        codes = "-".join(str(o.order_code) for o in orders[:3])
+        if orders.count() > 3:
+            codes += f"-and-{orders.count() - 3}-more"
+        filename = f"PI-{codes}.xlsx"
+        return FileResponse(
+            buf,
+            as_attachment=True,
+            filename=filename,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
     @action(detail=True, methods=["post"])
     def create_pipeline(self, request, pk=None):
         """

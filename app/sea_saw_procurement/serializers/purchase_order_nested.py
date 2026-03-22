@@ -5,8 +5,8 @@ from sea_saw_attachment.mixins import ReusableAttachmentWriteMixin
 
 from sea_saw_base.serializers import BaseSerializer
 from sea_saw_attachment.serializers import AttachmentSerializer
-from sea_saw_crm.serializers import AccountMinimalSerializer, ContactMinimalSerializer
-from sea_saw_crm.models import Account, Contact
+from sea_saw_crm.serializers import AccountMinimalSerializer, ContactMinimalSerializer, BankAccountMinimalSerializer
+from sea_saw_crm.models import Account, Contact, BankAccount
 from .purchase_item import (
     PurchaseItemSerializer,
     PurchaseItemSerializerForAdmin,
@@ -26,6 +26,8 @@ BASE_FIELDS = [
     "supplier_id",
     "contact",
     "contact_id",
+    "bank_account",
+    "bank_account_id",
     "status",
     "etd",
     "loading_port",
@@ -68,6 +70,16 @@ class PurchaseOrderSerializer(
         allow_null=True,
         write_only=True,
         label=_("Contact ID"),
+    )
+
+    bank_account = BankAccountMinimalSerializer(read_only=True, label=_("Bank Account"))
+    bank_account_id = serializers.PrimaryKeyRelatedField(
+        queryset=BankAccount.objects.all(),
+        source="bank_account",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Bank Account ID"),
     )
 
     purchase_items = PurchaseItemSerializer(

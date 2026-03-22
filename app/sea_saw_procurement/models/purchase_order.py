@@ -69,6 +69,16 @@ class PurchaseOrder(AbstractOrderBase):
         help_text=_("Contact person for this purchase order"),
     )
 
+    bank_account = models.ForeignKey(
+        "sea_saw_crm.BankAccount",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="purchase_orders",
+        verbose_name=_("Bank Account"),
+        help_text=_("Supplier bank account for payment"),
+    )
+
     related_order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,

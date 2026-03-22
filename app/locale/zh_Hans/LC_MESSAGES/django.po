@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 18:55+0800\n"
+"POT-Creation-Date: 2026-03-21 21:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,15 +98,15 @@ msgstr "附接"
 #: app/sea_saw_attachment/models/attachment.py:111
 #: app/sea_saw_finance/serializers/payment_nested.py:27
 #: app/sea_saw_finance/serializers/payment_standalone.py:27
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:77
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:123
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:89
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:135
 #: app/sea_saw_production/serializers/production_order_nested.py:32
 #: app/sea_saw_production/serializers/production_order_nested.py:65
 #: app/sea_saw_production/serializers/production_order_nested.py:97
 #: app/sea_saw_production/serializers/production_order_standalone.py:34
 #: app/sea_saw_sales/serializers/order_nested.py:139
 #: app/sea_saw_sales/serializers/order_nested.py:175
-#: app/sea_saw_sales/serializers/order_standalone.py:90
+#: app/sea_saw_sales/serializers/order_standalone.py:100
 #: app/sea_saw_warehouse/serializers/outbound_order_nested.py:97
 #: app/sea_saw_warehouse/serializers/outbound_order_nested.py:117
 #: app/sea_saw_warehouse/serializers/outbound_order_nested.py:176
@@ -312,6 +312,7 @@ msgid "Inco Terms"
 msgstr "Inco条款"
 
 #: app/sea_saw_base/models/base_order.py:66 app/sea_saw_base/models/field.py:18
+#: app/sea_saw_crm/models/bank_account.py:44
 #: app/sea_saw_finance/models/payment.py:116
 msgid "Currency"
 msgstr "货币"
@@ -587,7 +588,10 @@ msgstr "帐户的行业部门。"
 msgid "Additional notes or description about the account."
 msgstr "有关帐户的其他注释或说明。"
 
-#: app/sea_saw_crm/models/account.py:78 app/sea_saw_crm/models/contact.py:59
+#: app/sea_saw_crm/models/account.py:78
+#: app/sea_saw_crm/models/bank_account.py:16
+#: app/sea_saw_crm/models/contact.py:59
+#: app/sea_saw_crm/serializers/bank_account.py:35
 #: app/sea_saw_crm/serializers/contact.py:18
 #: app/sea_saw_pipeline/models/pipeline/pipeline.py:89
 #: app/sea_saw_sales/models/order.py:47
@@ -602,6 +606,94 @@ msgstr "账户"
 #: app/sea_saw_crm/models/account.py:83
 msgid "Unnamed Account"
 msgstr "未命名帐户"
+
+#: app/sea_saw_crm/models/bank_account.py:17
+msgid "The account (company) this bank account belongs to."
+msgstr "该联系人所属的帐户（公司）。"
+
+#: app/sea_saw_crm/models/bank_account.py:22
+msgid "Bank Name"
+msgstr "银行名称"
+
+#: app/sea_saw_crm/models/bank_account.py:23
+msgid "Name of the bank."
+msgstr "银行的名称。"
+
+#: app/sea_saw_crm/models/bank_account.py:28
+msgid "Account Number"
+msgstr "银行帐户"
+
+#: app/sea_saw_crm/models/bank_account.py:29
+msgid "Bank account number."
+msgstr "银行的帐户"
+
+#: app/sea_saw_crm/models/bank_account.py:36
+msgid "Account Holder"
+msgstr "账户所有人"
+
+#: app/sea_saw_crm/models/bank_account.py:37
+msgid "Name of the account holder."
+msgstr "账户的所有人。"
+
+#: app/sea_saw_crm/models/bank_account.py:45
+msgid "Currency of the bank account."
+msgstr "银行账户的货币。"
+
+#: app/sea_saw_crm/models/bank_account.py:52
+msgid "SWIFT / BIC Code"
+msgstr ""
+
+#: app/sea_saw_crm/models/bank_account.py:53
+msgid "International bank identifier code (8 or 11 characters)."
+msgstr "国际银行识别码"
+
+#: app/sea_saw_crm/models/bank_account.py:60
+msgid "Branch"
+msgstr "分行/支行"
+
+#: app/sea_saw_crm/models/bank_account.py:61
+msgid "Branch name of the bank."
+msgstr "分行/支行名称。"
+
+#: app/sea_saw_crm/models/bank_account.py:68
+msgid "Bank Address"
+msgstr "银行地址"
+
+#: app/sea_saw_crm/models/bank_account.py:69
+msgid "Address of the bank or branch."
+msgstr "银行的地址。"
+
+#: app/sea_saw_crm/models/bank_account.py:74
+msgid "Primary Account"
+msgstr "主要账户"
+
+#: app/sea_saw_crm/models/bank_account.py:75
+msgid "Mark as the primary bank account for this account."
+msgstr "标记为此账号/公司的主要银行账号"
+
+#: app/sea_saw_crm/models/bank_account.py:81
+#: app/sea_saw_finance/models/payment.py:135
+#: app/sea_saw_pipeline/models/pipeline/pipeline.py:203
+#: app/sea_saw_production/models/production_order.py:77
+#: app/sea_saw_warehouse/models/outbound_order.py:104
+msgid "Remark"
+msgstr "备注"
+
+#: app/sea_saw_crm/models/bank_account.py:82
+msgid "Additional notes about this bank account."
+msgstr "关于付款的附加说明"
+
+#: app/sea_saw_crm/models/bank_account.py:86
+#: app/sea_saw_procurement/models/purchase_order.py:78
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:75
+#: app/sea_saw_sales/models/order.py:67
+#: app/sea_saw_sales/serializers/order_standalone.py:85
+msgid "Bank Account"
+msgstr "银行账户"
+
+#: app/sea_saw_crm/models/bank_account.py:87
+msgid "Bank Accounts"
+msgstr "银行账户"
 
 #: app/sea_saw_crm/models/contact.py:18
 msgid "Name"
@@ -639,7 +731,7 @@ msgstr "该联系人所属的帐户（公司）。"
 #: app/sea_saw_pipeline/models/pipeline/pipeline.py:100
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:106
 #: app/sea_saw_procurement/models/purchase_order.py:68
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:63
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:65
 #: app/sea_saw_sales/models/order.py:57
 #: app/sea_saw_sales/serializers/order_nested.py:70
 #: app/sea_saw_sales/serializers/order_standalone.py:75
@@ -658,10 +750,15 @@ msgstr "未命名的联系人"
 msgid "At least one contact method is required: email or phone."
 msgstr "至少需要一种联系方式：电子邮件或电话。"
 
+#: app/sea_saw_crm/serializers/bank_account.py:42
 #: app/sea_saw_crm/serializers/contact.py:25
 #: app/sea_saw_sales/serializers/order_nested.py:67
 msgid "Account ID"
 msgstr "帐户ID"
+
+#: app/sea_saw_crm/serializers/bank_account.py:43
+msgid "ID of the account this bank account belongs to."
+msgstr "此联系人所属的帐户ID。"
 
 #: app/sea_saw_crm/serializers/contact.py:26
 msgid "ID of the account this contact belongs to."
@@ -792,13 +889,6 @@ msgstr "银行资信"
 msgid "Bank transaction reference number"
 msgstr "银行交易参考编号"
 
-#: app/sea_saw_finance/models/payment.py:135
-#: app/sea_saw_pipeline/models/pipeline/pipeline.py:203
-#: app/sea_saw_production/models/production_order.py:77
-#: app/sea_saw_warehouse/models/outbound_order.py:104
-msgid "Remark"
-msgstr "备注"
-
 #: app/sea_saw_finance/models/payment.py:136
 msgid "Additional notes about the payment"
 msgstr "关于付款的附加说明"
@@ -926,7 +1016,7 @@ msgstr "None"
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:210
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:255
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:286
-#: app/sea_saw_sales/models/order.py:77
+#: app/sea_saw_sales/models/order.py:87
 #: app/sea_saw_sales/models/order_item.py:22
 msgid "Order"
 msgstr "销售单"
@@ -1128,7 +1218,7 @@ msgid "Company ID"
 msgstr "公司ID"
 
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:113
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:70
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:72
 #: app/sea_saw_sales/serializers/order_nested.py:77
 #: app/sea_saw_sales/serializers/order_standalone.py:82
 msgid "Contact ID"
@@ -1146,7 +1236,7 @@ msgstr "生产订单"
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:215
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:260
 #: app/sea_saw_pipeline/serializers/pipeline/pipeline.py:291
-#: app/sea_saw_procurement/models/purchase_order.py:99
+#: app/sea_saw_procurement/models/purchase_order.py:109
 msgid "Purchase Orders"
 msgstr "采购订单"
 
@@ -1202,7 +1292,7 @@ msgid "Active"
 msgstr "进行中"
 
 #: app/sea_saw_procurement/models/purchase_item.py:22
-#: app/sea_saw_procurement/models/purchase_order.py:98
+#: app/sea_saw_procurement/models/purchase_order.py:108
 msgid "Purchase Order"
 msgstr "采购订单"
 
@@ -1252,11 +1342,11 @@ msgid "Purchase Item"
 msgstr "采购项目"
 
 #: app/sea_saw_procurement/models/purchase_item.py:79
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:74
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:120
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:136
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:151
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:166
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:86
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:132
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:148
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:163
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:178
 msgid "Purchase Items"
 msgstr "采购物品"
 
@@ -1277,7 +1367,7 @@ msgid "Purchase Date"
 msgstr "采购日期"
 
 #: app/sea_saw_procurement/models/purchase_order.py:58
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:53
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:55
 msgid "Supplier"
 msgstr "供应商"
 
@@ -1289,27 +1379,40 @@ msgstr "此采购订单的供应商帐户"
 msgid "Contact person for this purchase order"
 msgstr "此采购订单的联系人"
 
-#: app/sea_saw_procurement/models/purchase_order.py:78
+#: app/sea_saw_procurement/models/purchase_order.py:79
+#, fuzzy
+#| msgid "Supplier account for this purchase order"
+msgid "Supplier bank account for payment"
+msgstr "此采购订单的供应商帐户"
+
+#: app/sea_saw_procurement/models/purchase_order.py:88
 #: app/sea_saw_production/models/production_order.py:44
 msgid "Related Order (Legacy)"
 msgstr "遗产（Legacy）"
 
-#: app/sea_saw_procurement/models/purchase_order.py:79
+#: app/sea_saw_procurement/models/purchase_order.py:89
 #: app/sea_saw_production/models/production_order.py:45
 msgid "Sales order (legacy field, use pipeline.order instead)."
 msgstr "销售订单（旧字段，请改用pipeline.order）。"
 
-#: app/sea_saw_procurement/models/purchase_order.py:86
+#: app/sea_saw_procurement/models/purchase_order.py:96
 msgid "Purchase Order Status"
 msgstr "采购订单状态"
 
-#: app/sea_saw_procurement/models/purchase_order.py:108
+#: app/sea_saw_procurement/models/purchase_order.py:118
 msgid "Unnamed Purchase Order"
 msgstr "未命名的采购订单"
 
-#: app/sea_saw_procurement/serializers/purchase_order_nested.py:60
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:62
 msgid "Supplier ID"
 msgstr "供应商ID"
+
+#: app/sea_saw_procurement/serializers/purchase_order_nested.py:82
+#: app/sea_saw_sales/serializers/order_standalone.py:92
+#, fuzzy
+#| msgid "Bank Account"
+msgid "Bank Account ID"
+msgstr "账户"
 
 #: app/sea_saw_production/apps.py:8
 msgid "Sea-Saw Production"
@@ -1441,15 +1544,21 @@ msgstr "此订单的客户帐户"
 msgid "Contact person for this order"
 msgstr "此订单的联系人"
 
-#: app/sea_saw_sales/models/order.py:65
+#: app/sea_saw_sales/models/order.py:68
+#, fuzzy
+#| msgid "Customer account for this pipeline"
+msgid "Customer bank account for receiving payment"
+msgstr "此流水线的客户帐户"
+
+#: app/sea_saw_sales/models/order.py:75
 msgid "Order Status"
 msgstr "订单状态"
 
-#: app/sea_saw_sales/models/order.py:78
+#: app/sea_saw_sales/models/order.py:88
 msgid "Orders"
 msgstr "订单"
 
-#: app/sea_saw_sales/models/order.py:87
+#: app/sea_saw_sales/models/order.py:97
 msgid "Unnamed Order"
 msgstr "未命名订单"
 
@@ -1463,7 +1572,7 @@ msgstr "订单项目"
 #: app/sea_saw_sales/serializers/order_nested.py:172
 #: app/sea_saw_sales/serializers/order_nested.py:204
 #: app/sea_saw_sales/serializers/order_nested.py:228
-#: app/sea_saw_sales/serializers/order_standalone.py:86
+#: app/sea_saw_sales/serializers/order_standalone.py:96
 msgid "Order Items"
 msgstr "订单项目"
 
@@ -1475,15 +1584,15 @@ msgstr "未命名项目"
 msgid "Currently active sub-entity type from the related Pipeline"
 msgstr "相关流水线中当前活动的子实体类型"
 
-#: app/sea_saw_sales/serializers/order_standalone.py:98
+#: app/sea_saw_sales/serializers/order_standalone.py:108
 msgid "Related Pipeline"
 msgstr "相关流水线"
 
-#: app/sea_saw_sales/serializers/order_standalone.py:147
+#: app/sea_saw_sales/serializers/order_standalone.py:159
 msgid "订单状态由 Pipeline 管理，请通过 Pipeline 操作确认或取消订单。"
 msgstr ""
 
-#: app/sea_saw_sales/serializers/order_standalone.py:157
+#: app/sea_saw_sales/serializers/order_standalone.py:169
 #, python-format
 msgid "无效的状态变更：%(current)s → %(value)s"
 msgstr ""

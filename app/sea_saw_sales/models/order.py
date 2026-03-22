@@ -58,6 +58,16 @@ class Order(AbstractOrderBase):
         help_text=_("Contact person for this order"),
     )
 
+    bank_account = models.ForeignKey(
+        "sea_saw_crm.BankAccount",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders",
+        verbose_name=_("Bank Account"),
+        help_text=_("Customer bank account for receiving payment"),
+    )
+
     status = models.CharField(
         max_length=32,
         choices=OrderStatusType.choices,

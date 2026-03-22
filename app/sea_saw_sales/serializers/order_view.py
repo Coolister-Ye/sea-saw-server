@@ -1,55 +1,22 @@
-"""
-Order Serializers - Standalone version for direct Order access
-
-用于 OrderViewSet，提供独立的 Order 访问：
-- 列表页：显示 Order 基本信息 + Pipeline 状态概览
-- 详情页：提供 Order CRUD + 生成 Pipeline 功能
-- 完整流程管理请使用 Pipeline API
-"""
-
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from drf_writable_nested.mixins import UniqueFieldsMixin
 
 from sea_saw_base.serializers import BaseSerializer
-from sea_saw_crm.serializers import AccountMinimalSerializer, ContactMinimalSerializer
+from sea_saw_crm.serializers import (
+    AccountMinimalSerializer,
+    ContactMinimalSerializer,
+    BankAccountMinimalSerializer,
+)
 from sea_saw_attachment.serializers import AttachmentSerializer
 from sea_saw_attachment.mixins import ReusableAttachmentWriteMixin
-from .mixins import PipelineSyncMixin
-from sea_saw_pipeline.models import Pipeline
-from sea_saw_crm.models import Account, Contact
+from sea_saw_crm.models import Account, Contact, BankAccount
 from sea_saw_attachment.models import Attachment
+
+from .mixins import PipelineSyncMixin
 from .order_item import OrderItemSerializerForAdmin
+from .pipeline_minimal import PipelineMinimalSerializer
 from ..models import Order
-
-
-class PipelineMinimalSerializer(BaseSerializer):
-    """
-    Minimal Pipeline serializer for Order list/overview display.
-    Only shows essential pipeline status info - for full pipeline data, use Pipeline API.
-    """
-
-    class Meta(BaseSerializer.Meta):
-        model = Pipeline
-        fields = [
-            "id",
-            "pipeline_code",
-            "status",
-            "active_entity",
-            "pipeline_type",
-            "confirmed_at",
-            "in_purchase_at",
-            "purchase_completed_at",
-            "in_production_at",
-            "production_completed_at",
-            "in_purchase_and_production_at",
-            "purchase_and_production_completed_at",
-            "in_outbound_at",
-            "outbound_completed_at",
-            "completed_at",
-            "cancelled_at",
-        ]
-        read_only_fields = fields
 
 
 class OrderSerializerForOrderView(
@@ -82,6 +49,16 @@ class OrderSerializerForOrderView(
         label=_("Contact ID"),
     )
 
+    bank_account = BankAccountMinimalSerializer(read_only=True, label=_("Bank Account"))
+    bank_account_id = serializers.PrimaryKeyRelatedField(
+        queryset=BankAccount.objects.all(),
+        source="bank_account",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Bank Account ID"),
+    )
+
     order_items = OrderItemSerializerForAdmin(
         many=True, required=False, allow_null=True, label=_("Order Items")
     )
@@ -91,7 +68,7 @@ class OrderSerializerForOrderView(
     )
 
     related_pipeline = PipelineMinimalSerializer(
-        source="pipeline",  # Map to the actual OneToOne reverse relation field
+        source="pipeline",
         required=False,
         allow_null=True,
         read_only=True,
@@ -110,6 +87,8 @@ class OrderSerializerForOrderView(
             "account_id",
             "contact",
             "contact_id",
+            "bank_account",
+            "bank_account_id",
             "etd",
             "status",
             "loading_port",

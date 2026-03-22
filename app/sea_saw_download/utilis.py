@@ -79,7 +79,7 @@ ALLOWED_MODELS = {
 
 ALLOWED_SERIALIZERS = {
     'sea_saw_crm': ['CompanySerializer', 'ContactSerializer', 'SupplierSerializer'],
-    'sea_saw_sales': ['OrderSerializerForOrderView'],
+    'sea_saw_sales': ['OrderSerializerForOrderView', 'OrderSerializerForDownload'],
     'sea_saw_pipeline': ['PipelineSerializer'],
     'sea_saw_finance': ['PaymentSerializer'],
     'sea_saw_production': ['ProductionOrderSerializer'],
