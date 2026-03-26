@@ -42,7 +42,7 @@ def purchase_order_to_po_data(purchase_order) -> tuple:
         {
             "Product Name": item.product_name or "",
             "Specifications": item.specification or "",
-            "Cartons": item.order_qty,
+            "Cartons": item.purchase_qty,
             "KG/Carton": float(item.gross_weight) if item.gross_weight else 0,
             "Unit Price (USD/KG)": float(item.unit_price) if item.unit_price else 0,
         }
