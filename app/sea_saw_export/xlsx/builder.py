@@ -1,4 +1,4 @@
-"""Template sheet copy helpers (adapted from order_files/src/builder.py)."""
+"""Template sheet copy helpers."""
 
 from copy import deepcopy
 

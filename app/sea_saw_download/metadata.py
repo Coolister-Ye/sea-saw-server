@@ -1,11 +1,11 @@
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from rest_framework import exceptions
-from rest_framework.metadata import SimpleMetadata
 from rest_framework.request import clone_request
+from sea_saw_base.metadata import BaseMetadata
 
 
-class CustomMetadata(SimpleMetadata):
+class CustomMetadata(BaseMetadata):
     def determine_actions(self, request, view):
         """
         For generic class based views we return information about

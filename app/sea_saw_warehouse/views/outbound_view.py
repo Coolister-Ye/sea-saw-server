@@ -7,16 +7,51 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
 
 from sea_saw_warehouse.models import OutboundOrder
-from sea_saw_warehouse.serializers import OutboundOrderSerializerForAdmin
+from sea_saw_warehouse.serializers import (
+    OutboundOrderSerializerForAdmin,
+    OutboundOrderSerializerForOutboundView,
+)
+from sea_saw_warehouse.filters import OutboundOrderFilter
 from sea_saw_pipeline.serializers.pipeline import (
     PipelineSerializerForAdmin,
     PipelineSerializerForSales,
     PipelineSerializerForProduction,
     PipelineSerializerForWarehouse,
 )
-from sea_saw_base.permissions import IsAdmin, IsWarehouse
+from sea_saw_base.permissions import IsAdmin, IsWarehouse, IsSale
 from sea_saw_base.metadata import BaseMetadata
 from sea_saw_base.mixins import ReturnRelatedMixin
+
+
+class OutboundOrderViewSet(ModelViewSet):
+    """
+    ViewSet for OutboundOrder (standalone access).
+
+    Provides direct CRUD access to outbound orders for:
+    - Warehouse management
+    - Read-only access for reporting and queries
+    """
+
+    queryset = OutboundOrder.objects.all()
+    serializer_class = OutboundOrderSerializerForOutboundView
+    parser_classes = (JSONParser, NestedMultiPartParser, FormParser)
+    filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    filterset_class = OutboundOrderFilter
+    permission_classes = [IsAuthenticated, IsAdmin | IsWarehouse | IsSale]
+    metadata_class = BaseMetadata
+    search_fields = ["outbound_code", "remark", "container_no", "seal_no"]
+    ordering_fields = [
+        "outbound_code",
+        "outbound_date",
+        "eta",
+        "status",
+        "created_at",
+        "updated_at",
+    ]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted__isnull=True)
 
 
 class NestedOutboundOrderViewSet(ReturnRelatedMixin, ModelViewSet):

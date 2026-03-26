@@ -1,8 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import NestedPurchaseOrderViewSet
+from .views import PurchaseOrderViewSet, NestedPurchaseOrderViewSet
 
 router = DefaultRouter()
+router.register(
+    r"purchase-orders",
+    PurchaseOrderViewSet,
+    basename="purchase-order",
+)
 router.register(
     r"nested-purchase-orders",
     NestedPurchaseOrderViewSet,

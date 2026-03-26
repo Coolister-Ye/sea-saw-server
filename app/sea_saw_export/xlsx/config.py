@@ -1,4 +1,4 @@
-"""PI generator configuration (adapted from order_files/src/config.py)."""
+"""Shared Excel document configuration for PI/PO generation."""
 
 from collections import namedtuple
 
@@ -18,16 +18,4 @@ DocConfig = namedtuple(
         "buyer_sig_row_base",   # row for buyer name in signature block
         "bank_details_row_base",  # row for bank details content
     ],
-)
-
-PI_CONFIG = DocConfig(
-    template_sheet="TEMPLATE",
-    doc_title="PROFORMA INVOICE",
-    stamp_col_shift=0,
-    template_slots=1,
-    total_row_offset=24,  # row 22 = product, row 23 = blank separator, row 24 = Total
-    kg_per_carton=20,
-    print_area_rows=38,
-    buyer_sig_row_base=34,
-    bank_details_row_base=29,
 )

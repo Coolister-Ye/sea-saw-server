@@ -1,4 +1,4 @@
-"""Fill product rows and header fields into a worksheet (copied from order_files/src/writer.py)."""
+"""Fill product rows and header fields into a worksheet."""
 
 from copy import copy
 

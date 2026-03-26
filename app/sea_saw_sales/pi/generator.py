@@ -5,12 +5,24 @@ from io import BytesIO
 
 from openpyxl import load_workbook
 
-from .builder import fix_copied_sheet
-from .config import PI_CONFIG, PRODUCT_FIRST_ROW
-from .writer import setup_product_rows, fill_product_row, fill_header
+import sea_saw_export
+from sea_saw_export.xlsx import fix_copied_sheet, PRODUCT_FIRST_ROW, setup_product_rows, fill_product_row, fill_header
+from sea_saw_export.xlsx.config import DocConfig
 
 TEMPLATE_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "templates", "PI_template.xlsx"
+    os.path.dirname(sea_saw_export.__file__), "templates", "PI_template.xlsx"
+)
+
+PI_CONFIG = DocConfig(
+    template_sheet="TEMPLATE",
+    doc_title="PROFORMA INVOICE",
+    stamp_col_shift=0,
+    template_slots=1,
+    total_row_offset=24,
+    kg_per_carton=20,
+    print_area_rows=38,
+    buyer_sig_row_base=34,
+    bank_details_row_base=29,
 )
 
 
@@ -36,7 +48,6 @@ def generate_pi_bulk_xlsx(orders) -> BytesIO:
             fill_product_row(ws, PRODUCT_FIRST_ROW + i, product, PI_CONFIG)
         fill_header(ws, header, total_row, PI_CONFIG)
 
-    # Remove template sheet
     del wb[PI_CONFIG.template_sheet]
 
     buf = BytesIO()
@@ -61,12 +72,10 @@ def generate_pi_xlsx(order) -> BytesIO:
     fix_copied_sheet(template_ws, ws, PI_CONFIG)
     ws.title = f"PI-{order.order_code}"[:31]
 
-    # Remove all sheets except the new one
     for name in list(wb.sheetnames):
         if name != ws.title:
             del wb[name]
 
-    # Expand product rows and fill data
     n_products = max(len(products), 1)
     total_row = setup_product_rows(ws, n_products, PI_CONFIG)
 

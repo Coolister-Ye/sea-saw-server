@@ -1,38 +1,7 @@
 """Map an Order model instance to the PI generator's data format."""
 
 from django.conf import settings
-
-
-def _format_payment_terms(order) -> str:
-    """Build a readable payment terms string from deposit/balance amounts."""
-    parts = []
-    currency = order.currency or "USD"
-    if order.deposit is not None:
-        parts.append(f"Deposit: {currency} {order.deposit:,.2f}")
-    if order.balance is not None:
-        parts.append(f"Balance: {currency} {order.balance:,.2f}")
-    return ", ".join(parts) if parts else ""
-
-
-def _format_bank_details(bank_account) -> str:
-    """Build a pipe-separated bank details string from a BankAccount instance."""
-    if bank_account is None:
-        return getattr(settings, "PI_BANK_DETAILS", "")
-
-    parts = []
-    if bank_account.account_holder:
-        parts.append(f"Account Holder: {bank_account.account_holder}")
-    if bank_account.bank_name:
-        parts.append(f"Bank Name: {bank_account.bank_name}")
-    if bank_account.account_number:
-        parts.append(f"Account No: {bank_account.account_number}")
-    if bank_account.swift_code:
-        parts.append(f"SWIFT/BIC: {bank_account.swift_code}")
-    if bank_account.branch:
-        parts.append(f"Branch: {bank_account.branch}")
-    if bank_account.bank_address:
-        parts.append(f"Bank Address: {bank_account.bank_address}")
-    return " | ".join(parts)
+from sea_saw_export.utils import format_payment_terms, format_bank_details
 
 
 def order_to_pi_data(order) -> tuple:
@@ -46,6 +15,8 @@ def order_to_pi_data(order) -> tuple:
     account = order.account
     buyer_name = account.account_name if account else ""
     buyer_address = (account.address or "") if account else ""
+
+    currency = order.currency or "USD"
 
     header = {
         "Invoice No": f"PI-{order.order_code}",
@@ -61,9 +32,9 @@ def order_to_pi_data(order) -> tuple:
         "Date of Loading": str(order.etd) if order.etd else "",
         "Shipment Type": order.shipment_term or "",
         "Incoterms": order.inco_terms or "",
-        "Currency": order.currency or "USD",
-        "Payment Terms": _format_payment_terms(order),
-        "Bank Details": _format_bank_details(order.bank_account),
+        "Currency": currency,
+        "Payment Terms": format_payment_terms(currency, order.deposit, order.balance),
+        "Bank Details": format_bank_details(order.bank_account, fallback_setting="PI_BANK_DETAILS"),
         "Additional Info": order.comment or "",
     }
 

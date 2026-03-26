@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     # Local apps - ordered by dependency
     "sea_saw_base",  # Base models and utilities (MUST be first)
     "sea_saw_attachment",  # Unified attachment management
+    "sea_saw_export",  # Shared Excel export utilities
     "sea_saw_sales",  # Sales order management
     "sea_saw_production",  # Production order management
     "sea_saw_procurement",  # Procurement/Purchase order management

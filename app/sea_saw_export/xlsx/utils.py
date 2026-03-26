@@ -1,4 +1,4 @@
-"""Shared helper utilities (copied from order_files/src/utils.py)."""
+"""Shared helper utilities for Excel generation."""
 
 import datetime
 

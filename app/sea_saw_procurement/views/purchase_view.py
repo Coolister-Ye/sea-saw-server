@@ -1,5 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from rest_framework import status
 from rest_framework.parsers import FormParser, JSONParser
 from sea_saw_base.parsers import NestedMultiPartParser
 from django_filters import rest_framework as filters
@@ -8,6 +10,10 @@ from rest_framework.permissions import IsAuthenticated
 
 from sea_saw_procurement.models import PurchaseOrder
 from sea_saw_procurement.serializers import PurchaseOrderSerializerForAdmin
+from sea_saw_procurement.serializers.purchase_order_standalone import (
+    PurchaseOrderSerializerForStandalone,
+)
+from sea_saw_procurement.filters import PurchaseOrderFilter
 from sea_saw_pipeline.serializers.pipeline import (
     PipelineSerializerForAdmin,
     PipelineSerializerForSales,
@@ -17,6 +23,58 @@ from sea_saw_pipeline.serializers.pipeline import (
 from sea_saw_base.permissions import IsAdmin, IsSale
 from sea_saw_base.metadata import BaseMetadata
 from sea_saw_base.mixins import ReturnRelatedMixin
+from sea_saw_export.mixins import ExportViewSetMixin
+
+
+class PurchaseOrderViewSet(ExportViewSetMixin, ModelViewSet):
+    """
+    ViewSet for PurchaseOrder (standalone access).
+
+    Provides direct CRUD access to purchase orders for:
+    - Direct procurement management
+    - Read-only access for reporting and queries
+    """
+
+    queryset = PurchaseOrder.objects.all()
+    serializer_class = PurchaseOrderSerializerForStandalone
+    parser_classes = (JSONParser, NestedMultiPartParser, FormParser)
+    filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
+    filterset_class = PurchaseOrderFilter
+    permission_classes = [IsAuthenticated, IsAdmin | IsSale]
+    metadata_class = BaseMetadata
+    search_fields = ["purchase_code", "supplier__name", "comment"]
+    ordering_fields = [
+        "purchase_code",
+        "purchase_date",
+        "total_amount",
+        "status",
+        "created_at",
+        "updated_at",
+    ]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted__isnull=True)
+
+    @action(detail=True, methods=["get"], url_path="export-po")
+    def export_po(self, request, pk=None):
+        """Generate and download a Purchase Order XLSX for this purchase order."""
+        from sea_saw_procurement.po import generate_po_xlsx
+
+        return self._export_single(generate_po_xlsx, lambda po: f"PO-{po.purchase_code}.xlsx")
+
+    @action(detail=False, methods=["post"], url_path="export-po-bulk")
+    def export_po_bulk(self, request):
+        """Generate a single XLSX with one sheet per purchase order for the given IDs."""
+        from sea_saw_procurement.po import generate_po_bulk_xlsx
+
+        def get_filename(qs):
+            codes = "-".join(str(po.purchase_code) for po in qs[:3])
+            if qs.count() > 3:
+                codes += f"-and-{qs.count() - 3}-more"
+            return f"PO-{codes}.xlsx"
+
+        return self._export_bulk(generate_po_bulk_xlsx, get_filename, request.data.get("ids", []))
 
 
 class NestedPurchaseOrderViewSet(ReturnRelatedMixin, ModelViewSet):
