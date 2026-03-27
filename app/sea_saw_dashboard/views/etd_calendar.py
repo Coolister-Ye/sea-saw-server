@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from sea_saw_pipeline.models import Pipeline
 from sea_saw_sales.models import Order
 from sea_saw_sales.models.enums import OrderStatusType
+from sea_saw_warehouse.models import OutboundOrder
 
 
 ACTIVE_STATUSES = [OrderStatusType.CONFIRMED]
@@ -63,6 +64,22 @@ class ETDCalendarView(APIView):
         if "Production" in user_groups:
             return qs
         return qs.none()
+
+    @staticmethod
+    def _get_order_eta(order):
+        """从已 prefetch 的 pipeline.outbound_orders 中取最早的 ETA（非取消）。"""
+        try:
+            pipeline = order.pipeline
+        except Exception:
+            return None
+        if pipeline is None:
+            return None
+        etas = [
+            o.eta
+            for o in pipeline.outbound_orders.all()
+            if o.eta and o.status not in ("cancelled",)
+        ]
+        return str(min(etas)) if etas else None
 
     @staticmethod
     def _determine_shipping_status(order, today):
@@ -134,6 +151,7 @@ class ETDCalendarView(APIView):
                 "order_code": order.order_code,
                 "account_name": order.account.account_name if order.account else "",
                 "etd": str(order.etd),
+                "eta": self._get_order_eta(order),
                 "order_status": order.status,
                 "pipeline_id": pipeline_id,
                 "pipeline_code": pipeline_code,
@@ -186,7 +204,65 @@ class ETDCalendarView(APIView):
                 "days_until_etd": days_until_etd,
             })
 
-        # ── 3. Pipeline 阶段分布 ─────────────────────────────────────────
+        # ── 3. ETA 日历数据（当月有 ETA 的出库单，按 ETA 日期分组）────────────
+        eta_outbounds = (
+            OutboundOrder.objects.filter(
+                eta__year=year,
+                eta__month=month,
+                pipeline__order__in=base_qs,
+            )
+            .exclude(status__in=["cancelled"])
+            .select_related("pipeline__order__account", "pipeline")
+            .order_by("eta")
+        )
+
+        orders_by_eta_date: dict = {}
+        for ob in eta_outbounds:
+            order = ob.pipeline.order
+            date_key = str(ob.eta)
+            entry = {
+                "order_id": order.id,
+                "order_code": order.order_code,
+                "account_name": order.account.account_name if order.account else "",
+                "etd": str(order.etd),
+                "eta": str(ob.eta),
+                "outbound_code": ob.outbound_code,
+                "outbound_status": ob.status,
+                "pipeline_id": ob.pipeline.id,
+                "pipeline_code": ob.pipeline.pipeline_code,
+                "pipeline_status": ob.pipeline.status,
+            }
+            orders_by_eta_date.setdefault(date_key, []).append(entry)
+
+        # ── 4. ETA 预警（14 天内 ETA 未完成的出库单）────────────────────────
+        eta_warning_outbounds = (
+            OutboundOrder.objects.filter(
+                eta__gte=today,
+                eta__lte=today + timedelta(days=14),
+                pipeline__order__in=base_qs,
+            )
+            .exclude(status__in=["completed", "cancelled"])
+            .select_related("pipeline__order__account", "pipeline")
+            .order_by("eta")
+        )
+
+        eta_warning_list = []
+        for ob in eta_warning_outbounds:
+            order = ob.pipeline.order
+            eta_warning_list.append({
+                "order_id": order.id,
+                "order_code": order.order_code,
+                "account_name": order.account.account_name if order.account else "",
+                "etd": str(order.etd),
+                "eta": str(ob.eta),
+                "outbound_code": ob.outbound_code,
+                "outbound_status": ob.status,
+                "pipeline_id": ob.pipeline.id,
+                "pipeline_status": ob.pipeline.status,
+                "days_until_eta": (ob.eta - today).days,
+            })
+
+        # ── 5. Pipeline 阶段分布 ─────────────────────────────────────────
         distribution_qs = (
             Pipeline.objects.filter(deleted__isnull=True)
             .exclude(status__in=DISTRIBUTION_EXCLUDE_STATUSES)
@@ -211,6 +287,8 @@ class ETDCalendarView(APIView):
                 "orders_by_date": orders_by_date,
                 "summary": summary,
                 "warning_list": warning_list,
+                "orders_by_eta_date": orders_by_eta_date,
+                "eta_warning_list": eta_warning_list,
                 "pipeline_distribution": pipeline_distribution,
             }
         )
