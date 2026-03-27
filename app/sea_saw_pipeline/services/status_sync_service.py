@@ -4,6 +4,7 @@ Status Sync Service - Pipeline → sub-entity status synchronization
 Cascade rules (explicit, user-triggered only):
 - ORDER_CONFIRMED: Confirm the sales order
 - CANCELLED: Cancel the sales order only (sub-entities are unaffected)
+- DRAFT: Revert the sales order from confirmed → draft (e.g. issue_reported → draft)
 - All other Pipeline transitions leave sub-entity statuses unchanged
 
 Sub-entities manage their own status independently. Pipeline transitions are
@@ -100,6 +101,29 @@ class StatusSyncService:
         order.save(update_fields=["status", "updated_at", "updated_by"])
 
     @classmethod
+    def _revert_order_to_draft(cls, pipeline, user=None):
+        """
+        Revert the order back to draft when pipeline returns to DRAFT.
+
+        Only transitions confirmed → draft. Idempotent: cancelled/draft orders
+        are left untouched.
+
+        Args:
+            pipeline: Pipeline instance
+            user: User performing the action
+        """
+        if not pipeline.order:
+            return
+        order = pipeline.order
+        if order.status != "confirmed":
+            return
+        order.status = "draft"
+        order.updated_at = timezone.now()
+        if user:
+            order.updated_by = user
+        order.save(update_fields=["status", "updated_at", "updated_by"])
+
+    @classmethod
     def _bulk_update_subentities(
         cls, pipeline, entity_type, target_status, status_filter=None
     ):
@@ -147,11 +171,13 @@ class StatusSyncService:
             pipeline.active_entity = active_entity_value
             pipeline.save(update_fields=["active_entity", "updated_at"])
 
-        # Handle the two nodes where Pipeline affects Order.status
+        # Handle the nodes where Pipeline affects Order.status
         if new_status == PipelineStatusType.ORDER_CONFIRMED:
             cls._confirm_order(pipeline, user)
         elif new_status == PipelineStatusType.CANCELLED:
             cls._cancel_order(pipeline, user)
+        elif new_status == PipelineStatusType.DRAFT:
+            cls._revert_order_to_draft(pipeline, user)
 
         # Apply status updates to production/purchase/outbound sub-entities
         status_mapping = PIPELINE_TO_SUBENTITY_STATUS.get(new_status, {})

@@ -53,10 +53,10 @@ class OverviewStatsView(APIView):
         if period == "month":
             return queryset.annotate(
                 date=Concat(
-                    Cast(ExtractYear("created_at"), output_field=CharField()),
+                    Cast(ExtractYear("order_date"), output_field=CharField()),
                     Value("-"),
                     LPad(
-                        Cast(ExtractMonth("created_at"), output_field=CharField()),
+                        Cast(ExtractMonth("order_date"), output_field=CharField()),
                         2,
                         Value("0"),
                     ),
@@ -64,7 +64,7 @@ class OverviewStatsView(APIView):
                 )
             )
         return queryset.annotate(
-            date=Cast(ExtractYear("created_at"), output_field=CharField())
+            date=Cast(ExtractYear("order_date"), output_field=CharField())
         )
 
     @staticmethod
@@ -82,8 +82,8 @@ class OverviewStatsView(APIView):
         ]
 
     def _aggregate(self, queryset, expression, period, lookback):
-        since = now() - relativedelta(**{f"{period}s": lookback})
-        qs = self._annotate_period(queryset.filter(created_at__gte=since), period)
+        since = (now() - relativedelta(**{f"{period}s": lookback})).date()
+        qs = self._annotate_period(queryset.filter(order_date__gte=since), period)
         results = {
             row["date"]: row["total"]
             for row in qs.values("date").annotate(
