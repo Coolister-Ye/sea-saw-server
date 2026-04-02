@@ -32,9 +32,9 @@ class PipelineSyncMixin:
         pipeline = order.pipeline
         update_fields = []
 
-        # Sync account if changed
-        if pipeline.account != order.account:
-            pipeline.account = order.account
+        # Sync account (buyer) if changed
+        if pipeline.account != order.buyer:
+            pipeline.account = order.buyer
             update_fields.append("account")
 
         # Sync contact if changed

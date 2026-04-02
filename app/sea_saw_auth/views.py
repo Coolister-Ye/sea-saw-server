@@ -1,13 +1,23 @@
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters import rest_framework as filters
 
+from sea_saw_base.metadata import BaseMetadata
+from sea_saw_auth.filters import AdminUserFilter
+from sea_saw_auth.models import User, Role
 from sea_saw_auth.serializers import (
     UserSerializer,
     UserCreateSerializer,
     UserUpdateSerializer,
+    AdminUserSerializer,
+    AdminUserCreateSerializer,
+    RoleSerializer,
 )
 
 
@@ -70,3 +80,37 @@ class UserProfileUpdateView(UpdateAPIView):
                 "user": user_serializer.data,
             }
         )
+
+
+class AdminUserViewSet(ModelViewSet):
+    """Admin-only ViewSet for user management"""
+
+    queryset = User.objects.select_related("role").all().order_by("id")
+    permission_classes = [IsAdminUser]
+    metadata_class = BaseMetadata
+    filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filterset_class = AdminUserFilter
+    search_fields = ["^username", "^email"]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return AdminUserCreateSerializer
+        return AdminUserSerializer
+
+    @action(detail=True, methods=["post"], url_path="toggle-active")
+    def toggle_active(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = not user.is_active
+        user.save(update_fields=["is_active"])
+        return Response(AdminUserSerializer(user).data)
+
+
+class RoleViewSet(ModelViewSet):
+    """Admin-only ViewSet for role management"""
+
+    queryset = Role.objects.select_related("parent").all()
+    permission_classes = [IsAdminUser]
+    metadata_class = BaseMetadata
+    serializer_class = RoleSerializer
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ["^role_name"]

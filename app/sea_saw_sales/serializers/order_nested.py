@@ -9,11 +9,15 @@ from django.utils.translation import gettext_lazy as _
 from drf_writable_nested.mixins import UniqueFieldsMixin
 
 from sea_saw_base.serializers import BaseSerializer
-from sea_saw_crm.serializers import AccountMinimalSerializer, ContactMinimalSerializer
+from sea_saw_crm.serializers import (
+    AccountMinimalSerializer,
+    ContactMinimalSerializer,
+    BankAccountMinimalSerializer,
+)
 from sea_saw_attachment.serializers import AttachmentSerializer
 from sea_saw_attachment.mixins import ReusableAttachmentWriteMixin
 from .mixins import PipelineSyncMixin
-from sea_saw_crm.models import Account, Contact
+from sea_saw_crm.models import Account, Contact, BankAccount
 from ..models import Order, OrderStatusType
 
 from .order_item import (
@@ -31,10 +35,16 @@ BASE_FIELDS = [
     "id",
     "order_code",
     "order_date",
-    "account",
-    "account_id",
+    "buyer",
+    "buyer_id",
+    "seller",
+    "seller_id",
+    "shipper",
+    "shipper_id",
     "contact",
     "contact_id",
+    "bank_account",
+    "bank_account_id",
     "etd",
     "status",
     "active_entity",
@@ -57,14 +67,34 @@ class BaseOrderSerializer(
     统一处理 attachments 的 create / update
     """
 
-    account = AccountMinimalSerializer(read_only=True, label=_("Account"))
-    account_id = serializers.PrimaryKeyRelatedField(
+    buyer = AccountMinimalSerializer(read_only=True, label=_("Buyer"))
+    buyer_id = serializers.PrimaryKeyRelatedField(
         queryset=Account.objects.all(),
-        source="account",
+        source="buyer",
         required=False,
         allow_null=True,
         write_only=True,
-        label=_("Account ID"),
+        label=_("Buyer ID"),
+    )
+
+    seller = AccountMinimalSerializer(read_only=True, label=_("Seller"))
+    seller_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="seller",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Seller ID"),
+    )
+
+    shipper = AccountMinimalSerializer(read_only=True, label=_("Shipper"))
+    shipper_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="shipper",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Shipper ID"),
     )
 
     contact = ContactMinimalSerializer(read_only=True, label=_("Contact"))
@@ -75,6 +105,16 @@ class BaseOrderSerializer(
         allow_null=True,
         write_only=True,
         label=_("Contact ID"),
+    )
+
+    bank_account = BankAccountMinimalSerializer(read_only=True, label=_("Bank Account"))
+    bank_account_id = serializers.PrimaryKeyRelatedField(
+        queryset=BankAccount.objects.all(),
+        source="bank_account",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Bank Account ID"),
     )
 
     # Add active_entity from related Pipeline (read-only)
@@ -111,6 +151,8 @@ class BaseOrderSerializer(
             "deposit",
             "balance",
             "total_amount",
+            "payment_terms",
+            "additional_info",
             "comment",
             "owner",
             "created_by",
@@ -146,6 +188,8 @@ class OrderSerializerForAdmin(UniqueFieldsMixin, BaseOrderSerializer):
             "deposit",
             "balance",
             "total_amount",
+            "payment_terms",
+            "additional_info",
             "comment",
             "attachments",
             "order_items",
@@ -182,6 +226,8 @@ class OrderSerializerForSales(UniqueFieldsMixin, BaseOrderSerializer):
             "deposit",
             "balance",
             "total_amount",
+            "payment_terms",
+            "additional_info",
             "comment",
             "owner",
             "attachments",

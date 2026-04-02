@@ -41,6 +41,16 @@ class PurchaseOrderSerializerForStandalone(
     - Full purchase_items and attachments
     """
 
+    buyer = AccountMinimalSerializer(read_only=True, label=_("Buyer"))
+    buyer_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="buyer",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Buyer ID"),
+    )
+
     supplier = AccountMinimalSerializer(read_only=True, label=_("Supplier"))
     supplier_id = serializers.PrimaryKeyRelatedField(
         queryset=Account.objects.all(),
@@ -49,6 +59,16 @@ class PurchaseOrderSerializerForStandalone(
         allow_null=True,
         write_only=True,
         label=_("Supplier ID"),
+    )
+
+    shipper = AccountMinimalSerializer(read_only=True, label=_("Shipper"))
+    shipper_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="shipper",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Shipper ID"),
     )
 
     contact = ContactMinimalSerializer(read_only=True, label=_("Contact"))
@@ -110,8 +130,12 @@ class PurchaseOrderSerializerForStandalone(
             "id",
             "purchase_code",
             "purchase_date",
+            "buyer",
+            "buyer_id",
             "supplier",
             "supplier_id",
+            "shipper",
+            "shipper_id",
             "contact",
             "contact_id",
             "bank_account",
@@ -126,6 +150,8 @@ class PurchaseOrderSerializerForStandalone(
             "deposit",
             "balance",
             "total_amount",
+            "payment_terms",
+            "additional_info",
             "comment",
             "related_order",
             "related_order_id",

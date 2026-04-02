@@ -9,13 +9,13 @@ class BankAccount(BaseModel):
     An Account can have multiple bank accounts.
     """
 
-    account = models.ForeignKey(
+    account_holder = models.ForeignKey(
         "Account",
         on_delete=models.CASCADE,
         related_name="bank_accounts",
         null=True,
         blank=True,
-        verbose_name=_("Account"),
+        verbose_name=_("Account Holder"),
         help_text=_("The account (company) this bank account belongs to."),
     )
 
@@ -29,14 +29,6 @@ class BankAccount(BaseModel):
         max_length=255,
         verbose_name=_("Account Number"),
         help_text=_("Bank account number."),
-    )
-
-    account_holder = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name=_("Account Holder"),
-        help_text=_("Name of the account holder."),
     )
 
     currency = models.CharField(

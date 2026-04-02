@@ -38,14 +38,34 @@ class Order(AbstractOrderBase):
         verbose_name=_("Order Date"),
     )
 
-    account = models.ForeignKey(
+    buyer = models.ForeignKey(
         "sea_saw_crm.Account",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="orders",
-        verbose_name=_("Account"),
-        help_text=_("Customer account for this order"),
+        related_name="buyer_orders",
+        verbose_name=_("Buyer"),
+        help_text=_("Buyer account for this order"),
+    )
+
+    seller = models.ForeignKey(
+        "sea_saw_crm.Account",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="seller_orders",
+        verbose_name=_("Seller"),
+        help_text=_("Seller account for this order"),
+    )
+
+    shipper = models.ForeignKey(
+        "sea_saw_crm.Account",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="shipper_orders",
+        verbose_name=_("Shipper"),
+        help_text=_("Shipper account for this order"),
     )
 
     contact = models.ForeignKey(
@@ -90,7 +110,7 @@ class Order(AbstractOrderBase):
         indexes = [
             models.Index(fields=["order_code"]),
             models.Index(fields=["status"]),
-            models.Index(fields=["account"]),
+            models.Index(fields=["buyer"]),
         ]
 
     def __str__(self):

@@ -18,7 +18,9 @@ class OrderSerializerForDownload(BaseSerializer):
     Excludes attachments and write-only fields to keep the output clean.
     """
 
-    account = AccountMinimalSerializer(read_only=True, label=_("Company"))
+    buyer = AccountMinimalSerializer(read_only=True, label=_("Buyer"))
+    seller = AccountMinimalSerializer(read_only=True, label=_("Seller"))
+    shipper = AccountMinimalSerializer(read_only=True, label=_("Shipper"))
     contact = ContactMinimalSerializer(read_only=True, label=_("Contact"))
     bank_account = BankAccountMinimalSerializer(read_only=True, label=_("Bank Account"))
     order_items = OrderItemSerializerForAdmin(
@@ -36,7 +38,9 @@ class OrderSerializerForDownload(BaseSerializer):
             "id",
             "order_code",
             "order_date",
-            "account",
+            "buyer",
+            "seller",
+            "shipper",
             "contact",
             "bank_account",
             "etd",
@@ -49,6 +53,8 @@ class OrderSerializerForDownload(BaseSerializer):
             "deposit",
             "balance",
             "total_amount",
+            "payment_terms",
+            "additional_info",
             "comment",
             "order_items",
             "related_pipeline",

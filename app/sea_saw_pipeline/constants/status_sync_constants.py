@@ -1,13 +1,18 @@
 """
 Status Sync Constants - Configuration for Pipeline → sub-entity status synchronization
 
-Cascade rules (Pipeline → sub-entities):
-- All transitions: Sub-entities manage their own status independently (no cascade)
+Order.status cascade rules (StatusSyncService):
+  - ORDER_CONFIRMED  → order.status = 'confirmed'  (_confirm_order)
+  - CANCELLED        → order.status = 'cancelled'  (_cancel_order)
+  - DRAFT            → order.status = 'draft'       (_revert_order_to_draft)
+                       Triggered when rolling back issue_reported → draft.
 
-Order.status is managed independently:
-  - ORDER_CONFIRMED → order.status = 'confirmed'  (via StatusSyncService._confirm_order)
-  - CANCELLED       → order.status = 'cancelled'  (via StatusSyncService._cancel_order)
-  - All other Pipeline transitions leave Order.status unchanged.
+Sub-entity (production/purchase/outbound) cascade rules:
+  - issue_reported → resume state (e.g. in_production):
+      sub-entities with issue_reported status are restored to active
+      (restore_issue_entities, called from PipelineStateService.transition)
+  - issue_reported → DRAFT: sub-entities are deleted (cleanup_documents_on_rollback)
+  - All other transitions: sub-entities manage their own status independently
 """
 
 from ..models.pipeline import PipelineStatusType, ActiveEntityType

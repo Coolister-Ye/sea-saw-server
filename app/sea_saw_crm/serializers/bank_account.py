@@ -17,7 +17,6 @@ class BankAccountMinimalSerializer(BaseSerializer):
             "id",
             "bank_name",
             "account_number",
-            "account_holder",
             "currency",
             "is_primary",
         ]
@@ -28,14 +27,14 @@ class BankAccountSerializer(BaseSerializer):
     Serializer for BankAccount model.
     """
 
-    account = AccountMinimalSerializer(
+    account_holder = AccountMinimalSerializer(
         required=False,
         allow_null=True,
         read_only=True,
-        label=_("Account"),
+        label=_("Account Holder"),
     )
 
-    account_id = serializers.IntegerField(
+    account_holder_id = serializers.IntegerField(
         required=False,
         allow_null=True,
         write_only=True,
@@ -47,11 +46,10 @@ class BankAccountSerializer(BaseSerializer):
         model = BankAccount
         fields = [
             "id",
-            "account",
-            "account_id",
+            "account_holder",
+            "account_holder_id",
             "bank_name",
             "account_number",
-            "account_holder",
             "currency",
             "swift_code",
             "branch",

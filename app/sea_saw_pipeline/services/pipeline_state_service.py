@@ -302,7 +302,16 @@ class PipelineStateService:
         # Attach cleanup result for caller reference
         pipeline._cleanup_result = cleanup_result
 
-        # Sync sub-entity statuses
+        # When resuming from issue_reported to a non-rollback state,
+        # restore sub-entities that were left in issue_reported status.
+        # (For → DRAFT and → CANCELLED, cleanup/cancel handles sub-entities instead.)
+        if current_status == PipelineStatusType.ISSUE_REPORTED and target_status not in (
+            PipelineStatusType.DRAFT,
+            PipelineStatusType.CANCELLED,
+        ):
+            StatusSyncService.restore_issue_entities(pipeline, target_status, user)
+
+        # Sync order status and active_entity based on new pipeline status
         StatusSyncService.sync_pipeline_to_subentities(
             pipeline=pipeline,
             new_status=target_status,

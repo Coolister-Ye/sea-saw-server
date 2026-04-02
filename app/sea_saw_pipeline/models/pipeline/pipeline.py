@@ -224,9 +224,9 @@ class Pipeline(BaseModel):
         if not self.pipeline_code:
             self.pipeline_code = self.generate_code()
 
-        # Sync account from order if not set
-        if not self.account and self.order and self.order.account:
-            self.account = self.order.account
+        # Sync account from order buyer if not set
+        if not self.account and self.order and self.order.buyer:
+            self.account = self.order.buyer
 
         # Sync contact from order if not set
         if not self.contact and self.order and self.order.contact:

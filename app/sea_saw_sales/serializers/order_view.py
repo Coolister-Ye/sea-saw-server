@@ -29,14 +29,34 @@ class OrderSerializerForOrderView(
     - Includes full order items and attachments
     """
 
-    account = AccountMinimalSerializer(read_only=True, label=_("Company"))
-    account_id = serializers.PrimaryKeyRelatedField(
+    buyer = AccountMinimalSerializer(read_only=True, label=_("Buyer"))
+    buyer_id = serializers.PrimaryKeyRelatedField(
         queryset=Account.objects.all(),
-        source="account",
+        source="buyer",
         required=False,
         allow_null=True,
         write_only=True,
-        label=_("Company ID"),
+        label=_("Buyer ID"),
+    )
+
+    seller = AccountMinimalSerializer(read_only=True, label=_("Seller"))
+    seller_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="seller",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Seller ID"),
+    )
+
+    shipper = AccountMinimalSerializer(read_only=True, label=_("Shipper"))
+    shipper_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="shipper",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Shipper ID"),
     )
 
     contact = ContactMinimalSerializer(read_only=True, label=_("Contact"))
@@ -83,8 +103,12 @@ class OrderSerializerForOrderView(
             "id",
             "order_code",
             "order_date",
-            "account",
-            "account_id",
+            "buyer",
+            "buyer_id",
+            "seller",
+            "seller_id",
+            "shipper",
+            "shipper_id",
             "contact",
             "contact_id",
             "bank_account",
@@ -99,6 +123,8 @@ class OrderSerializerForOrderView(
             "deposit",
             "balance",
             "total_amount",
+            "payment_terms",
+            "additional_info",
             "comment",
             "order_items",
             "attachments",

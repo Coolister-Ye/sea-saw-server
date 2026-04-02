@@ -20,8 +20,10 @@ class OrderFilter(BaseFilter):
     - Text fields: comment
     """
 
-    # Exact-match filters for FK IDs sent by the frontend selector (account_id=2, contact_id=3)
-    account_id = filters.NumberFilter(field_name="account", lookup_expr="exact")
+    # Exact-match filters for FK IDs sent by the frontend selector
+    buyer_id = filters.NumberFilter(field_name="buyer", lookup_expr="exact")
+    seller_id = filters.NumberFilter(field_name="seller", lookup_expr="exact")
+    shipper_id = filters.NumberFilter(field_name="shipper", lookup_expr="exact")
     contact_id = filters.NumberFilter(field_name="contact", lookup_expr="exact")
     bank_account_id = filters.NumberFilter(field_name="bank_account", lookup_expr="exact")
 
@@ -41,7 +43,15 @@ class OrderFilter(BaseFilter):
         },
 
         # Related entities (ForeignKey)
-        "account": {
+        "buyer": {
+            "filter_type": filters.BaseInFilter,
+            "lookup_expr": ["in", "isnull"],
+        },
+        "seller": {
+            "filter_type": filters.BaseInFilter,
+            "lookup_expr": ["in", "isnull"],
+        },
+        "shipper": {
             "filter_type": filters.BaseInFilter,
             "lookup_expr": ["in", "isnull"],
         },

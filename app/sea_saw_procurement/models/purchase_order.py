@@ -49,6 +49,16 @@ class PurchaseOrder(AbstractOrderBase):
         verbose_name=_("Purchase Date"),
     )
 
+    buyer = models.ForeignKey(
+        "sea_saw_crm.Account",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="buyer_purchase_orders",
+        verbose_name=_("Buyer"),
+        help_text=_("Buyer account for this purchase order"),
+    )
+
     supplier = models.ForeignKey(
         "sea_saw_crm.Account",
         on_delete=models.SET_NULL,
@@ -57,6 +67,16 @@ class PurchaseOrder(AbstractOrderBase):
         related_name="purchase_orders",
         verbose_name=_("Supplier"),
         help_text=_("Supplier account for this purchase order"),
+    )
+
+    shipper = models.ForeignKey(
+        "sea_saw_crm.Account",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="shipper_purchase_orders",
+        verbose_name=_("Shipper"),
+        help_text=_("Shipper account for this purchase order"),
     )
 
     contact = models.ForeignKey(

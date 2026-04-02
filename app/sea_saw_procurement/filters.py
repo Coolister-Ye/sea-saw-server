@@ -20,7 +20,9 @@ class PurchaseOrderFilter(BaseFilter):
     - Text fields: comment
     """
 
+    buyer_id = filters.NumberFilter(field_name="buyer", lookup_expr="exact")
     supplier_id = filters.NumberFilter(field_name="supplier", lookup_expr="exact")
+    shipper_id = filters.NumberFilter(field_name="shipper", lookup_expr="exact")
     contact_id = filters.NumberFilter(field_name="contact", lookup_expr="exact")
     bank_account_id = filters.NumberFilter(field_name="bank_account", lookup_expr="exact")
 
@@ -37,7 +39,15 @@ class PurchaseOrderFilter(BaseFilter):
             "filter_type": filters.CharFilter,
             "lookup_expr": ["iexact", "in", "isnull"],
         },
+        "buyer": {
+            "filter_type": filters.BaseInFilter,
+            "lookup_expr": ["in", "isnull"],
+        },
         "supplier": {
+            "filter_type": filters.BaseInFilter,
+            "lookup_expr": ["in", "isnull"],
+        },
+        "shipper": {
             "filter_type": filters.BaseInFilter,
             "lookup_expr": ["in", "isnull"],
         },

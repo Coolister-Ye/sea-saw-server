@@ -5,7 +5,7 @@ from ..models import BankAccount
 
 
 class BankAccountFilter(BaseFilter):
-    account_id = filters.NumberFilter(field_name="account", lookup_expr="exact")
+    account_id = filters.NumberFilter(field_name="account_holder", lookup_expr="exact")
 
     filter_fields = {
         "bank_name": {
@@ -13,10 +13,6 @@ class BankAccountFilter(BaseFilter):
             "lookup_expr": ["__all__"],
         },
         "account_number": {
-            "filter_type": filters.CharFilter,
-            "lookup_expr": ["__all__"],
-        },
-        "account_holder": {
             "filter_type": filters.CharFilter,
             "lookup_expr": ["__all__"],
         },
@@ -28,7 +24,7 @@ class BankAccountFilter(BaseFilter):
             "filter_type": filters.BooleanFilter,
             "lookup_expr": ["exact"],
         },
-        "account": {
+        "account_holder": {
             "filter_type": filters.BaseInFilter,
             "lookup_expr": ["in"],
         },

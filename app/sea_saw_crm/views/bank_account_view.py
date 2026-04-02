@@ -18,14 +18,14 @@ class BankAccountViewSet(ModelViewSet):
     - ?is_primary=true  - Only primary bank accounts
     """
 
-    queryset = BankAccount.objects.select_related("account").all()
+    queryset = BankAccount.objects.select_related("account_holder").all()
     serializer_class = BankAccountSerializer
     permission_classes = [BankAccountPermission]
     metadata_class = BaseMetadata
 
     filter_backends = (OrderingFilter, SearchFilter, filters.DjangoFilterBackend)
     filterset_class = BankAccountFilter
-    search_fields = ["^bank_name", "^account_number", "^account_holder"]
+    search_fields = ["^bank_name", "^account_number", "^account_holder__account_name"]
 
     def get_queryset(self):
         user = self.request.user
@@ -44,4 +44,4 @@ class BankAccountViewSet(ModelViewSet):
             return qs.none()
 
         # Visibility follows the parent account's owner
-        return qs.filter(account__owner__in=get_users())
+        return qs.filter(account_holder__owner__in=get_users())

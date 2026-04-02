@@ -114,3 +114,100 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         if User.objects.exclude(pk=user.pk).filter(email=value).exists():
             raise serializers.ValidationError("This email is already in use.")
         return value
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    """Admin User Serializer - For admin user management (read/write)"""
+
+    role = RoleSerializer(read_only=True)
+    role_id = serializers.PrimaryKeyRelatedField(
+        queryset=Role.objects.all(),
+        source="role",
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
+    password = serializers.CharField(
+        write_only=True, required=False, validators=[validate_password]
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "phone",
+            "department",
+            "is_staff",
+            "is_active",
+            "date_joined",
+            "role",
+            "role_id",
+            "password",
+        ]
+        read_only_fields = ["id", "date_joined"]
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+
+class AdminUserCreateSerializer(serializers.ModelSerializer):
+    """Admin User Create Serializer - For creating users via admin"""
+
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password]
+    )
+    password_confirm = serializers.CharField(write_only=True, required=True)
+    role_id = serializers.PrimaryKeyRelatedField(
+        queryset=Role.objects.all(),
+        source="role",
+        required=False,
+        allow_null=True,
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+            "password",
+            "password_confirm",
+            "first_name",
+            "last_name",
+            "phone",
+            "department",
+            "is_staff",
+            "is_active",
+            "role_id",
+        ]
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["password_confirm"]:
+            raise serializers.ValidationError(
+                {"password_confirm": "Password fields didn't match."}
+            )
+        return attrs
+
+    def create(self, validated_data):
+        validated_data.pop("password_confirm")
+        password = validated_data.pop("password")
+        role = validated_data.pop("role", None)
+        user = User.objects.create_user(
+            username=validated_data.pop("username"),
+            email=validated_data.pop("email", ""),
+            password=password,
+            **validated_data,
+        )
+        if role is not None:
+            user.role = role
+            user.save(update_fields=["role"])
+        return user

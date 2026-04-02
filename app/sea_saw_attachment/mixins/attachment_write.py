@@ -67,17 +67,20 @@ class ReusableAttachmentWriteMixin:
 
     def _handle_attachments(self, instance, attachments):
         """
-        Process attachments list and create new attachment records.
-        Only creates attachments that have a binary file object.
+        Process attachments list: delete removed attachments and create new ones.
 
         Handles three scenarios:
-        1. Existing attachment (has id, file is string/URL) - skip (keep unchanged)
+        1. Existing attachment (has id, no new file) - keep unchanged
         2. New attachment (no id, has binary file) - create new
         3. Update attachment (has id, has binary file) - create new (replaces old)
 
+        Any existing attachment whose id is NOT in the submitted list is deleted.
+        If attachments is None (not provided in partial update), nothing is done.
+
         Automatically handles GenericForeignKey by setting content_type and object_id.
         """
-        if not attachments:
+        # None means the field was not included in the request (partial update) - skip
+        if attachments is None:
             return
 
         if not self.attachment_model:
@@ -86,33 +89,36 @@ class ReusableAttachmentWriteMixin:
         # Import here to avoid circular imports
         from django.contrib.contenttypes.models import ContentType
 
+        content_type = ContentType.objects.get_for_model(instance)
+
+        # Delete attachments that are no longer in the submitted list
+        keep_ids = {att.get("id") for att in attachments if att.get("id")}
+        self.attachment_model.objects.filter(
+            content_type=content_type,
+            object_id=instance.pk,
+        ).exclude(id__in=keep_ids).delete()
+
+        # Create new attachments
         for att in attachments:
             file_obj = att.get(self.attachment_file_field)
             att_id = att.get("id")
 
-            # Case 1: Existing attachment without new file - skip (keep unchanged)
+            # Case 1: Existing attachment without new file - keep unchanged
             if att_id and not file_obj:
                 continue
 
             # Case 1b: Existing attachment with URL string in file field - skip
-            # This happens when frontend sends back serialized data during update
             if att_id and isinstance(file_obj, str):
                 continue
 
             # Case 2 & 3: New binary file present - create new attachment
-            # Only process if file_obj is an actual file upload (has read method)
             if file_obj and hasattr(file_obj, "read"):
-                # Prepare data for creation
                 create_data = {
                     self.attachment_file_field: file_obj,
+                    "content_type": content_type,
+                    "object_id": instance.pk,
                 }
 
-                # Set GenericForeignKey fields (content_type and object_id)
-                content_type = ContentType.objects.get_for_model(instance)
-                create_data["content_type"] = content_type
-                create_data["object_id"] = instance.pk
-
-                # Include optional fields if present
                 if att.get("description"):
                     create_data["description"] = att["description"]
 

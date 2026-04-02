@@ -90,6 +90,20 @@ class AbstractOrderBase(BaseModel):
         verbose_name=_("Total Amount"),
     )
 
+    payment_terms = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Term/Method of Payment"),
+        help_text=_("Free-text payment terms."),
+    )
+
+    additional_info = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Additional Info"),
+        help_text=_("Additional information for document templates."),
+    )
+
     comment = models.TextField(
         null=True,
         blank=True,

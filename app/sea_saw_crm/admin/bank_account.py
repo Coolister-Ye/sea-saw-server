@@ -9,16 +9,15 @@ class BankAccountAdmin(SafeDeleteAdmin):
     list_display = (
         highlight_deleted,
         "id",
-        "account",
+        "account_holder",
         "bank_name",
         "account_number",
-        "account_holder",
         "currency",
         "is_primary",
         "created_at",
     ) + SafeDeleteAdmin.list_display
 
-    search_fields = ("bank_name", "account_number", "account_holder", "account__account_name")
+    search_fields = ("bank_name", "account_number", "account_holder__account_name")
 
     list_filter = ("currency", "is_primary", "created_at", "deleted")
 

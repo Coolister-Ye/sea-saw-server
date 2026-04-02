@@ -46,7 +46,9 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
     list_display = [
         "purchase_code",
         "related_order",
+        "buyer",
         "supplier",
+        "shipper",
         "contact",
         "status",
         "purchase_date",
@@ -65,7 +67,9 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
                 "fields": (
                     "purchase_code",
                     "related_order",
+                    "buyer",
                     "supplier",
+                    "shipper",
                     "contact",
                     "status",
                     "purchase_date",
@@ -99,6 +103,8 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
             _("Additional Information"),
             {
                 "fields": (
+                    "payment_terms",
+                    "additional_info",
                     "comment",
                     "created_by",
                     "updated_by",

@@ -22,8 +22,12 @@ BASE_FIELDS = [
     "id",
     "purchase_code",
     "purchase_date",
+    "buyer",
+    "buyer_id",
     "supplier",
     "supplier_id",
+    "shipper",
+    "shipper_id",
     "contact",
     "contact_id",
     "bank_account",
@@ -38,6 +42,8 @@ BASE_FIELDS = [
     "deposit",
     "balance",
     "total_amount",
+    "payment_terms",
+    "additional_info",
     "comment",
     "owner",
     "created_at",
@@ -52,6 +58,16 @@ class PurchaseOrderSerializer(
     Purchase Order serializer with nested items and attachments.
     """
 
+    buyer = AccountMinimalSerializer(read_only=True, label=_("Buyer"))
+    buyer_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="buyer",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Buyer ID"),
+    )
+
     supplier = AccountMinimalSerializer(read_only=True, label=_("Supplier"))
     supplier_id = serializers.PrimaryKeyRelatedField(
         queryset=Account.objects.all(),
@@ -60,6 +76,16 @@ class PurchaseOrderSerializer(
         allow_null=True,
         write_only=True,
         label=_("Supplier ID"),
+    )
+
+    shipper = AccountMinimalSerializer(read_only=True, label=_("Shipper"))
+    shipper_id = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        source="shipper",
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Shipper ID"),
     )
 
     contact = ContactMinimalSerializer(read_only=True, label=_("Contact"))
@@ -104,8 +130,12 @@ NON_FINANCIAL_FIELDS = [
     "id",
     "purchase_code",
     "purchase_date",
+    "buyer",
+    "buyer_id",
     "supplier",
     "supplier_id",
+    "shipper",
+    "shipper_id",
     "contact",
     "contact_id",
     "status",
@@ -114,6 +144,7 @@ NON_FINANCIAL_FIELDS = [
     "destination_port",
     "shipment_term",
     "inco_terms",
+    "additional_info",
     "comment",
     "purchase_items",
     "attachments",

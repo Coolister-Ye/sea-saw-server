@@ -2,11 +2,14 @@
 Status Sync Service - Pipeline → sub-entity status synchronization
 
 Cascade rules (explicit, user-triggered only):
-- ORDER_CONFIRMED: Confirm the sales order
-- CANCELLED: Cancel the sales order only (sub-entities are unaffected)
-- DRAFT: Revert the sales order from confirmed → draft (e.g. issue_reported → draft)
-- All other Pipeline transitions leave sub-entity statuses unchanged
+- ORDER_CONFIRMED : Confirm the sales order (draft → confirmed)
+- CANCELLED       : Cancel the sales order only (sub-entities unaffected)
+- DRAFT           : Revert the sales order back to draft (confirmed → draft)
+                    Triggered on rollback from issue_reported → draft
+- ISSUE_REPORTED resume (→ in_production / in_outbound / etc.):
+                    Restore sub-entities from issue_reported → active
 
+All other Pipeline transitions leave sub-entity statuses unchanged.
 Sub-entities manage their own status independently. Pipeline transitions are
 validated against sub-entity completion state before being allowed.
 """
@@ -105,8 +108,8 @@ class StatusSyncService:
         """
         Revert the order back to draft when pipeline returns to DRAFT.
 
-        Only transitions confirmed → draft. Idempotent: cancelled/draft orders
-        are left untouched.
+        Reverts any non-terminal order status (confirmed) back to draft.
+        Idempotent: already-draft or cancelled orders are left untouched.
 
         Args:
             pipeline: Pipeline instance
@@ -115,7 +118,8 @@ class StatusSyncService:
         if not pipeline.order:
             return
         order = pipeline.order
-        if order.status != "confirmed":
+        # Skip if already draft or in a terminal state (cancelled)
+        if order.status in ("draft", "cancelled"):
             return
         order.status = "draft"
         order.updated_at = timezone.now()
@@ -198,39 +202,31 @@ class StatusSyncService:
         pass
 
     @classmethod
-    @transaction.atomic
-    def resolve_issue(cls, pipeline, resume_status, user=None):
+    def restore_issue_entities(cls, pipeline, resume_status, user=None):
         """
-        Resolve issue and resume pipeline workflow.
+        Restore sub-entities from issue_reported → active when pipeline resumes
+        from issue_reported to a non-rollback status.
 
-        1. Restore issue_reported sub-entities to 'active' status
-        2. Transition pipeline back to the resume status
+        Called by PipelineStateService.transition when:
+            current_status == ISSUE_REPORTED and target is not DRAFT/CANCELLED.
 
-        Order.status is NOT touched during issue resolution.
+        Only restores sub-entities whose type matches the resume stage's active
+        entity (e.g. in_production → restores production orders only).
+        Order.status is NOT touched here — it is managed by _revert_order_to_draft
+        (for → DRAFT) or left unchanged (for forward resume).
 
         Args:
-            pipeline: Pipeline with issue_reported status
-            resume_status: Status to transition back to
-            user: User resolving the issue
-
-        Returns:
-            Pipeline instance
-
-        Raises:
-            ValueError: If pipeline is not in issue_reported status
+            pipeline: Pipeline instance (already at new status in memory)
+            resume_status: The target status being resumed to
+            user: User performing the action
         """
-        from .pipeline_state_service import PipelineStateService
+        active_entity_value = PIPELINE_TO_ACTIVE_ENTITY.get(resume_status)
+        if active_entity_value is None:
+            return
 
-        if pipeline.status != PipelineStatusType.ISSUE_REPORTED:
-            raise ValueError("Pipeline is not in issue_reported status")
-
-        active_entity = pipeline.active_entity
-        entity_types = ACTIVE_ENTITY_TO_ENTITY_TYPES.get(active_entity, [])
-
-        # Restore issue_reported sub-entities to active status
+        entity_types = ACTIVE_ENTITY_TO_ENTITY_TYPES.get(active_entity_value, [])
         for entity_type in entity_types:
             if entity_type == "order":
-                # Order.status is independent — skip
                 continue
             cls._bulk_update_subentities(
                 pipeline,
@@ -238,12 +234,3 @@ class StatusSyncService:
                 SubEntityStatus.ACTIVE,
                 status_filter=SubEntityStatus.ISSUE_REPORTED,
             )
-
-        # Transition pipeline back to resume status
-        PipelineStateService.transition(
-            pipeline=pipeline,
-            target_status=resume_status,
-            user=user,
-        )
-
-        return pipeline

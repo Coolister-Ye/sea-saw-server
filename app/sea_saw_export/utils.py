@@ -19,16 +19,21 @@ def format_bank_details(bank_account, fallback_setting: str = "") -> str:
         return getattr(settings, fallback_setting, "") if fallback_setting else ""
 
     parts = []
-    if bank_account.account_holder:
-        parts.append(f"Account Holder: {bank_account.account_holder}")
+    account_name = (
+        getattr(bank_account.account_holder, "account_name", None)
+        if bank_account.account_holder
+        else None
+    )
+    if account_name:
+        parts.append(f"Beneficiary: {account_name}")
     if bank_account.bank_name:
         parts.append(f"Bank Name: {bank_account.bank_name}")
+    if bank_account.bank_address:
+        parts.append(f"Bank Address: {bank_account.bank_address}")
     if bank_account.account_number:
         parts.append(f"Account No: {bank_account.account_number}")
     if bank_account.swift_code:
         parts.append(f"SWIFT/BIC: {bank_account.swift_code}")
     if bank_account.branch:
         parts.append(f"Branch: {bank_account.branch}")
-    if bank_account.bank_address:
-        parts.append(f"Bank Address: {bank_account.bank_address}")
     return " | ".join(parts)
