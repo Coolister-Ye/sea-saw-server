@@ -124,7 +124,7 @@ class ETDCalendarView(APIView):
                 etd__month=month,
                 status__in=ACTIVE_STATUSES,
             )
-            .select_related("account", "pipeline")
+            .select_related("buyer", "pipeline")
             .prefetch_related("pipeline__outbound_orders")
             .order_by("etd", "order_code")
         )
@@ -173,7 +173,7 @@ class ETDCalendarView(APIView):
                 status__in=ACTIVE_STATUSES,
             )
             .exclude(pipeline__status__in=SAFE_PIPELINE_STATUSES)
-            .select_related("account", "pipeline")
+            .select_related("buyer", "pipeline")
             .prefetch_related("pipeline__outbound_orders")
             .order_by("etd")
         )
@@ -212,7 +212,7 @@ class ETDCalendarView(APIView):
                 pipeline__order__in=base_qs,
             )
             .exclude(status__in=["cancelled"])
-            .select_related("pipeline__order__account", "pipeline")
+            .select_related("pipeline__order__buyer", "pipeline")
             .order_by("eta")
         )
 
@@ -242,7 +242,7 @@ class ETDCalendarView(APIView):
                 pipeline__order__in=base_qs,
             )
             .exclude(status__in=["completed", "cancelled"])
-            .select_related("pipeline__order__account", "pipeline")
+            .select_related("pipeline__order__buyer", "pipeline")
             .order_by("eta")
         )
 
