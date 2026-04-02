@@ -136,7 +136,7 @@ class OrderViewSet(ExportViewSetMixin, ModelViewSet):
         # Create pipeline for this order
         Pipeline.objects.create(
             order=order,
-            account=order.account,
+            account=order.buyer,
             contact=order.contact,
             order_date=order.order_date,
             pipeline_type=pipeline_type,

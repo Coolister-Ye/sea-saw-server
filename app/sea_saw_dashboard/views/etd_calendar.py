@@ -149,7 +149,7 @@ class ETDCalendarView(APIView):
             entry = {
                 "order_id": order.id,
                 "order_code": order.order_code,
-                "account_name": order.account.account_name if order.account else "",
+                "account_name": order.buyer.account_name if order.buyer else "",
                 "etd": str(order.etd),
                 "eta": self._get_order_eta(order),
                 "order_status": order.status,
@@ -197,7 +197,7 @@ class ETDCalendarView(APIView):
             warning_list.append({
                 "order_id": order.id,
                 "order_code": order.order_code,
-                "account_name": order.account.account_name if order.account else "",
+                "account_name": order.buyer.account_name if order.buyer else "",
                 "etd": str(order.etd),
                 "pipeline_id": pipeline_id,
                 "pipeline_status": pipeline_status,
@@ -223,7 +223,7 @@ class ETDCalendarView(APIView):
             entry = {
                 "order_id": order.id,
                 "order_code": order.order_code,
-                "account_name": order.account.account_name if order.account else "",
+                "account_name": order.buyer.account_name if order.buyer else "",
                 "etd": str(order.etd),
                 "eta": str(ob.eta),
                 "outbound_code": ob.outbound_code,
@@ -252,7 +252,7 @@ class ETDCalendarView(APIView):
             eta_warning_list.append({
                 "order_id": order.id,
                 "order_code": order.order_code,
-                "account_name": order.account.account_name if order.account else "",
+                "account_name": order.buyer.account_name if order.buyer else "",
                 "etd": str(order.etd),
                 "eta": str(ob.eta),
                 "outbound_code": ob.outbound_code,
