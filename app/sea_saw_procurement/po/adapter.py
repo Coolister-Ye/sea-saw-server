@@ -12,30 +12,45 @@ def purchase_order_to_po_data(purchase_order) -> tuple:
     - Buyer = our company (settings)
     - Seller = supplier
     """
+    buyer = purchase_order.buyer
+    buyer_name = (buyer.account_name if buyer else None) or getattr(
+        settings, "PI_SELLER_NAME", ""
+    )
+    buyer_address = (buyer.address if buyer else None) or getattr(
+        settings, "PI_SELLER_ADDRESS", ""
+    )
+
     supplier = purchase_order.supplier
     seller_name = supplier.account_name if supplier else ""
     seller_address = (supplier.address or "") if supplier else ""
 
+    shipper = purchase_order.shipper
+    shipper_name = (shipper.account_name if shipper else None) or seller_name
+    shipper_address = (shipper.address if shipper else None) or seller_address
+
     currency = purchase_order.currency or "USD"
+    payment_terms = purchase_order.payment_terms or format_payment_terms(
+        currency, purchase_order.deposit, purchase_order.balance
+    )
 
     header = {
-        "Invoice No": f"PO-{purchase_order.purchase_code}",
+        "Invoice No": f"{purchase_order.purchase_code}",
         "Issue Date": purchase_order.purchase_date,
-        "Buyer Name": getattr(settings, "PI_SELLER_NAME", ""),
-        "Buyer Address": getattr(settings, "PI_SELLER_ADDRESS", ""),
+        "Buyer Name": buyer_name,
+        "Buyer Address": buyer_address,
         "Seller Name": seller_name,
         "Seller Address": seller_address,
-        "Shipper Name": seller_name,
-        "Shipper Address": seller_address,
+        "Shipper Name": shipper_name,
+        "Shipper Address": shipper_address,
         "Port of Loading": purchase_order.loading_port or "",
         "Port of Destination": purchase_order.destination_port or "",
         "Date of Loading": str(purchase_order.etd) if purchase_order.etd else "",
-        "Shipment Type": purchase_order.shipment_term or "",
+        "Shipment Type": (purchase_order.shipment_term or "").upper(),
         "Incoterms": purchase_order.inco_terms or "",
         "Currency": currency,
-        "Payment Terms": format_payment_terms(currency, purchase_order.deposit, purchase_order.balance),
+        "Payment Terms": payment_terms,
         "Bank Details": format_bank_details(purchase_order.bank_account),
-        "Additional Info": purchase_order.comment or "",
+        "Additional Info": purchase_order.additional_info or "",
     }
 
     products = [

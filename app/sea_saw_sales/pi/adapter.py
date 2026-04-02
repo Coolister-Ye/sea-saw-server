@@ -12,30 +12,51 @@ def order_to_pi_data(order) -> tuple:
         header: dict matching PI template header fields
         products: list of dicts, one per order item
     """
-    account = order.account
-    buyer_name = account.account_name if account else ""
-    buyer_address = (account.address or "") if account else ""
+    buyer = order.buyer
+    buyer_name = buyer.account_name if buyer else ""
+    buyer_address = (buyer.address or "") if buyer else ""
+
+    seller = order.seller
+    seller_name = (seller.account_name if seller else None) or getattr(
+        settings, "PI_SELLER_NAME", ""
+    )
+    seller_address = (seller.address if seller else None) or getattr(
+        settings, "PI_SELLER_ADDRESS", ""
+    )
+
+    shipper = order.shipper
+    shipper_name = (shipper.account_name if shipper else None) or getattr(
+        settings, "PI_SHIPPER_NAME", ""
+    )
+    shipper_address = (shipper.address if shipper else None) or getattr(
+        settings, "PI_SHIPPER_ADDRESS", ""
+    )
 
     currency = order.currency or "USD"
+    payment_terms = order.payment_terms or format_payment_terms(
+        currency, order.deposit, order.balance
+    )
 
     header = {
-        "Invoice No": f"PI-{order.order_code}",
+        "Invoice No": f"{order.order_code}",
         "Issue Date": order.order_date,
         "Buyer Name": buyer_name,
         "Buyer Address": buyer_address,
-        "Seller Name": getattr(settings, "PI_SELLER_NAME", ""),
-        "Seller Address": getattr(settings, "PI_SELLER_ADDRESS", ""),
-        "Shipper Name": getattr(settings, "PI_SHIPPER_NAME", ""),
-        "Shipper Address": getattr(settings, "PI_SHIPPER_ADDRESS", ""),
+        "Seller Name": seller_name,
+        "Seller Address": seller_address,
+        "Shipper Name": shipper_name,
+        "Shipper Address": shipper_address,
         "Port of Loading": order.loading_port or "",
         "Port of Destination": order.destination_port or "",
         "Date of Loading": str(order.etd) if order.etd else "",
-        "Shipment Type": order.shipment_term or "",
+        "Shipment Type": (order.shipment_term or "").upper(),
         "Incoterms": order.inco_terms or "",
         "Currency": currency,
-        "Payment Terms": format_payment_terms(currency, order.deposit, order.balance),
-        "Bank Details": format_bank_details(order.bank_account, fallback_setting="PI_BANK_DETAILS"),
-        "Additional Info": order.comment or "",
+        "Payment Terms": payment_terms,
+        "Bank Details": format_bank_details(
+            order.bank_account, fallback_setting="PI_BANK_DETAILS"
+        ),
+        "Additional Info": order.additional_info or "",
     }
 
     products = [
