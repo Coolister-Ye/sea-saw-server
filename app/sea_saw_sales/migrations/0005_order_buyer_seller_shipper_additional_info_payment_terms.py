@@ -10,6 +10,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Remove the old index on 'account' before renaming the field
+        migrations.RemoveIndex(
+            model_name="order",
+            name="sea_saw_sal_account_77370b_idx",
+        ),
         # Rename account -> buyer
         migrations.RenameField(
             model_name="order",
@@ -79,5 +84,10 @@ class Migration(migrations.Migration):
                 null=True,
                 verbose_name="Term/Method of Payment",
             ),
+        ),
+        # Re-add the index on the renamed field 'buyer'
+        migrations.AddIndex(
+            model_name="order",
+            index=models.Index(fields=["buyer"], name="sea_saw_sal_buyer_idx"),
         ),
     ]
