@@ -1,4 +1,4 @@
 from .overview import OverviewStatsView
-from .etd_calendar import ETDCalendarView
+from .shipping_calendar import ShippingCalendarView
 
-__all__ = ["OverviewStatsView", "ETDCalendarView"]
+__all__ = ["OverviewStatsView", "ShippingCalendarView"]
