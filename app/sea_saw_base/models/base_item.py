@@ -65,7 +65,7 @@ class AbstarctItemBase(BaseModel):
     )
 
     glazing = models.DecimalField(
-        max_digits=5,
+        max_digits=6,
         decimal_places=5,
         null=True,
         blank=True,
