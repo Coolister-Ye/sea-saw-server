@@ -5,6 +5,40 @@ from decimal import Decimal
 from django.db import migrations, models
 
 
+def rename_index_forward(apps, schema_editor):
+    if schema_editor.connection.vendor != "postgresql":
+        return
+    schema_editor.execute("""
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1 FROM pg_indexes
+                WHERE indexname = 'sea_saw_sal_buyer_idx'
+            ) THEN
+                ALTER INDEX "sea_saw_sal_buyer_idx"
+                    RENAME TO "sea_saw_sal_buyer_i_653395_idx";
+            END IF;
+        END$$;
+    """)
+
+
+def rename_index_backward(apps, schema_editor):
+    if schema_editor.connection.vendor != "postgresql":
+        return
+    schema_editor.execute("""
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1 FROM pg_indexes
+                WHERE indexname = 'sea_saw_sal_buyer_i_653395_idx'
+            ) THEN
+                ALTER INDEX "sea_saw_sal_buyer_i_653395_idx"
+                    RENAME TO "sea_saw_sal_buyer_idx";
+            END IF;
+        END$$;
+    """)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,32 +49,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql="""
-                DO $$
-                BEGIN
-                    IF EXISTS (
-                        SELECT 1 FROM pg_indexes
-                        WHERE indexname = 'sea_saw_sal_buyer_idx'
-                    ) THEN
-                        ALTER INDEX "sea_saw_sal_buyer_idx"
-                            RENAME TO "sea_saw_sal_buyer_i_653395_idx";
-                    END IF;
-                END$$;
-            """,
-            reverse_sql="""
-                DO $$
-                BEGIN
-                    IF EXISTS (
-                        SELECT 1 FROM pg_indexes
-                        WHERE indexname = 'sea_saw_sal_buyer_i_653395_idx'
-                    ) THEN
-                        ALTER INDEX "sea_saw_sal_buyer_i_653395_idx"
-                            RENAME TO "sea_saw_sal_buyer_idx";
-                    END IF;
-                END$$;
-            """,
-        ),
+        migrations.RunPython(rename_index_forward, rename_index_backward),
         migrations.AlterField(
             model_name="order",
             name="additional_info",
