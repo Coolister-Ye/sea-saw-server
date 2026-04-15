@@ -51,7 +51,7 @@ class OutboundOrderViewSet(ModelViewSet):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return super().get_queryset().filter(deleted__isnull=True)
+        return super().get_queryset().filter(deleted__isnull=True).select_related("pipeline")
 
 
 class NestedOutboundOrderViewSet(ReturnRelatedMixin, ModelViewSet):

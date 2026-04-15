@@ -11,13 +11,24 @@ class BankAccountMinimalSerializer(BaseSerializer):
     Minimal BankAccount serializer for nested display in Account.
     """
 
+    account_holder = AccountMinimalSerializer(
+        required=False,
+        allow_null=True,
+        read_only=True,
+        label=_("Account Holder"),
+    )
+
     class Meta(BaseSerializer.Meta):
         model = BankAccount
         fields = [
             "id",
+            "account_holder",
             "bank_name",
             "account_number",
             "currency",
+            "swift_code",
+            "branch",
+            "bank_address",
             "is_primary",
         ]
 

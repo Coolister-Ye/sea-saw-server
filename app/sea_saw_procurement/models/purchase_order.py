@@ -38,6 +38,8 @@ class PurchaseOrder(AbstractOrderBase):
     pipeline = models.ForeignKey(
         "sea_saw_pipeline.Pipeline",  # String reference to avoid circular import
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="purchase_orders",
         verbose_name=_("Pipeline"),
         help_text=_("The business process pipeline this purchase order belongs to."),

@@ -37,6 +37,8 @@ class OutboundOrder(BaseModel):
     pipeline = models.ForeignKey(
         "sea_saw_pipeline.Pipeline",
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="outbound_orders",
         verbose_name=_("Pipeline"),
         help_text=_("The business process pipeline this outbound order belongs to."),

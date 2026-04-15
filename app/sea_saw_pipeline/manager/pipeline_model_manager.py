@@ -417,6 +417,10 @@ class PipelineModelManager(BaseModelManager):
 
         order = pipeline.order
 
+        # If this will be the only purchase order under the pipeline, reuse order_code
+        existing_count = pipeline.purchase_orders.filter(deleted__isnull=True).count()
+        use_order_code = existing_count == 0
+
         # Create PurchaseOrder
         purchase = PurchaseOrder.objects.create_with_user(
             user=user,
@@ -425,6 +429,7 @@ class PipelineModelManager(BaseModelManager):
             supplier=supplier,
             contact=contact,
             purchase_date=purchase_date or timezone.now().date(),
+            **({"purchase_code": order.order_code} if use_order_code else {}),
             # Copy logistics info from order
             etd=order.etd,
             loading_port=order.loading_port,

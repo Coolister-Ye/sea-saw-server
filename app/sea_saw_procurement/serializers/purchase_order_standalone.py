@@ -14,6 +14,7 @@ from sea_saw_crm.models import Account, Contact, BankAccount
 from sea_saw_attachment.models import Attachment
 from sea_saw_sales.serializers.pipeline_minimal import PipelineMinimalSerializer
 from sea_saw_sales.models import Order
+from sea_saw_pipeline.models import Pipeline
 
 from .purchase_item import PurchaseItemSerializerForAdmin
 from ..models import PurchaseOrder
@@ -99,6 +100,14 @@ class PurchaseOrderSerializerForStandalone(
         read_only=True,
         label=_("Related Pipeline"),
     )
+    related_pipeline_id = serializers.PrimaryKeyRelatedField(
+        source="pipeline",
+        queryset=Pipeline.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Related Pipeline ID"),
+    )
 
     related_order = RelatedOrderMinimalSerializer(
         read_only=True,
@@ -156,6 +165,7 @@ class PurchaseOrderSerializerForStandalone(
             "related_order",
             "related_order_id",
             "related_pipeline",
+            "related_pipeline_id",
             "purchase_items",
             "attachments",
             "owner",
@@ -164,4 +174,33 @@ class PurchaseOrderSerializerForStandalone(
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["total_amount", "purchase_code"]
+
+    def validate(self, data):
+        pipeline = data.get("pipeline")
+        related_order = data.get("related_order")
+
+        # Auto-fill related_order when only pipeline is set
+        if "pipeline" in data and pipeline is not None and "related_order" not in data:
+            data["related_order"] = pipeline.order
+
+        # Auto-fill pipeline when only related_order is set
+        if "related_order" in data and related_order is not None and "pipeline" not in data:
+            try:
+                data["pipeline"] = related_order.pipeline
+            except Exception:
+                pass  # Order has no pipeline yet — leave pipeline unchanged
+
+        # Cross-validate when both are explicitly present
+        final_pipeline = data.get("pipeline")
+        final_order = data.get("related_order")
+        if final_pipeline is not None and final_order is not None:
+            if final_pipeline.order_id != final_order.id:
+                raise serializers.ValidationError(
+                    {
+                        "related_order_id": _(
+                            "The selected order does not match the pipeline's associated order."
+                        )
+                    }
+                )
+
+        return super().validate(data)

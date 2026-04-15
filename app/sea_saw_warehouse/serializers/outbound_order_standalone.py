@@ -11,7 +11,7 @@ from sea_saw_base.serializers import BaseSerializer
 from sea_saw_attachment.serializers import AttachmentSerializer
 from .outbound_item import OutboundItemSerializer
 from sea_saw_warehouse.models import OutboundOrder
-from sea_saw_sales.models import Order
+from sea_saw_pipeline.models.pipeline import Pipeline
 
 from django.utils.translation import gettext_lazy as _
 from drf_writable_nested.mixins import UniqueFieldsMixin
@@ -19,12 +19,29 @@ from drf_writable_nested.mixins import UniqueFieldsMixin
 
 class PipelineNestedSerializer(BaseSerializer):
     """
-    Simplified Pipeline (Order) serializer for nested display in OutboundOrder.
+    Simplified Pipeline serializer for nested display in OutboundOrder.
     """
 
     class Meta(BaseSerializer.Meta):
-        model = Order
-        fields = ["id", "order_code", "order_date", "status", "etd"]
+        model = Pipeline
+        fields = [
+            "id",
+            "pipeline_code",
+            "pipeline_type",
+            "status",
+            "active_entity",
+            "confirmed_at",
+            "in_purchase_at",
+            "purchase_completed_at",
+            "in_production_at",
+            "production_completed_at",
+            "in_purchase_and_production_at",
+            "purchase_and_production_completed_at",
+            "in_outbound_at",
+            "outbound_completed_at",
+            "completed_at",
+            "cancelled_at",
+        ]
 
 
 class OutboundOrderSerializerForOutboundView(UniqueFieldsMixin, BaseSerializer):
@@ -44,46 +61,20 @@ class OutboundOrderSerializerForOutboundView(UniqueFieldsMixin, BaseSerializer):
     )
 
     related_pipeline = PipelineNestedSerializer(
-        source='pipeline',  # Map to the actual ForeignKey field
+        source="pipeline",  # Map to the actual ForeignKey field
         required=False,
         allow_null=True,
         read_only=True,
         label=_("Related Pipeline (Order)"),
     )
-
-    order_outbound_amount = serializers.SerializerMethodField(
-        label=_("Order Outbound Amount"),
+    related_pipeline_id = serializers.PrimaryKeyRelatedField(
+        source="pipeline",
+        queryset=Pipeline.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True,
+        label=_("Related Pipeline ID"),
     )
-    purchase_outbound_amount = serializers.SerializerMethodField(
-        label=_("Purchase Outbound Amount"),
-    )
-
-    def get_order_outbound_amount(self, obj):
-        """订单出库金额：order_item.unit_price × outbound_gross_weight 的合计"""
-        total = Decimal("0")
-        for item in obj.outbound_items.all():
-            if item.outbound_gross_weight is None:
-                continue
-            order_item = item.order_item
-            if order_item is None or order_item.unit_price is None:
-                continue
-            total += order_item.unit_price * item.outbound_gross_weight
-        return total
-
-    def get_purchase_outbound_amount(self, obj):
-        """采购出库金额：purchase_item.unit_price × outbound_gross_weight 的合计"""
-        total = Decimal("0")
-        for item in obj.outbound_items.all():
-            if item.outbound_gross_weight is None:
-                continue
-            order_item = item.order_item
-            if order_item is None:
-                continue
-            purchase_item = order_item.purchase_items.first()
-            if purchase_item is None or purchase_item.unit_price is None:
-                continue
-            total += purchase_item.unit_price * item.outbound_gross_weight
-        return total
 
     class Meta(BaseSerializer.Meta):
         model = OutboundOrder
@@ -99,11 +90,10 @@ class OutboundOrderSerializerForOutboundView(UniqueFieldsMixin, BaseSerializer):
             "logistics_provider",
             "loader",
             "remark",
-            "order_outbound_amount",
-            "purchase_outbound_amount",
             "outbound_items",
             "attachments",
             "related_pipeline",
+            "related_pipeline_id",
             "owner",
             "created_at",
             "updated_at",
