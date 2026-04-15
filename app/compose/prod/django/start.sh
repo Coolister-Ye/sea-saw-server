@@ -5,6 +5,5 @@ set -o pipefail
 set -o nounset
 
 python manage.py migrate
-python manage.py reset_sequences
 python manage.py collectstatic --noinput
 gunicorn sea_saw_server.wsgi:application --bind 0.0.0.0:8000
