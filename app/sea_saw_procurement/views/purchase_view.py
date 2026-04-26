@@ -56,25 +56,25 @@ class PurchaseOrderViewSet(ExportViewSetMixin, ModelViewSet):
     def get_queryset(self):
         return super().get_queryset().filter(deleted__isnull=True)
 
-    @action(detail=True, methods=["get"], url_path="export-po")
-    def export_po(self, request, pk=None):
-        """Generate and download a Purchase Order XLSX for this purchase order."""
-        from sea_saw_procurement.po import generate_po_xlsx
+    @action(detail=True, methods=["get"], url_path="export-purchase-contract")
+    def export_purchase_contract(self, request, pk=None):
+        """Generate and download a Purchase Contract XLSX for this purchase order."""
+        from sea_saw_procurement.pc import generate_pc_xlsx
 
-        return self._export_single(generate_po_xlsx, lambda po: f"PO-{po.purchase_code}.xlsx")
+        return self._export_single(generate_pc_xlsx, lambda po: f"PC-{po.purchase_code}.xlsx")
 
-    @action(detail=False, methods=["post"], url_path="export-po-bulk")
-    def export_po_bulk(self, request):
+    @action(detail=False, methods=["post"], url_path="export-purchase-contract-bulk")
+    def export_purchase_contract_bulk(self, request):
         """Generate a single XLSX with one sheet per purchase order for the given IDs."""
-        from sea_saw_procurement.po import generate_po_bulk_xlsx
+        from sea_saw_procurement.pc import generate_pc_bulk_xlsx
 
         def get_filename(qs):
             codes = "-".join(str(po.purchase_code) for po in qs[:3])
             if qs.count() > 3:
                 codes += f"-and-{qs.count() - 3}-more"
-            return f"PO-{codes}.xlsx"
+            return f"PC-{codes}.xlsx"
 
-        return self._export_bulk(generate_po_bulk_xlsx, get_filename, request.data.get("ids", []))
+        return self._export_bulk(generate_pc_bulk_xlsx, get_filename, request.data.get("ids", []))
 
 
 class NestedPurchaseOrderViewSet(ReturnRelatedMixin, ModelViewSet):

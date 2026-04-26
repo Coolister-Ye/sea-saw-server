@@ -1,15 +1,15 @@
-"""Map an Order model instance to the PI generator's data format."""
+"""Map an Order model instance to the Sales Contract generator's data format."""
 
 from django.conf import settings
 from sea_saw_export.utils import format_payment_terms, format_bank_details
 
 
-def order_to_pi_data(order) -> tuple:
+def order_to_sc_data(order) -> tuple:
     """
-    Map an Order instance to (header dict, products list) for the PI generator.
+    Map an Order instance to (header dict, products list) for the SC generator.
 
     Returns:
-        header: dict matching PI template header fields
+        header: dict matching SC template header fields
         products: list of dicts, one per order item
     """
     buyer = order.buyer
@@ -18,18 +18,18 @@ def order_to_pi_data(order) -> tuple:
 
     seller = order.seller
     seller_name = (seller.account_name if seller else None) or getattr(
-        settings, "PI_SELLER_NAME", ""
+        settings, "SC_SELLER_NAME", ""
     )
     seller_address = (seller.address if seller else None) or getattr(
-        settings, "PI_SELLER_ADDRESS", ""
+        settings, "SC_SELLER_ADDRESS", ""
     )
 
     shipper = order.shipper
     shipper_name = (shipper.account_name if shipper else None) or getattr(
-        settings, "PI_SHIPPER_NAME", ""
+        settings, "SC_SHIPPER_NAME", ""
     )
     shipper_address = (shipper.address if shipper else None) or getattr(
-        settings, "PI_SHIPPER_ADDRESS", ""
+        settings, "SC_SHIPPER_ADDRESS", ""
     )
 
     currency = order.currency or "USD"
@@ -54,7 +54,7 @@ def order_to_pi_data(order) -> tuple:
         "Currency": currency,
         "Payment Terms": payment_terms,
         "Bank Details": format_bank_details(
-            order.bank_account, fallback_setting="PI_BANK_DETAILS"
+            order.bank_account, fallback_setting="SC_BANK_DETAILS"
         ),
         "Additional Info": order.additional_info or "",
     }

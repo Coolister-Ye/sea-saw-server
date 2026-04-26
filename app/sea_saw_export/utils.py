@@ -36,4 +36,6 @@ def format_bank_details(bank_account, fallback_setting: str = "") -> str:
         parts.append(f"SWIFT/BIC: {bank_account.swift_code}")
     if bank_account.branch:
         parts.append(f"Branch: {bank_account.branch}")
+    if bank_account.remark:
+        parts.append(f"Remark: {bank_account.remark}")
     return " | ".join(parts)

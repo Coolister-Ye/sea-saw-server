@@ -78,25 +78,25 @@ class OrderViewSet(ExportViewSetMixin, ModelViewSet):
         """
         serializer.save()
 
-    @action(detail=True, methods=["get"], url_path="export-pi")
-    def export_pi(self, request, pk=None):
-        """Generate and download a Proforma Invoice XLSX for this order."""
-        from sea_saw_sales.pi import generate_pi_xlsx
+    @action(detail=True, methods=["get"], url_path="export-sales-contract")
+    def export_sales_contract(self, request, pk=None):
+        """Generate and download a Sales Contract XLSX for this order."""
+        from sea_saw_sales.sc import generate_sc_xlsx
 
-        return self._export_single(generate_pi_xlsx, lambda o: f"PI-{o.order_code}.xlsx")
+        return self._export_single(generate_sc_xlsx, lambda o: f"SC-{o.order_code}.xlsx")
 
-    @action(detail=False, methods=["post"], url_path="export-pi-bulk")
-    def export_pi_bulk(self, request):
+    @action(detail=False, methods=["post"], url_path="export-sales-contract-bulk")
+    def export_sales_contract_bulk(self, request):
         """Generate a single XLSX with one sheet per order for the given IDs."""
-        from sea_saw_sales.pi import generate_pi_bulk_xlsx
+        from sea_saw_sales.sc import generate_sc_bulk_xlsx
 
         def get_filename(qs):
             codes = "-".join(str(o.order_code) for o in qs[:3])
             if qs.count() > 3:
                 codes += f"-and-{qs.count() - 3}-more"
-            return f"PI-{codes}.xlsx"
+            return f"SC-{codes}.xlsx"
 
-        return self._export_bulk(generate_pi_bulk_xlsx, get_filename, request.data.get("ids", []))
+        return self._export_bulk(generate_sc_bulk_xlsx, get_filename, request.data.get("ids", []))
 
     @action(detail=True, methods=["post"])
     def create_pipeline(self, request, pk=None):

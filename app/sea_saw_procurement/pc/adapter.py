@@ -1,23 +1,23 @@
-"""Map a PurchaseOrder model instance to the PO generator's data format."""
+"""Map a PurchaseOrder model instance to the Purchase Contract generator's data format."""
 
 from django.conf import settings
 from sea_saw_export.utils import format_payment_terms, format_bank_details
 
 
-def purchase_order_to_po_data(purchase_order) -> tuple:
+def purchase_order_to_pc_data(purchase_order) -> tuple:
     """
-    Map a PurchaseOrder instance to (header dict, products list) for the PO generator.
+    Map a PurchaseOrder instance to (header dict, products list) for the PC generator.
 
-    In a PO:
+    In a Purchase Contract:
     - Buyer = our company (settings)
     - Seller = supplier
     """
     buyer = purchase_order.buyer
     buyer_name = (buyer.account_name if buyer else None) or getattr(
-        settings, "PI_SELLER_NAME", ""
+        settings, "PC_BUYER_NAME", ""
     )
     buyer_address = (buyer.address if buyer else None) or getattr(
-        settings, "PI_SELLER_ADDRESS", ""
+        settings, "PC_BUYER_ADDRESS", ""
     )
 
     supplier = purchase_order.supplier
