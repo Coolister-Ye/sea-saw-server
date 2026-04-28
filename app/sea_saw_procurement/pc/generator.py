@@ -23,6 +23,7 @@ PC_CONFIG = DocConfig(
     print_area_rows=38,
     buyer_sig_row_base=34,
     bank_details_row_base=29,
+    title_party="Buyer",
 )
 
 

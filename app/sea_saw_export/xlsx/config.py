@@ -17,5 +17,7 @@ DocConfig = namedtuple(
         "print_area_rows",      # bottom row of the print area (for default slot count)
         "buyer_sig_row_base",   # row for buyer name in signature block
         "bank_details_row_base",  # row for bank details content
+        "title_party",          # "Seller" or "Buyer" — which party fills B2/B3 letterhead
     ],
+    defaults=("Seller",),
 )

@@ -118,7 +118,8 @@ def fill_product_row(ws, row, product, cfg):
 def fill_header(ws, header, total_row, cfg):
     ws["B4"] = cfg.doc_title
 
-    for cell, key in [("B2", "Seller Name"), ("B3", "Seller Address")]:
+    title_party = getattr(cfg, "title_party", "Seller")
+    for cell, key in [("B2", f"{title_party} Name"), ("B3", f"{title_party} Address")]:
         if header.get(key):
             ws[cell] = header[key]
 
