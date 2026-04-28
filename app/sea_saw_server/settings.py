@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "crispy_forms",
     "crispy_bootstrap4",
     "dj_rest_auth",
@@ -227,8 +228,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
     ],
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/minute",
+        "register": "3/hour",
+    },
     "DEFAULT_PAGINATION_CLASS": "proxy_pagination.ProxyPagination",
     "PAGE_SIZE": 5,
     "DEFAULT_FILTER_BACKENDS": [
@@ -250,9 +254,10 @@ PROXY_PAGINATION_MAPPING = {
 # =============================================================================
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
     "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),

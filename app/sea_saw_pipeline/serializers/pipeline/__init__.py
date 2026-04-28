@@ -8,7 +8,6 @@ from .pipeline import (
     PipelineSerializerForProduction,
     PipelineSerializerForWarehouse,
 )
-
 __all__ = [
     "PipelineSerializerForAdmin",
     "PipelineSerializerForSales",

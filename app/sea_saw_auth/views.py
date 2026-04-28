@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters import rest_framework as filters
+from rest_framework_simplejwt.views import TokenObtainPairView as BaseTokenObtainPairView
 
 from sea_saw_base.metadata import BaseMetadata
 from sea_saw_auth.filters import AdminUserFilter
@@ -19,6 +20,11 @@ from sea_saw_auth.serializers import (
     AdminUserCreateSerializer,
     RoleSerializer,
 )
+from sea_saw_auth.throttles import LoginRateThrottle, RegisterRateThrottle
+
+
+class ThrottledTokenObtainPairView(BaseTokenObtainPairView):
+    throttle_classes = [LoginRateThrottle]
 
 
 class UserDetailView(APIView):
@@ -37,6 +43,7 @@ class UserRegisterView(CreateAPIView):
 
     permission_classes = [AllowAny]
     authentication_classes = []  # No authentication required for registration
+    throttle_classes = [RegisterRateThrottle]
     serializer_class = UserCreateSerializer
 
     def create(self, request, *args, **kwargs):

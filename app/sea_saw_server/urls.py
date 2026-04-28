@@ -21,10 +21,11 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path, include, re_path
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
+    TokenBlacklistView,
 )
+from sea_saw_auth.views import ThrottledTokenObtainPairView
 
 
 def health_check(request):
@@ -46,9 +47,10 @@ urlpatterns = [
     path("api/pipeline/", include("sea_saw_pipeline.urls")),  # Pipeline orchestration endpoints
     path("api/attachments/", include("sea_saw_attachment.urls")),  # Attachment endpoints
     path("api/auth/", include("sea_saw_auth.urls")),
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/", ThrottledTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("api/token/blacklist/", TokenBlacklistView.as_view(), name="token_blacklist"),
     path("api/download/", include("sea_saw_download.urls")),
     path("api/preference/", include("sea_saw_preference.urls")),
     path("api/dashboard/", include("sea_saw_dashboard.urls")),  # Dashboard report endpoints
