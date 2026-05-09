@@ -81,6 +81,16 @@ class BaseMetadata(SimpleMetadata):
             finally:
                 view.request = request
 
+        # For read-only viewsets (no POST/PUT), expose schema via GET
+        if not actions and "GET" in view.allowed_methods:
+            try:
+                view.check_permissions(request)
+                serializer = view.get_serializer()
+                self.filter_info = self.get_filters_info(view)
+                actions["GET"] = self.get_serializer_info(serializer)
+            except (exceptions.APIException, PermissionDenied, Http404):
+                pass
+
         return actions
 
     # =====================================================

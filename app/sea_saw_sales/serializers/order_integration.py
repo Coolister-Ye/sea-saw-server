@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from drf_writable_nested.mixins import UniqueFieldsMixin
 
 from sea_saw_base.serializers import BaseSerializer
@@ -80,6 +81,10 @@ class OrderIntegrationSerializer(
     )
 
     eta = serializers.SerializerMethodField(label=_("ETA"))
+    total_purchase_amount = serializers.SerializerMethodField(label=_("Total Purchase Amount"))
+    total_outbound_amount = serializers.SerializerMethodField(label=_("Total Outbound Amount"))
+    total_received_amount = serializers.SerializerMethodField(label=_("Total Received Amount"))
+    total_paid_amount = serializers.SerializerMethodField(label=_("Total Paid Amount"))
 
     def get_eta(self, obj):
         pipeline = getattr(obj, "pipeline", None)
@@ -92,13 +97,49 @@ class OrderIntegrationSerializer(
             .last()
         )
 
-    pipeline_status = serializers.SerializerMethodField(label=_("Pipeline Status"))
-
-    def get_pipeline_status(self, obj):
+    def get_total_purchase_amount(self, obj):
         pipeline = getattr(obj, "pipeline", None)
         if not pipeline:
             return None
-        return pipeline.status
+        result = pipeline.purchase_orders.aggregate(total=Sum("total_amount"))
+        return result["total"]
+
+    def get_total_outbound_amount(self, obj):
+        pipeline = getattr(obj, "pipeline", None)
+        if not pipeline:
+            return None
+        from sea_saw_warehouse.models import OutboundItem
+        result = OutboundItem.objects.filter(
+            outbound_order__pipeline=pipeline,
+            outbound_gross_weight__isnull=False,
+            order_item__unit_price__isnull=False,
+        ).aggregate(
+            total=Sum(
+                ExpressionWrapper(
+                    F("order_item__unit_price") * F("outbound_gross_weight"),
+                    output_field=DecimalField(max_digits=20, decimal_places=2),
+                )
+            )
+        )
+        return result["total"]
+
+    def get_total_received_amount(self, obj):
+        pipeline = getattr(obj, "pipeline", None)
+        if not pipeline:
+            return None
+        result = pipeline.payments.filter(
+            payment_type="order_payment"
+        ).aggregate(total=Sum("amount"))
+        return result["total"]
+
+    def get_total_paid_amount(self, obj):
+        pipeline = getattr(obj, "pipeline", None)
+        if not pipeline:
+            return None
+        result = pipeline.payments.filter(
+            payment_type="purchase_payment"
+        ).aggregate(total=Sum("amount"))
+        return result["total"]
 
     order_items = OrderItemIntegrationSerializer(
         many=True, required=False, allow_null=True, label=_("Order Items")
@@ -124,7 +165,6 @@ class OrderIntegrationSerializer(
             "id",
             "order_code",
             "order_date",
-            "pipeline_status",
             "buyer",
             "buyer_id",
             "seller",
@@ -146,6 +186,10 @@ class OrderIntegrationSerializer(
             "deposit",
             "balance",
             "total_amount",
+            "total_purchase_amount",
+            "total_outbound_amount",
+            "total_received_amount",
+            "total_paid_amount",
             "payment_terms",
             "additional_info",
             "comment",
