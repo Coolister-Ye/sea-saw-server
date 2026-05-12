@@ -7,6 +7,6 @@ class SeaSawPreferenceConfig(AppConfig):
 
     def ready(self):
         from django.db.models.signals import post_migrate
-        from sea_saw_preference.seeds import seed_system_filter_presets
+        from sea_saw_preference.seeds import seed_custom_views
 
-        post_migrate.connect(seed_system_filter_presets, sender=self)
+        post_migrate.connect(seed_custom_views, sender=self)

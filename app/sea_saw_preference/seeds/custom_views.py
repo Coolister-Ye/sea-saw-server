@@ -1,5 +1,5 @@
 """
-System filter preset seed data.
+System view seed data.
 
 Each entry will be created via get_or_create on app startup (post_migrate).
 Existing records are never overwritten — edit them directly in the admin panel.
@@ -7,10 +7,10 @@ Existing records are never overwritten — edit them directly in the admin panel
 params convention for date-relative filters:
   Use plain Django ORM lookup keys. If a value needs to be resolved to
   "today" at query time, store it as the string "__today__" and resolve
-  it on the frontend (resolveParams) or via a custom DRF filter backend.
+  it on the frontend (resolveParams).
 """
 
-SYSTEM_FILTER_PRESETS = [
+SYSTEM_VIEWS = [
     {
         "entity": "order",
         "key": "all",
@@ -38,19 +38,21 @@ SYSTEM_FILTER_PRESETS = [
 ]
 
 
-def seed_system_filter_presets(sender, **kwargs):
+def seed_custom_views(sender, **kwargs):  # noqa: ARG001
     """Idempotent seed — safe to run multiple times."""
-    # Import here to avoid AppRegistryNotReady errors
-    from sea_saw_preference.models import UserFilterPreset
+    from sea_saw_preference.models import CustomView
 
-    for preset in SYSTEM_FILTER_PRESETS:
-        UserFilterPreset.objects.get_or_create(
-            entity=preset["entity"],
-            key=preset["key"],
-            preset_type=UserFilterPreset.PRESET_TYPE_SYSTEM,
+    for view in SYSTEM_VIEWS:
+        CustomView.objects.get_or_create(
+            entity=view["entity"],
+            key=view["key"],
+            is_system=True,
             defaults={
-                "name": preset["name"],
-                "params": preset["params"],
-                "user": None,
+                "owner": None,
+                "name": view["name"],
+                "params": view["params"],
+                "column_order": [],
+                "visibility": CustomView.VisibilityChoice.PUBLIC,
+                "is_default": False,
             },
         )

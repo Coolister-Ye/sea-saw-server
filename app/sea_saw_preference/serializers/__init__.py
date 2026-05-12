@@ -1,4 +1,3 @@
-from .filter_preset import FilterPresetSerializer
-from .column_preference import UserColumnPreferenceSerializer
+from .custom_view import CustomViewSerializer
 
-__all__ = ["FilterPresetSerializer", "UserColumnPreferenceSerializer"]
+__all__ = ["CustomViewSerializer"]

@@ -1,4 +1,3 @@
-from .filter_preset import UserFilterPreset
-from .column_preference import UserColumnPreference
+from .custom_view import CustomView
 
-__all__ = ["UserFilterPreset", "UserColumnPreference"]
+__all__ = ["CustomView"]

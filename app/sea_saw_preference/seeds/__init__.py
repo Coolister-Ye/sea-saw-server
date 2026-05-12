@@ -1,3 +1,3 @@
-from .filter_presets import seed_system_filter_presets
+from .custom_views import seed_custom_views
 
-__all__ = ["seed_system_filter_presets"]
+__all__ = ["seed_custom_views"]

@@ -1,4 +1,3 @@
-from .filter_preset import UserFilterPresetAdmin
-from .column_preference import UserColumnPreferenceAdmin
+from .custom_view import CustomViewAdmin
 
-__all__ = ["UserFilterPresetAdmin", "UserColumnPreferenceAdmin"]
+__all__ = ["CustomViewAdmin"]
